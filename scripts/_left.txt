@@ -1,0 +1,12 @@
+﻿      <div class="hidden lg:flex lg:w-1/2 relative bg-[var(--color-doc-blue-700)] flex-col justify-center px-12">
+        <div class="relative z-10 w-full max-w-lg mx-auto">
+          <h1 class="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6">
+            {{ mode === 'register' ? 'Únete a DocMeet hoy.' : 'Bienvenido de nuevo.' }}
+          </h1>
+          <p class="text-blue-100 text-lg leading-relaxed mb-12">
+            {{ mode === 'register'
+              ? 'Crea tu perfil en menos de 2 minutos y comienza a gestionar tus citas médicas con facilidad.'
+              : 'Accede a tu cuenta para gestionar tus citas, ver tu historial y contactar a tus especialistas.' }}
+          </p>
+        </div>
+      </motionless-left>

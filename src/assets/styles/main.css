@@ -1,0 +1,39 @@
+@import 'tailwindcss';
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  /* Fondos limpios y clínicos */
+  --color-hospital-bg: #f8fafc;
+  --color-hospital-surface: #ffffff;
+
+  /* Azul corporativo (Confianza y estructura) */
+  --color-doc-blue-50: #e6f0fa;
+  --color-doc-blue-100: #cce0f5;
+  --color-doc-blue-500: #0070cc;
+  --color-doc-blue-600: #00539c; /* Azul principal institucional */
+  --color-doc-blue-700: #003d73;
+
+  /* Turquesa/Celeste llamativo (Acentos modernos) */
+  --color-doc-teal-400: #26c6da;
+  --color-doc-teal-500: #00acc1;
+  --color-doc-teal-600: #00838f;
+
+  /* Verde para confirmaciones y citas (Salud) */
+  --color-doc-green-500: #10b981;
+  --color-doc-green-600: #059669;
+
+  /* Colores de texto para alta legibilidad */
+  --color-doc-text-main: #1e293b;
+  --color-doc-text-muted: #64748b;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-hospital-bg);
+  color: var(--color-doc-text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
