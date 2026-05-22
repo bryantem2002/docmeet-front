@@ -39,10 +39,8 @@ const userInitials = computed(() => {
   <header class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/75">
     <div class="mx-auto grid h-16 w-full max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 sm:px-6 lg:h-[4.5rem] lg:px-8">
       <RouterLink :to="{ name: 'home' }" class="flex items-center gap-3 group min-w-0">
-        <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--color-doc-blue-700)] to-[var(--color-doc-blue-500)] shadow-md shadow-blue-500/25 ring-1 ring-white/30 transition-transform duration-300 group-hover:-translate-y-0.5">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
+        <div class="flex h-10 w-10 items-center justify-center transition-transform duration-300 group-hover:-translate-y-0.5">
+          <img :src="'/img/logodoc.png'" alt="DocMeet Logo" class="w-full h-full object-contain drop-shadow-sm" />
         </div>
         <div class="leading-tight">
           <p class="text-[1.35rem] tracking-tight text-slate-800">

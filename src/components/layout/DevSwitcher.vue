@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/store/auth-store'
+import { useRouter } from 'vue-router'
 
 const auth = useAuthStore()
+const router = useRouter()
 
 function setRole(role: 'admin' | 'doctor' | 'paciente') {
   const names = {
@@ -20,10 +22,20 @@ function setRole(role: 'admin' | 'doctor' | 'paciente') {
 
   // 2. Usamos TU propia función del store para inyectar un token falso y el usuario
   auth.applySession('dev-fake-token-999', fakeUser as any)
+
+  // 3. Redirigimos a la vista por defecto de cada rol
+  if (role === 'admin') {
+    router.push('/admin')
+  } else if (role === 'doctor') {
+    router.push('/medico/dashboard')
+  } else {
+    router.push('/citas')
+  }
 }
 
 function logout() {
   auth.logout()
+  router.push('/')
 }
 
 const isDev = import.meta.env.DEV

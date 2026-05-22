@@ -1,0 +1,120 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const metrics = ref({
+  totalIncome: 'S/ 24,500',
+  appointmentsMonth: 342,
+  newPatients: 85,
+  activeDoctors: 12
+})
+
+// Mock data for the chart (Completadas vs Canceladas)
+const chartData = [
+  { day: 'Lun', completed: 80, cancelled: 10 },
+  { day: 'Mar', completed: 65, cancelled: 15 },
+  { day: 'Mie', completed: 90, cancelled: 5 },
+  { day: 'Jue', completed: 75, cancelled: 20 },
+  { day: 'Vie', completed: 85, cancelled: 8 },
+  { day: 'Sab', completed: 40, cancelled: 2 },
+  { day: 'Dom', completed: 20, cancelled: 0 },
+]
+
+const maxChartValue = 100
+</script>
+
+<template>
+  <div class="max-w-7xl mx-auto w-full px-4 sm:px-0 font-sans">
+    <div class="mb-8">
+      <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Panel de Administración</h1>
+      <p class="text-slate-500 mt-2 font-medium">Visión global del rendimiento de la clínica y gestión general.</p>
+    </div>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Ingresos del Mes</p>
+        <p class="text-3xl font-black text-emerald-600">{{ metrics.totalIncome }}</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Citas Realizadas</p>
+        <p class="text-3xl font-black text-blue-600">{{ metrics.appointmentsMonth }}</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Pacientes Nuevos</p>
+        <p class="text-3xl font-black text-indigo-600">{{ metrics.newPatients }}</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Doctores Activos</p>
+        <p class="text-3xl font-black text-amber-600">{{ metrics.activeDoctors }}</p>
+      </div>
+    </div>
+
+    <!-- Gráfico Visual con CSS/Tailwind -->
+    <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm mb-8">
+      <div class="flex justify-between items-end mb-8">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800">Flujo de Citas (Semana Actual)</h2>
+          <p class="text-sm text-slate-500">Citas completadas vs Cancelaciones</p>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+            <span class="text-sm font-medium text-slate-600">Completadas</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-red-400"></span>
+            <span class="text-sm font-medium text-slate-600">Canceladas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diagrama de barras CSS -->
+      <div class="h-64 flex items-end justify-between gap-2 border-b border-slate-200 pb-2 relative">
+        <!-- Líneas guía -->
+        <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
+          <div class="border-t border-slate-100 w-full h-0"></div>
+          <div class="border-t border-slate-100 w-full h-0"></div>
+          <div class="border-t border-slate-100 w-full h-0"></div>
+          <div class="border-t border-slate-100 w-full h-0"></div>
+        </div>
+
+        <div v-for="day in chartData" :key="day.day" class="flex-1 flex flex-col items-center gap-1 group relative z-10">
+          <div class="w-full flex justify-center items-end gap-1 h-full">
+            <!-- Barra Completadas -->
+            <div 
+              class="w-full max-w-[2rem] bg-blue-500 rounded-t-sm transition-all duration-500 hover:opacity-80 relative"
+              :style="{ height: `${(day.completed / maxChartValue) * 100}%` }"
+            >
+              <!-- Tooltip hover -->
+              <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                {{ day.completed }}
+              </span>
+            </div>
+            <!-- Barra Canceladas -->
+            <div 
+              class="w-full max-w-[2rem] bg-red-400 rounded-t-sm transition-all duration-500 hover:opacity-80 relative"
+              :style="{ height: `${(day.cancelled / maxChartValue) * 100}%` }"
+            >
+              <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                {{ day.cancelled }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Etiquetas eje X -->
+      <div class="flex justify-between mt-4">
+        <span v-for="day in chartData" :key="'label-'+day.day" class="flex-1 text-center text-sm font-bold text-slate-500">
+          {{ day.day }}
+        </span>
+      </div>
+    </div>
+    
+  </div>
+</template>
+
+<style scoped>
+.font-sans {
+  font-family: 'Inter', 'Poppins', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+</style>

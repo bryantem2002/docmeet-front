@@ -13,9 +13,15 @@ const router = createRouter({
     
     // --- RUTAS COMPARTIDAS / PACIENTES ---
     {
+      path: '/agendar',
+      name: 'book-appointment',
+      component: () => import('@/views/calendario.vue'), 
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/citas',
       name: 'appointments',
-      component: () => import('@/views/calendario.vue'), 
+      component: () => import('@/views/appointments-view.vue'), 
       meta: { requiresAuth: true },
     },
     {
@@ -56,13 +62,37 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('@/views/appointments-view.vue'), 
+      component: () => import('@/views/admin/AdminDashboard.vue'), 
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/pacientes',
+      name: 'admin-patients',
+      component: () => import('@/views/admin/AdminPatients.vue'), 
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/doctores',
+      name: 'admin-doctors',
+      component: () => import('@/views/admin/AdminDoctors.vue'), 
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/sedes',
+      name: 'admin-locations',
+      component: () => import('@/views/admin/AdminLocations.vue'), 
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/solicitudes',
+      name: 'admin-requests',
+      component: () => import('@/views/admin/AdminRequests.vue'), 
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: '/admin/pagos',
       name: 'payments',
-      component: () => import('@/views/appointments-view.vue'), 
+      component: () => import('@/views/admin/AdminPayments.vue'), 
       meta: { requiresAuth: true, requiresAdmin: true },
     },
 
@@ -70,13 +100,25 @@ const router = createRouter({
     {
       path: '/medico/dashboard',
       name: 'doctor-dashboard',
-      component: () => import('@/views/appointments-view.vue'), 
+      component: () => import('@/views/doctor/DoctorDashboard.vue'), 
       meta: { requiresAuth: true, requiresDoctor: true }
     },
     {
       path: '/medico/pacientes',
       name: 'doctor-patients',
-      component: () => import('@/views/appointments-view.vue'), 
+      component: () => import('@/views/doctor/DoctorPatients.vue'), 
+      meta: { requiresAuth: true, requiresDoctor: true }
+    },
+    {
+      path: '/medico/diagnosticos',
+      name: 'doctor-diagnoses',
+      component: () => import('@/views/doctor/DoctorDiagnoses.vue'), 
+      meta: { requiresAuth: true, requiresDoctor: true }
+    },
+    {
+      path: '/medico/recetas',
+      name: 'doctor-prescriptions',
+      component: () => import('@/views/doctor/DoctorPrescriptions.vue'), 
       meta: { requiresAuth: true, requiresDoctor: true }
     }
   ],

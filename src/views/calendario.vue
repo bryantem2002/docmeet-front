@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import NewAppointmentModal from '@/components/NewAppointmentModal.vue'
 
 // --- ESTADOS DEL CALENDARIO ---
 const today = new Date()
 // Mantenemos la fecha actual en la vista y el día seleccionado
 const currentDate = ref(new Date(today.getFullYear(), today.getMonth(), 1))
 const selectedDate = ref(new Date(today.getFullYear(), today.getMonth(), today.getDate()))
+const isModalOpen = ref(false)
 
 const weekDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 
@@ -26,7 +28,7 @@ const nextWeekStr = formatDateStr(new Date(today.getFullYear(), today.getMonth()
 // --- DATOS DE PRUEBA (MOCK DATA) ---
 const appointments = ref([
   { id: 1, date: todayStr, time: '10:00 AM', doctor: 'Dr. Gregory House', specialty: 'Medicina Interna', type: 'Presencial', status: 'confirmed' },
-  { id: 2, date: todayStr, time: '03:30 PM', doctor: 'Dra. Allison Cameron', specialty: 'Inmunología', type: 'Videollamada', status: 'pending' },
+  { id: 2, date: todayStr, time: '03:30 PM', doctor: 'Dra. Allison Cameron', specialty: 'Inmunología', type: 'Videollamada', status: 'confirmed' },
   { id: 3, date: tomorrowStr, time: '09:15 AM', doctor: 'Dr. Robert Chase', specialty: 'Cardiología', type: 'Presencial', status: 'confirmed' },
   { id: 4, date: nextWeekStr, time: '11:00 AM', doctor: 'Dra. Lisa Cuddy', specialty: 'Endocrinología', type: 'Presencial', status: 'confirmed' }
 ])
@@ -114,18 +116,37 @@ function selectDay(day: any) {
     currentDate.value = new Date(day.date.getFullYear(), day.date.getMonth(), 1)
   }
 }
+
+// --- CREAR CITA ---
+const handleNewAppointment = (data: any) => {
+  appointments.value.push({
+    id: Date.now(),
+    date: data.date,
+    time: data.time,
+    doctor: data.doctor || 'Por asignar',
+    specialty: data.specialty || 'General',
+    type: 'Presencial',
+    status: 'pending'
+  })
+}
 </script>
 
 <template>
   <div class="max-w-6xl mx-auto w-full">
     
+    <NewAppointmentModal 
+      :isOpen="isModalOpen" 
+      @close="isModalOpen = false" 
+      @schedule="handleNewAppointment" 
+    />
+
     <!-- Encabezado de la página -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
       <div>
         <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Mi Agenda Médica</h1>
         <p class="text-sm text-slate-500 mt-1">Administra tus citas y horarios de manera sencilla.</p>
       </div>
-      <button class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors shadow-sm shadow-blue-200 flex items-center gap-2 active:scale-95">
+      <button @click="isModalOpen = true" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors shadow-sm shadow-blue-200 flex items-center gap-2 active:scale-95">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
         </svg>
