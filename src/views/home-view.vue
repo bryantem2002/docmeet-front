@@ -21,9 +21,9 @@ const currentSlide = ref(0)
 let autoplayInterval: ReturnType<typeof setInterval> | null = null
 
 const slides = [
-  { image: '/img/banner-1.png' },
-  { image: '/img/banner-2.png' },
-  { image: '/img/banner-3.png' }
+  { imageDesktop: '/img/banner-1.png', imageMobile: '/img/banner-1.1.png' },
+  { imageDesktop: '/img/banner-2.png', imageMobile: '/img/banner-2.1.png' },
+  { imageDesktop: '/img/banner-3.png', imageMobile: '/img/banner-3.1.png' }
 ]
 
 function nextSlide() {
@@ -155,7 +155,7 @@ function resetServiceAutoplay() {
     
     <!-- ═══ BANNER CAROUSEL ═══ -->
     <section class="relative w-full overflow-hidden bg-gradient-to-br from-slate-50 to-white">
-      <div class="relative h-[420px] sm:h-[460px] lg:h-[500px]">
+      <div class="relative h-[550px] sm:h-[460px] lg:h-[600px] w-full">
         
         <!-- Slides -->
         <div
@@ -165,24 +165,31 @@ function resetServiceAutoplay() {
           :class="index === currentSlide ? 'opacity-100 translate-x-0' : index < currentSlide ? 'opacity-0 -translate-x-full' : 'opacity-0 translate-x-full'"
         >
           <div class="w-full h-full flex justify-center items-center">
-            <img
-              :src="slide.image"
-              alt="Banner DocMeet"
-              class="w-full h-full object-cover object-center"
-            />
+            <picture class="w-full h-full">
+              <!-- Móvil -->
+              <source media="(max-width: 639px)" :srcset="slide.imageMobile">
+              <!-- Web/Tablet -->
+              <source media="(min-width: 640px)" :srcset="slide.imageDesktop">
+              
+              <img
+                :src="slide.imageDesktop"
+                alt="Banner DocMeet"
+                class="w-full h-full object-cover object-top sm:object-center"
+              />
+            </picture>
           </div>
         </div>
 
         <!-- Nav Arrows -->
         <button
           @click="prevSlide"
-          class="absolute left-3 lg:left-6 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:text-[#3E90C8] hover:shadow-lg"
+          class="absolute left-3 lg:left-6 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:text-[#418FC8] hover:shadow-lg"
         >
           <PhCaretLeft class="h-5 w-5" weight="bold" />
         </button>
         <button
           @click="nextSlide"
-          class="absolute right-3 lg:right-6 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:text-[#3E90C8] hover:shadow-lg"
+          class="absolute right-3 lg:right-6 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:text-[#418FC8] hover:shadow-lg"
         >
           <PhCaretRight class="h-5 w-5" weight="bold" />
         </button>
@@ -194,14 +201,14 @@ function resetServiceAutoplay() {
             :key="index"
             @click="goToSlide(index)"
             class="h-2 rounded-full transition-all duration-300"
-            :class="index === currentSlide ? 'w-8 bg-[#3E90C8]' : 'w-2 bg-slate-300 hover:bg-slate-400'"
+            :class="index === currentSlide ? 'w-8 bg-[#418FC8]' : 'w-2 bg-slate-300 hover:bg-slate-400'"
           ></button>
         </div>
       </div>
     </section>
 
     <!-- ═══ STATS ═══ -->
-    <section class="bg-[#3E90C8] py-14">
+    <section class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] py-14">
       <div class="mx-auto w-full max-w-[1400px] px-6 lg:px-8 xl:px-12">
         <div class="grid grid-cols-2 gap-8 text-center md:grid-cols-4 md:divide-x md:divide-[#68C8E0]/30">
           <div v-for="stat in stats" :key="stat.label" class="space-y-1.5">
@@ -347,7 +354,7 @@ function resetServiceAutoplay() {
         <div class="bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100 overflow-hidden flex flex-col lg:flex-row">
           
           <!-- Info Column -->
-          <div class="w-full lg:w-5/12 bg-gradient-to-br from-[#3E90C8] to-[#1c4d72] p-10 lg:p-14 text-white flex flex-col justify-center relative overflow-hidden">
+          <div class="w-full lg:w-5/12 bg-gradient-to-br from-[#3E90C8] to-[#1c4d72] p-8 sm:p-10 lg:p-14 text-white flex flex-col justify-center relative overflow-hidden">
             <!-- Decorative Background Image (fondo1.png) -->
             <div class="absolute inset-0 bg-[url('/img/fondo1.png')] bg-cover bg-center opacity-20 mix-blend-overlay pointer-events-none"></div>
             
@@ -382,7 +389,7 @@ function resetServiceAutoplay() {
           </div>
           
           <!-- Form Column -->
-          <div class="w-full lg:w-7/12 p-10 lg:p-14 bg-white">
+          <div class="w-full lg:w-7/12 p-6 sm:p-10 lg:p-14 bg-white">
             <form @submit.prevent class="space-y-6">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2 relative">

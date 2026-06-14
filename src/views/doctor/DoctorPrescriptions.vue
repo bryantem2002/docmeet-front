@@ -16,23 +16,51 @@ const prescriptions = ref([
         <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Recetas Generadas</h1>
         <p class="text-slate-500 mt-2 font-medium">Control y seguimiento de todas las recetas médicas emitidas por ti.</p>
       </div>
-      <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-lg shadow-emerald-200 flex items-center justify-center gap-2">
+      <button class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2">
         <PhPlus class="h-5 w-5" weight="bold" />
         Nueva Receta Libre
       </button>
     </div>
 
     <!-- Filtros (Mockup visual) -->
-    <div class="flex gap-4 mb-6">
+    <div class="flex flex-col sm:flex-row gap-4 mb-6">
       <div class="relative flex-1 max-w-md">
         <PhMagnifyingGlass class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-        <input type="text" placeholder="Buscar por paciente o código de receta..." class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-sm text-slate-700" />
+        <input type="text" placeholder="Buscar por paciente o código de receta..." class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] font-medium text-sm text-slate-700" />
       </div>
     </div>
 
     <!-- Tabla -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="overflow-x-auto">
+      <!-- Vista Móvil -->
+      <div class="block lg:hidden divide-y divide-slate-100">
+        <div v-for="rec in prescriptions" :key="'mob-'+rec.id" class="p-5 hover:bg-slate-50 transition-colors group">
+          <div class="flex justify-between items-start mb-3">
+            <h3 class="font-bold text-slate-800 text-sm">{{ rec.patient }}</h3>
+            <span class="text-xs font-bold text-slate-400 flex items-center gap-1">
+              <PhFileText class="h-4 w-4 text-slate-300" />
+              {{ rec.id }}
+            </span>
+          </div>
+          <div class="flex justify-between items-center mb-4">
+            <p class="text-xs text-slate-500">{{ rec.date }}</p>
+            <span class="bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded-full text-[10px] border border-slate-200">
+              {{ rec.items }} items
+            </span>
+          </div>
+          <div class="flex gap-2">
+            <button class="flex-1 text-[#418FC8] font-bold hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] py-2.5 rounded-xl text-sm transition-all text-center">
+              Ver Detalles
+            </button>
+            <button class="text-slate-500 hover:text-[#418FC8] bg-white border border-slate-200 hover:bg-[#418FC8]/10 px-4 py-2 rounded-xl transition-colors" title="Imprimir Receta">
+              <PhPrinter class="h-5 w-5" weight="bold" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista Desktop -->
+      <div class="hidden lg:block overflow-x-auto">
         <table class="w-full text-left border-collapse min-w-[800px]">
           <thead>
             <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-extrabold uppercase tracking-widest">
@@ -59,11 +87,11 @@ const prescriptions = ref([
                 </span>
               </td>
               <td class="p-5 text-right flex justify-end gap-2">
-                <button class="text-slate-500 hover:text-emerald-600 bg-white border border-slate-200 hover:bg-emerald-50 px-3 py-2 rounded-lg text-sm transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100" title="Imprimir Receta">
-                  <PhPrinter class="h-5 w-5" />
+                <button class="text-slate-500 hover:text-[#418FC8] bg-white border border-slate-200 hover:bg-[#418FC8]/10 px-3 py-2 rounded-lg text-sm transition-colors" title="Imprimir Receta">
+                  <PhPrinter class="h-4 w-4" weight="bold" />
                 </button>
-                <button class="text-emerald-600 font-bold hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-lg text-sm transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
-                  Ver Receta
+                <button class="text-[#418FC8] font-bold hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] px-4 py-2 rounded-lg text-sm transition-all shadow-sm hover:shadow-[#418FC8]/20">
+                  Ver Detalles
                 </button>
               </td>
             </tr>

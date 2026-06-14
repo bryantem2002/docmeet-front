@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { PhPlus, PhMagnifyingGlass, PhCheckCircle, PhProhibit } from '@phosphor-icons/vue'
+import { PhPlus, PhMagnifyingGlass, PhCheckCircle, PhProhibit, PhPhone, PhFunnel } from '@phosphor-icons/vue'
 
 const patients = ref([
   { id: 'PAC-001', name: 'Carlos Pérez', dni: '74839210', phone: '987654321', lastVisit: '10 May 2026', sede: 'Miraflores', date: '10 May 2026', status: 'active' },
@@ -21,7 +21,7 @@ const toggleStatus = (patient: any) => {
         <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Gestor de Pacientes</h1>
         <p class="text-slate-500 mt-2 font-medium">Visualiza y administra todas las cuentas de pacientes a nivel global.</p>
       </div>
-      <button class="bg-[#3E90C8] hover:bg-[#2d7ab5] text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-lg shadow-[#3E90C8]/20 flex items-center justify-center gap-2">
+      <button class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2">
         <PhPlus class="h-5 w-5" weight="bold" />
         Registrar Paciente
       </button>
@@ -34,7 +34,7 @@ const toggleStatus = (patient: any) => {
         <input 
           type="text" 
           placeholder="Buscar por nombre, correo o DNI..." 
-          class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3E90C8]/50 focus:border-[#3E90C8] transition-all"
+          class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all"
         />
       </div>
       <div class="flex gap-2">
@@ -44,9 +44,44 @@ const toggleStatus = (patient: any) => {
       </div>
     </div>
 
-    <!-- Tabla -->
+    <!-- Contenedor Principal -->
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden transition-colors">
-      <div class="overflow-x-auto custom-scrollbar">
+      
+      <!-- Vista Móvil (Tarjetas) -->
+      <div class="block sm:hidden divide-y divide-slate-100">
+        <div v-for="pac in patients" :key="'mob-'+pac.id" class="p-5 hover:bg-slate-50 transition-colors">
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-[#418FC8]/10 text-[#418FC8] flex items-center justify-center font-bold text-sm shrink-0">
+                {{ pac.name.charAt(0) }}
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-800 text-base">{{ pac.name }}</h3>
+                <p class="text-xs font-bold text-slate-400 mt-0.5">{{ pac.id }}</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 text-[10px] font-bold rounded-full border shrink-0" :class="pac.status === 'active' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'">
+              {{ pac.status === 'active' ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+          <div class="flex flex-col gap-1.5 mb-4 text-sm">
+            <div class="flex justify-between">
+              <span class="text-slate-500">Teléfono:</span>
+              <span class="font-bold text-slate-700 flex items-center gap-1"><PhPhone class="text-slate-400" /> {{ pac.phone }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Última Cita:</span>
+              <span class="font-medium text-slate-700">{{ pac.lastVisit }}</span>
+            </div>
+          </div>
+          <button class="w-full text-[#418FC8] font-bold hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] py-2.5 rounded-xl text-sm transition-colors text-center">
+            Ver Detalles
+          </button>
+        </div>
+      </div>
+
+      <!-- Vista Desktop (Tabla) -->
+      <div class="hidden sm:block overflow-x-auto custom-scrollbar">
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="bg-slate-50/50 border-b border-slate-200">
@@ -60,7 +95,7 @@ const toggleStatus = (patient: any) => {
           <tbody class="divide-y divide-slate-100">
             <tr v-for="pac in patients" :key="pac.id" class="hover:bg-slate-50/50 transition-colors">
               <td class="p-5 font-bold text-slate-800 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-[#3E90C8]/10 text-[#3E90C8] flex items-center justify-center font-bold text-xs">
+                <div class="w-8 h-8 rounded-full bg-[#418FC8]/10 text-[#418FC8] flex items-center justify-center font-bold text-xs">
                   {{ pac.name.charAt(0) }}
                 </div>
                 <div>
@@ -85,7 +120,7 @@ const toggleStatus = (patient: any) => {
                   <PhCheckCircle v-if="pac.status === 'active'" class="h-4 w-4" weight="bold" />
                   <PhProhibit v-else class="h-4 w-4" weight="bold" />
                 </button>
-                <button class="text-[#3E90C8] font-bold hover:text-[#2d7ab5] bg-[#3E90C8]/10 hover:bg-[#3E90C8]/20 px-4 py-2 rounded-lg text-sm transition-colors">
+                <button class="text-[#418FC8] font-bold hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] px-4 py-2 rounded-lg text-sm transition-all shadow-sm hover:shadow-[#418FC8]/20">
                   Editar
                 </button>
               </td>

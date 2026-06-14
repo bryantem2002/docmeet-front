@@ -25,50 +25,89 @@ const secretaries = ref([
 
 <template>
   <div class="max-w-7xl mx-auto w-full px-4 sm:px-0 font-sans">
-    <div class="mb-8 flex justify-between items-center">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
       <div>
         <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Secretarias</h1>
         <p class="text-slate-500 mt-2 font-medium">Gestión del personal administrativo y asignación a médicos.</p>
       </div>
-      <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+      <button class="w-full sm:w-auto bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5">
         Nueva Secretaria
       </button>
     </div>
 
-    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-      <table class="w-full text-left text-sm text-slate-600">
-        <thead class="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
-          <tr>
-            <th class="px-6 py-4">Nombre Completo</th>
-            <th class="px-6 py-4">Turno</th>
-            <th class="px-6 py-4">Sede Asignada</th>
-            <th class="px-6 py-4">Doctores Asignados</th>
-            <th class="px-6 py-4">Estado</th>
-            <th class="px-6 py-4 text-right">Acciones</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-          <tr v-for="sec in secretaries" :key="sec.id" class="hover:bg-slate-50/50 transition-colors">
-            <td class="px-6 py-4 font-bold text-slate-800">{{ sec.name }}</td>
-            <td class="px-6 py-4">{{ sec.shift }}</td>
-            <td class="px-6 py-4">{{ sec.clinic }}</td>
-            <td class="px-6 py-4 text-center">
-              <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs font-bold">{{ sec.doctorsAssigned }}</span>
-            </td>
-            <td class="px-6 py-4">
-              <span 
-                class="px-2 py-1 rounded text-xs font-bold"
-                :class="sec.active ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'"
-              >
-                {{ sec.active ? 'Activo' : 'Inactivo' }}
-              </span>
-            </td>
-            <td class="px-6 py-4 text-right">
-              <button class="text-purple-600 hover:text-purple-800 font-medium text-sm">Gestionar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Contenedor Principal -->
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden transition-colors">
+      
+      <!-- Vista Móvil (Tarjetas) -->
+      <div class="block sm:hidden divide-y divide-slate-100">
+        <div v-for="sec in secretaries" :key="'mob-'+sec.id" class="p-5 hover:bg-slate-50 transition-colors">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">{{ sec.name }}</h3>
+              <p class="text-xs font-bold text-slate-400 mt-0.5">DNI: {{ sec.dni }}</p>
+            </div>
+            <span class="px-2.5 py-1 text-[10px] font-bold rounded-full border shrink-0" :class="sec.active ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'">
+              {{ sec.active ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+          <div class="flex flex-col gap-1.5 mb-4 text-sm">
+            <div class="flex justify-between">
+              <span class="text-slate-500">Sede Asignada:</span>
+              <span class="font-bold text-[#418FC8]">{{ sec.clinic }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Turno:</span>
+              <span class="font-medium text-slate-700">{{ sec.shift }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">Doctores Asignados:</span>
+              <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-xs font-bold">{{ sec.doctorsAssigned }}</span>
+            </div>
+          </div>
+          <button class="w-full text-[#418FC8] font-bold hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] py-2.5 rounded-xl text-sm transition-colors text-center">
+            Gestionar
+          </button>
+        </div>
+      </div>
+
+      <!-- Vista Desktop (Tabla) -->
+      <div class="hidden sm:block overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50/50 border-b border-slate-200">
+              <th class="p-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Nombre Completo</th>
+              <th class="p-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Turno</th>
+              <th class="p-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Sede Asignada</th>
+              <th class="p-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Docs Asignados</th>
+              <th class="p-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Estado</th>
+              <th class="p-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr v-for="sec in secretaries" :key="sec.id" class="hover:bg-slate-50/50 transition-colors">
+              <td class="p-5 font-bold text-slate-800 text-sm">{{ sec.name }}</td>
+              <td class="p-5 text-slate-600 text-sm font-medium">{{ sec.shift }}</td>
+              <td class="p-5 text-[#418FC8] font-bold text-sm">{{ sec.clinic }}</td>
+              <td class="p-5 text-center">
+                <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs font-bold">{{ sec.doctorsAssigned }}</span>
+              </td>
+              <td class="p-5 text-center">
+                <span 
+                  class="px-3 py-1 text-xs font-bold rounded-full border"
+                  :class="sec.active ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'"
+                >
+                  {{ sec.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="p-5 text-right">
+                <button class="text-[#418FC8] font-bold hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] px-4 py-2 rounded-lg text-sm transition-all shadow-sm hover:shadow-[#418FC8]/20">
+                  Gestionar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>

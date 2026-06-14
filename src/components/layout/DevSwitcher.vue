@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useAuthStore } from '@/store/auth-store'
 import { useRouter } from 'vue-router'
 import { PhArrowsOutCardinal, PhMinus, PhX } from '@phosphor-icons/vue'
@@ -18,24 +18,35 @@ const position = ref({ x: window.innerWidth - 450, y: window.innerHeight - 80 })
 const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
 
-function startDrag(event: MouseEvent) {
+function startDrag(event: MouseEvent | TouchEvent) {
   isDragging.value = true
+  const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX
+  const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY
+  
   dragOffset.value = {
-    x: event.clientX - position.value.x,
-    y: event.clientY - position.value.y
+    x: clientX - position.value.x,
+    y: clientY - position.value.y
   }
   document.addEventListener('mousemove', onDrag)
   document.addEventListener('mouseup', stopDrag)
+  document.addEventListener('touchmove', onDrag, { passive: false })
+  document.addEventListener('touchend', stopDrag)
 }
 
-function onDrag(event: MouseEvent) {
+function onDrag(event: MouseEvent | TouchEvent) {
   if (!isDragging.value) return
+  if ('touches' in event && event.cancelable) {
+    event.preventDefault()
+  }
   
-  let newX = event.clientX - dragOffset.value.x
-  let newY = event.clientY - dragOffset.value.y
+  const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX
+  const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY
   
-  const maxX = window.innerWidth - 300
-  const maxY = window.innerHeight - 50
+  let newX = clientX - dragOffset.value.x
+  let newY = clientY - dragOffset.value.y
+  
+  const maxX = Math.max(0, window.innerWidth - 320)
+  const maxY = Math.max(0, window.innerHeight - 60)
   
   newX = Math.max(0, Math.min(newX, maxX))
   newY = Math.max(0, Math.min(newY, maxY))
@@ -47,11 +58,28 @@ function stopDrag() {
   isDragging.value = false
   document.removeEventListener('mousemove', onDrag)
   document.removeEventListener('mouseup', stopDrag)
+  document.removeEventListener('touchmove', onDrag)
+  document.removeEventListener('touchend', stopDrag)
 }
+
+function clampPosition() {
+  const maxX = Math.max(0, window.innerWidth - 320)
+  const maxY = Math.max(0, window.innerHeight - 60)
+  position.value.x = Math.max(0, Math.min(position.value.x, maxX))
+  position.value.y = Math.max(0, Math.min(position.value.y, maxY))
+}
+
+onMounted(() => {
+  clampPosition()
+  window.addEventListener('resize', clampPosition)
+})
 
 onUnmounted(() => {
   document.removeEventListener('mousemove', onDrag)
   document.removeEventListener('mouseup', stopDrag)
+  document.removeEventListener('touchmove', onDrag)
+  document.removeEventListener('touchend', stopDrag)
+  window.removeEventListener('resize', clampPosition)
 })
 
 function setRole(role: 'admin' | 'doctor' | 'paciente' | 'secretaria') {
@@ -91,13 +119,14 @@ function logout() {
 <template>
   <div 
     v-if="isVisible" 
-    class="fixed z-[9999] shadow-2xl border border-slate-700 bg-slate-900/95 backdrop-blur-md rounded-2xl overflow-hidden flex flex-col"
+    class="fixed z-[9999] shadow-2xl border border-slate-700 bg-slate-900/95 backdrop-blur-md rounded-2xl overflow-hidden flex flex-col w-[90vw] max-w-[340px] sm:w-auto"
     :style="{ top: position.y + 'px', left: position.x + 'px' }"
     :class="isDragging ? 'opacity-90 scale-105' : ''"
   >
     <div 
       class="flex items-center justify-between px-3 py-2 bg-slate-800/80 cursor-move border-b border-slate-700 select-none"
       @mousedown="startDrag"
+      @touchstart="startDrag"
     >
       <div class="flex items-center gap-2">
         <PhArrowsOutCardinal class="text-slate-400 w-4 h-4" />
@@ -106,11 +135,11 @@ function logout() {
         </span>
       </div>
       
-      <div class="flex items-center gap-2">
-        <button @click.stop="isMinimized = !isMinimized" class="text-slate-400 hover:text-white transition-colors" title="Minimizar">
+      <div class="flex items-center gap-1">
+        <button @click.stop="isMinimized = !isMinimized" class="p-2 text-slate-400 hover:text-white transition-colors" title="Minimizar">
           <PhMinus class="w-4 h-4" />
         </button>
-        <button @click.stop="isVisible = false" class="text-slate-400 hover:text-red-400 transition-colors" title="Cerrar permanentemente">
+        <button @click.stop="isVisible = false" class="p-2 text-slate-400 hover:text-red-400 transition-colors" title="Cerrar permanentemente">
           <PhX class="w-4 h-4" />
         </button>
       </div>

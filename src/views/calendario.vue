@@ -147,7 +147,7 @@ const handleNewAppointment = (data: any) => {
         <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Mi Agenda Médica</h1>
         <p class="text-sm text-slate-500 mt-1">Administra tus citas y horarios de manera sencilla.</p>
       </div>
-      <button @click="isModalOpen = true" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors shadow-sm shadow-blue-200 flex items-center gap-2 active:scale-95">
+      <button @click="isModalOpen = true" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md shadow-[#418FC8]/30 flex items-center gap-2 active:scale-95 hover:-translate-y-0.5">
         <PhPlus class="h-5 w-5" weight="bold" />
         Nueva Cita
       </button>
@@ -162,10 +162,10 @@ const handleNewAppointment = (data: any) => {
         <div class="flex items-center justify-between mb-8">
           <h2 class="text-xl font-bold text-slate-800">{{ currentMonthName }}</h2>
           <div class="flex gap-2">
-            <button @click="prevMonth" class="p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all focus:ring-2 focus:ring-blue-100 outline-none">
+            <button @click="prevMonth" class="p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-[#418FC8] transition-all focus:ring-2 focus:ring-[#418FC8]/20 outline-none">
               <PhCaretLeft class="h-5 w-5" weight="bold" />
             </button>
-            <button @click="nextMonth" class="p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all focus:ring-2 focus:ring-blue-100 outline-none">
+            <button @click="nextMonth" class="p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-[#418FC8] transition-all focus:ring-2 focus:ring-[#418FC8]/20 outline-none">
               <PhCaretRight class="h-5 w-5" weight="bold" />
             </button>
           </div>
@@ -188,9 +188,9 @@ const handleNewAppointment = (data: any) => {
             :class="[
               !day.isCurrentMonth ? 'text-slate-300' : 'text-slate-700 font-medium',
               day.isSelected 
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 font-bold scale-105' 
-                : 'hover:bg-blue-50 hover:text-blue-600',
-              day.isToday && !day.isSelected ? 'bg-slate-50 text-blue-600 font-bold border border-blue-100' : ''
+                ? 'bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] text-white shadow-lg shadow-[#418FC8]/30 font-bold scale-105' 
+                : 'hover:bg-[#418FC8]/10 hover:text-[#418FC8]',
+              day.isToday && !day.isSelected ? 'bg-slate-50 text-[#418FC8] font-bold border border-[#418FC8]/20' : ''
             ]"
           >
             <span class="text-sm sm:text-base z-10">{{ day.date.getDate() }}</span>
@@ -199,7 +199,7 @@ const handleNewAppointment = (data: any) => {
             <div 
               v-if="day.hasAppointments" 
               class="absolute bottom-2 sm:bottom-3 w-1.5 h-1.5 rounded-full transition-colors"
-              :class="day.isSelected ? 'bg-white' : 'bg-blue-400 group-hover:bg-blue-600'"
+              :class="day.isSelected ? 'bg-white' : 'bg-[#6DC7DC] group-hover:bg-[#418FC8]'"
             ></div>
           </button>
         </div>
@@ -224,12 +224,12 @@ const handleNewAppointment = (data: any) => {
             class="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-blue-200 transition-all relative overflow-hidden group cursor-pointer"
           >
             <!-- Banda lateral decorativa -->
-            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#418FC8] opacity-80 group-hover:opacity-100 transition-opacity"></div>
             
             <div class="flex justify-between items-start mb-4 ml-2">
               <div class="flex items-center gap-2">
                 <span class="px-2.5 py-1 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg flex items-center gap-1.5">
-                  <PhClock class="h-3.5 w-3.5 text-blue-600" />
+                  <PhClock class="h-3.5 w-3.5 text-[#418FC8]" />
                   {{ app.time }}
                 </span>
                 <span 
@@ -251,7 +251,7 @@ const handleNewAppointment = (data: any) => {
               
               <div class="flex items-center gap-3">
                 <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-lg w-fit">
-                  <PhVideoCamera class="h-4 w-4 text-blue-500" />
+                  <PhVideoCamera class="h-4 w-4 text-[#418FC8]" />
                   {{ app.type }}
                 </div>
               </div>

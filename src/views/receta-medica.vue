@@ -100,20 +100,20 @@ const descargarPDF = async (id: number) => {
         class="bg-white border border-slate-200 rounded-3xl p-6 shadow-[0_2px_15px_rgb(0,0,0,0.03)] hover:shadow-lg transition-all duration-300 flex flex-col h-full relative overflow-hidden group"
       >
         <!-- Detalles decorativos -->
-        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-0 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
+        <div class="absolute top-0 right-0 w-24 h-24 bg-[#418FC8]/10 rounded-bl-full -z-0 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
 
         <!-- Cabecera de la Tarjeta -->
         <div class="flex justify-between items-start mb-5 relative z-10">
           <div>
             <div class="flex items-center gap-2 mb-1.5">
-              <span class="px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg flex items-center gap-1.5">
+              <span class="px-2.5 py-1 bg-[#418FC8]/10 text-[#418FC8] text-xs font-bold rounded-lg flex items-center gap-1.5">
                 <PhCalendarBlank class="h-3.5 w-3.5" />
                 {{ formatDate(receta.date) }}
               </span>
               <span class="text-xs font-semibold text-slate-400">#{{ receta.id }}</span>
             </div>
             <h3 class="text-lg font-bold text-slate-800">{{ receta.doctor }}</h3>
-            <p class="text-sm font-medium text-blue-600">{{ receta.specialty }}</p>
+            <p class="text-sm font-medium text-[#418FC8]">{{ receta.specialty }}</p>
           </div>
           
           <!-- Ícono de Receta -->
@@ -134,9 +134,9 @@ const descargarPDF = async (id: number) => {
           </h4>
           <ul class="space-y-3">
             <li v-for="(med, index) in receta.medications" :key="index" class="flex items-start gap-3">
-              <div class="mt-0.5 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></div>
+              <div class="mt-0.5 w-1.5 h-1.5 rounded-full bg-[#6DC7DC] shrink-0"></div>
               <div>
-                <p class="text-sm font-bold text-slate-800">{{ med.name }} <span class="text-blue-600 font-semibold text-xs ml-1">{{ med.dosage }}</span></p>
+                <p class="text-sm font-bold text-slate-800">{{ med.name }} <span class="text-[#418FC8] font-semibold text-xs ml-1">{{ med.dosage }}</span></p>
                 <p class="text-xs text-slate-500 mt-0.5">{{ med.frequency }} durante {{ med.duration }}</p>
               </div>
             </li>
@@ -156,8 +156,8 @@ const descargarPDF = async (id: number) => {
             :disabled="downloadingId === receta.id"
             class="w-full py-3 px-4 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2"
             :class="downloadingId === receta.id 
-              ? 'bg-blue-100 text-blue-400 cursor-not-allowed' 
-              : 'bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white shadow-sm hover:shadow-md'"
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+              : 'bg-white border-2 border-[#418FC8] text-[#418FC8] hover:bg-[#418FC8] hover:text-white shadow-sm hover:shadow-md hover:-translate-y-0.5'"
           >
             <!-- Spinner si está cargando -->
             <PhSpinner v-if="downloadingId === receta.id" class="animate-spin h-5 w-5" />

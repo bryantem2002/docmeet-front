@@ -37,9 +37,9 @@ const maxChartValue = 100
         <p class="text-3xl font-black text-emerald-500">{{ metrics.totalIncome }}</p>
       </div>
       <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
-        <div class="absolute inset-0 bg-gradient-to-br from-[#3E90C8]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-[#418FC8]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
         <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Citas Realizadas</p>
-        <p class="text-3xl font-black text-[#3E90C8]">{{ metrics.appointmentsMonth }}</p>
+        <p class="text-3xl font-black text-[#418FC8]">{{ metrics.appointmentsMonth }}</p>
       </div>
       <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-br from-[#70C6DC]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -55,14 +55,14 @@ const maxChartValue = 100
 
     <!-- Gráfico Visual con CSS/Tailwind -->
     <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm mb-8">
-      <div class="flex justify-between items-end mb-8">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-8">
         <div>
           <h2 class="text-lg font-bold text-slate-800">Flujo de Citas (Semana Actual)</h2>
           <p class="text-sm text-slate-500">Citas completadas vs Cancelaciones</p>
         </div>
-        <div class="flex gap-4">
+        <div class="flex flex-wrap gap-4">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-[#3E90C8]"></span>
+            <span class="w-3 h-3 rounded-full bg-[#418FC8]"></span>
             <span class="text-sm font-medium text-slate-600">Completadas</span>
           </div>
           <div class="flex items-center gap-2">
@@ -73,8 +73,9 @@ const maxChartValue = 100
       </div>
 
       <!-- Diagrama de barras CSS -->
-      <div class="h-64 flex items-end justify-between gap-2 border-b border-slate-200 pb-2 relative">
-        <!-- Líneas guía -->
+      <div class="overflow-x-auto custom-scrollbar pb-2">
+        <div class="h-64 min-w-[500px] flex items-end justify-between gap-2 border-b border-slate-200 pb-2 relative">
+          <!-- Líneas guía -->
         <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
           <div class="border-t border-slate-100 w-full h-0"></div>
           <div class="border-t border-slate-100 w-full h-0"></div>
@@ -86,7 +87,7 @@ const maxChartValue = 100
           <div class="w-full flex justify-center items-end gap-1 h-full">
             <!-- Barra Completadas -->
             <div 
-              class="w-full max-w-[2rem] bg-[#3E90C8] rounded-t-md transition-all duration-500 hover:opacity-80 relative"
+              class="w-full max-w-[2rem] bg-gradient-to-t from-[#418FC8] to-[#6DC7DC] rounded-t-md transition-all duration-500 hover:opacity-80 relative shadow-[0_0_10px_rgba(65,143,200,0.3)]"
               :style="{ height: `${(day.completed / maxChartValue) * 100}%` }"
             >
               <!-- Tooltip hover -->
@@ -105,12 +106,13 @@ const maxChartValue = 100
             </div>
           </div>
         </div>
-      </div>
-      <!-- Etiquetas eje X -->
-      <div class="flex justify-between mt-4">
-        <span v-for="day in chartData" :key="'label-'+day.day" class="flex-1 text-center text-sm font-bold text-slate-500">
-          {{ day.day }}
-        </span>
+        </div>
+        <!-- Etiquetas eje X -->
+        <div class="flex justify-between mt-4 min-w-[500px]">
+          <span v-for="day in chartData" :key="'label-'+day.day" class="flex-1 text-center text-sm font-bold text-slate-500">
+            {{ day.day }}
+          </span>
+        </div>
       </div>
     </div>
     

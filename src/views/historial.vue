@@ -104,7 +104,7 @@ const filteredHistory = computed(() => {
         <input 
           v-model="searchQuery"
           type="text" 
-          class="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-colors sm:text-sm" 
+          class="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] focus:bg-white transition-colors sm:text-sm" 
           placeholder="Buscar doctor o diagnóstico..."
         >
       </div>
@@ -115,7 +115,7 @@ const filteredHistory = computed(() => {
         <select 
           id="specialty" 
           v-model="filterSpecialty"
-          class="block w-full sm:w-48 pl-3 pr-10 py-2.5 text-base border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-xl bg-slate-50"
+          class="block w-full sm:w-48 pl-3 pr-10 py-2.5 text-base border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] sm:text-sm rounded-xl bg-slate-50"
         >
           <option v-for="spec in availableSpecialties" :key="spec" :value="spec">
             {{ spec }}
@@ -149,12 +149,12 @@ const filteredHistory = computed(() => {
             </div>
             
             <div class="bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 flex items-center gap-3 w-fit">
-              <div class="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
+              <div class="h-8 w-8 rounded-full bg-[#418FC8]/10 text-[#418FC8] flex items-center justify-center font-bold text-sm">
                 {{ record.doctor.charAt(4) }} <!-- Letra inicial del doctor -->
               </div>
               <div>
                 <p class="text-sm font-bold text-slate-800">{{ record.doctor }}</p>
-                <p class="text-xs font-medium text-blue-600">{{ record.specialty }}</p>
+                <p class="text-xs font-medium text-[#418FC8]">{{ record.specialty }}</p>
               </div>
             </div>
           </div>
@@ -181,7 +181,7 @@ const filteredHistory = computed(() => {
           <div class="mt-6 flex justify-end">
             <button 
               v-if="record.prescription"
-              class="flex items-center gap-2 text-sm font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors"
+              class="flex items-center gap-2 text-sm font-semibold text-[#418FC8] bg-[#418FC8]/10 hover:bg-[#418FC8]/20 px-4 py-2 rounded-lg transition-colors"
             >
               <PhFileText class="h-5 w-5" />
               Ver Receta Médica
@@ -201,7 +201,7 @@ const filteredHistory = computed(() => {
       </div>
       <h3 class="text-lg font-bold text-slate-700 mb-2">No se encontraron resultados</h3>
       <p class="text-slate-500 max-w-md">No tienes registros médicos que coincidan con tu búsqueda actual. Intenta cambiar los filtros o los términos de búsqueda.</p>
-      <button @click="searchQuery = ''; filterSpecialty = 'Todas'" class="mt-4 text-blue-600 font-medium hover:underline focus:outline-none">
+      <button @click="searchQuery = ''; filterSpecialty = 'Todas'" class="mt-4 text-[#418FC8] font-medium hover:underline focus:outline-none">
         Limpiar filtros
       </button>
     </div>

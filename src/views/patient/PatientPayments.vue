@@ -15,7 +15,31 @@ const myPayments = ref([
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-      <table class="w-full text-left text-sm text-slate-600">
+      <!-- Vista Móvil -->
+      <div class="block md:hidden divide-y divide-slate-100">
+        <div v-for="pay in myPayments" :key="'mob-'+pay.id" class="p-5 hover:bg-slate-50 transition-colors">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <p class="text-xs text-slate-500 font-medium mb-1">{{ pay.date }}</p>
+              <h3 class="font-bold text-slate-800 text-base">{{ pay.doctor }}</h3>
+              <p class="text-xs text-slate-500 mt-0.5">{{ pay.clinic }}</p>
+            </div>
+            <div class="text-right">
+              <p class="font-black text-slate-800 text-lg mb-1">{{ pay.amount }}</p>
+              <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider" :class="pay.status === 'Pagado' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'">
+                {{ pay.status }}
+              </span>
+            </div>
+          </div>
+          <button class="w-full text-[#418FC8] font-bold hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] py-2.5 rounded-xl text-sm transition-all text-center mt-2">
+            Descargar PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Vista Desktop -->
+      <div class="hidden md:block overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-600 min-w-[600px]">
         <thead class="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
           <tr>
             <th class="px-6 py-4">Fecha</th>
@@ -41,13 +65,14 @@ const myPayments = ref([
               </span>
             </td>
             <td class="px-6 py-4 text-right">
-              <button class="text-[var(--color-doc-blue-600)] hover:text-blue-800 font-medium text-sm underline underline-offset-2">
+              <button class="text-[#418FC8] hover:text-[#6DC7DC] font-medium text-sm underline underline-offset-2">
                 Descargar PDF
               </button>
             </td>
           </tr>
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   </div>
 </template>

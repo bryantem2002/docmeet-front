@@ -54,14 +54,14 @@ const dashboardRouteName = computed(() => {
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 bg-white border-b border-slate-200">
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all duration-300">
     <div class="mx-auto w-full max-w-[1600px] flex items-center h-[92px] px-6 lg:px-10">
 
       <!-- Logo -->
-      <RouterLink :to="{ name: 'home' }" class="flex items-center gap-3 shrink-0 mr-auto lg:mr-0">
-        <img src="/img/logodoc.png" alt="DocMeet" class="h-12 w-12 object-contain" />
-        <div class="leading-none">
-          <p class="text-[1.7rem] tracking-tight">
+      <RouterLink :to="{ name: 'home' }" class="flex items-center gap-1.5 sm:gap-3 shrink-0 mr-auto lg:mr-0 min-w-0">
+        <img src="/img/logodoc.png" alt="DocMeet" class="h-8 w-8 sm:h-12 sm:w-12 object-contain shrink-0" />
+        <div class="leading-none shrink-0">
+          <p class="text-lg sm:text-[1.7rem] tracking-tight">
             <span class="font-black text-[#3E90C8]">Doc</span><span class="font-bold text-slate-800">Meet</span>
           </p>
           <p class="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-400 mt-0.5 hidden sm:block">Salud digital</p>
@@ -91,7 +91,7 @@ const dashboardRouteName = computed(() => {
 
 
       <!-- Right side -->
-      <div class="flex items-center gap-5 shrink-0">
+      <div class="flex items-center gap-2 sm:gap-5 shrink-0">
 
         <!-- Contact + Buttons in one row (desktop) -->
         <div class="hidden lg:flex items-center gap-5">
@@ -137,7 +137,7 @@ const dashboardRouteName = computed(() => {
           <!-- Mobile "Mi Panel" Button -->
           <RouterLink
             :to="{ name: dashboardRouteName }"
-            class="lg:hidden rounded-full bg-[#3E90C8] px-5 py-2 text-white text-sm font-bold transition-all hover:bg-[#2d7ab5] mr-2"
+            class="lg:hidden rounded-full bg-[#3E90C8] px-3 sm:px-5 py-1.5 sm:py-2 text-white text-xs sm:text-sm font-bold transition-all hover:bg-[#2d7ab5]"
           >
             Mi Panel
           </RouterLink>
@@ -154,13 +154,13 @@ const dashboardRouteName = computed(() => {
             <NotificationDropdown />
 
 
-            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#68C8E0] to-[#3E90C8] text-white text-sm font-black shadow-sm border-2 border-white">
+            <div class="hidden lg:flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#68C8E0] to-[#3E90C8] text-white text-sm font-black shadow-sm border-2 border-white">
               {{ userInitials }}
             </div>
 
             <button
               type="button"
-              class="p-2 text-slate-400 hover:text-red-500 rounded-lg transition-colors ml-1"
+              class="hidden lg:block p-2 text-slate-400 hover:text-red-500 rounded-lg transition-colors ml-1"
               title="Cerrar sesión"
               @click="logout"
             >
@@ -181,7 +181,7 @@ const dashboardRouteName = computed(() => {
     </div>
 
     <!-- Mobile menu -->
-    <div v-if="mobileMenuOpen" class="lg:hidden border-t border-slate-100 bg-white px-5 py-4 space-y-1">
+    <div v-if="mobileMenuOpen" class="absolute top-[92px] left-0 w-full lg:hidden border-t border-slate-200 bg-white/95 backdrop-blur-md px-5 py-4 space-y-1 shadow-2xl">
       <RouterLink to="/#nosotros" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 font-bold text-base hover:bg-slate-50 transition-colors" @click="mobileMenuOpen = false">
         <PhUsers class="h-5 w-5 text-[#3E90C8]" />
         Nosotros
@@ -217,6 +217,20 @@ const dashboardRouteName = computed(() => {
         <button @click="openAuthModal('login')" class="w-full mt-2 rounded-xl bg-[#3E90C8] px-5 py-3.5 text-white text-sm font-bold transition-colors hover:bg-[#2d7ab5]">
           Iniciar Sesión
         </button>
+      </template>
+      <template v-else>
+        <div class="flex items-center gap-3 px-4 py-3 mt-2 bg-slate-50 rounded-xl">
+          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#68C8E0] to-[#3E90C8] text-white text-sm font-black shadow-sm">
+            {{ userInitials }}
+          </div>
+          <div class="flex-1">
+            <p class="text-sm font-bold text-slate-800">{{ user?.fullName || 'Usuario' }}</p>
+            <p class="text-xs font-medium text-slate-500 capitalize">{{ user?.role }}</p>
+          </div>
+          <button @click="logout" class="p-2 text-slate-400 hover:text-red-500 rounded-lg bg-white border border-slate-200 transition-colors">
+            <PhSignOut class="h-5 w-5" weight="bold" />
+          </button>
+        </div>
       </template>
     </div>
   </header>

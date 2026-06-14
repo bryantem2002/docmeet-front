@@ -12,18 +12,36 @@ const schedules = ref([
 
 <template>
   <div class="max-w-7xl mx-auto w-full px-4 sm:px-0 font-sans">
-    <div class="mb-8 flex justify-between items-center">
+    <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
         <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Mi Horario de Atención</h1>
         <p class="text-slate-500 mt-2 font-medium">Configura tus días y horas de disponibilidad para citas.</p>
       </div>
-      <button class="bg-[var(--color-doc-teal-600)] hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+      <button class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-4 py-2 rounded-lg font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
         Guardar Cambios
       </button>
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-      <table class="w-full text-left text-sm text-slate-600">
+      <!-- Vista Móvil -->
+      <div class="block sm:hidden divide-y divide-slate-100">
+        <div v-for="sch in schedules" :key="'mob-'+sch.id" class="p-5 hover:bg-slate-50 transition-colors">
+          <div class="flex justify-between items-start mb-3">
+            <h3 class="font-bold text-slate-800 text-base">{{ sch.day }}</h3>
+            <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider" :class="sch.active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'">
+              {{ sch.active ? 'Habilitado' : 'Deshabilitado' }}
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 mb-4">Horario: <span class="font-bold text-slate-700">{{ sch.startTime }} - {{ sch.endTime }}</span></p>
+          <button class="w-full text-[#418FC8] hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] py-2.5 rounded-xl text-sm font-bold transition-all text-center">
+            Editar Horario
+          </button>
+        </div>
+      </div>
+
+      <!-- Vista Desktop -->
+      <div class="hidden sm:block overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-600 min-w-[600px]">
         <thead class="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
           <tr>
             <th class="px-6 py-4">Día de la Semana</th>
@@ -47,11 +65,12 @@ const schedules = ref([
               </span>
             </td>
             <td class="px-6 py-4 text-right">
-              <button class="text-[var(--color-doc-teal-600)] hover:text-teal-800 font-medium text-sm">Editar</button>
+              <button class="text-[#418FC8] hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md">Editar</button>
             </td>
           </tr>
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   </div>
 </template>

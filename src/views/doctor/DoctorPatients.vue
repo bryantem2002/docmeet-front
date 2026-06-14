@@ -17,38 +17,60 @@ const patients = ref([
     </div>
 
     <!-- Filtros Búsqueda -->
-    <div class="flex gap-4 mb-6">
-      <div class="relative flex-1 max-w-md">
+    <div class="flex flex-col sm:flex-row gap-4 mb-6">
+      <div class="relative w-full sm:flex-1 sm:max-w-md">
         <PhMagnifyingGlass class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-        <input type="text" placeholder="Buscar paciente por nombres o DNI..." class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-sm text-slate-700" />
+        <input type="text" placeholder="Buscar paciente por nombres o DNI..." class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] font-medium text-sm text-slate-700" />
       </div>
-      <button class="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold py-3 px-6 rounded-xl flex items-center gap-2 text-sm transition-colors">
+      <button class="w-full sm:w-auto bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 text-sm transition-colors">
         <PhFunnel class="h-5 w-5" />
         Filtros
       </button>
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm font-bold uppercase tracking-wider">
-            <th class="p-4">Paciente</th>
-            <th class="p-4">Última Visita</th>
-            <th class="p-4">Nº Visitas</th>
-            <th class="p-4 text-right">Acción</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-          <tr v-for="patient in patients" :key="patient.id" class="hover:bg-slate-50 transition-colors">
-            <td class="p-4 font-bold text-slate-800">{{ patient.name }}</td>
-            <td class="p-4 text-slate-500 font-medium">{{ patient.lastVisit }}</td>
-            <td class="p-4 text-slate-500 font-medium">{{ patient.totalVisits }}</td>
-            <td class="p-4 text-right">
-              <button class="text-blue-600 font-bold hover:underline">Ver Historial</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Vista Móvil -->
+      <div class="block sm:hidden divide-y divide-slate-100">
+        <div v-for="patient in patients" :key="'mob-'+patient.id" class="p-5 hover:bg-slate-50 transition-colors">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">{{ patient.name }}</h3>
+              <p class="text-xs text-slate-500 mt-1">Última Visita: <span class="font-bold text-slate-700">{{ patient.lastVisit }}</span></p>
+            </div>
+            <div class="bg-slate-100 px-3 py-1.5 rounded-xl text-center">
+              <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Visitas</p>
+              <p class="font-black text-[#418FC8] text-lg">{{ patient.totalVisits }}</p>
+            </div>
+          </div>
+          <button class="w-full text-[#418FC8] font-bold hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] py-2.5 rounded-xl text-sm transition-all text-center">
+            Ver Historial
+          </button>
+        </div>
+      </div>
+
+      <!-- Vista Desktop -->
+      <div class="hidden sm:block overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[600px]">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm font-bold uppercase tracking-wider">
+              <th class="p-4">Paciente</th>
+              <th class="p-4">Última Visita</th>
+              <th class="p-4">Nº Visitas</th>
+              <th class="p-4 text-right">Acción</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr v-for="patient in patients" :key="patient.id" class="hover:bg-slate-50 transition-colors">
+              <td class="p-4 font-bold text-slate-800">{{ patient.name }}</td>
+              <td class="p-4 text-slate-500 font-medium">{{ patient.lastVisit }}</td>
+              <td class="p-4 text-slate-500 font-medium">{{ patient.totalVisits }}</td>
+              <td class="p-4 text-right">
+                <button class="text-[#418FC8] font-bold hover:underline">Ver Historial</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>

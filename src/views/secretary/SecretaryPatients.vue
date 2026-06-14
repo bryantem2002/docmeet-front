@@ -9,18 +9,37 @@ const patients = ref([
 
 <template>
   <div class="max-w-7xl mx-auto w-full px-4 sm:px-0 font-sans">
-    <div class="mb-8 flex justify-between items-center">
+    <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
         <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Pacientes</h1>
         <p class="text-slate-500 mt-2 font-medium">Registro y gestión de pacientes del sistema.</p>
       </div>
-      <button class="bg-[var(--color-doc-blue-600)] hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+      <button class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-4 py-2 rounded-lg font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
         Registrar Paciente
       </button>
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-      <table class="w-full text-left text-sm text-slate-600">
+      <!-- Vista Móvil -->
+      <div class="block md:hidden divide-y divide-slate-100">
+        <div v-for="patient in patients" :key="'mob-'+patient.id" class="p-5 hover:bg-slate-50 transition-colors">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">{{ patient.name }}</h3>
+              <p class="text-xs text-slate-500 mt-0.5">DNI: <span class="font-bold text-slate-700">{{ patient.dni }}</span></p>
+              <p class="text-xs text-slate-500 mt-0.5">Tel: <span class="font-medium text-slate-700">{{ patient.phone }}</span></p>
+              <p class="text-xs text-slate-500 mt-0.5">{{ patient.email }}</p>
+            </div>
+          </div>
+          <button class="w-full text-[#418FC8] hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] py-2.5 rounded-xl text-sm font-bold transition-all text-center mt-2">
+            Editar
+          </button>
+        </div>
+      </div>
+
+      <!-- Vista Desktop -->
+      <div class="hidden md:block overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-600 min-w-[600px]">
         <thead class="bg-slate-50 text-slate-500 font-medium">
           <tr>
             <th class="px-6 py-4">Nombre Completo</th>
@@ -37,11 +56,12 @@ const patients = ref([
             <td class="px-6 py-4">{{ patient.phone }}</td>
             <td class="px-6 py-4">{{ patient.email }}</td>
             <td class="px-6 py-4 text-right">
-              <button class="text-[var(--color-doc-blue-600)] hover:text-blue-800 font-medium text-sm">Editar</button>
+              <button class="text-[#418FC8] hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md">Editar</button>
             </td>
           </tr>
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   </div>
 </template>

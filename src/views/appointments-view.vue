@@ -154,7 +154,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
         <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Mis Citas</h1>
         <p class="text-slate-500 mt-2 font-medium">Administra tus próximas consultas y revisa tu historial de atenciones.</p>
       </div>
-      <router-link to="/agendar" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-lg shadow-blue-200 flex items-center gap-2">
+      <router-link to="/agendar" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2">
         <PhPlus class="h-5 w-5" weight="bold" />
         Agendar nueva cita
       </router-link>
@@ -165,18 +165,18 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
       <button 
         @click="activeTab = 'upcoming'"
         class="pb-4 font-bold text-[15px] transition-all relative"
-        :class="activeTab === 'upcoming' ? 'text-blue-600' : 'text-slate-500 hover:text-slate-700'"
+        :class="activeTab === 'upcoming' ? 'text-[#418FC8]' : 'text-slate-500 hover:text-slate-700'"
       >
         Próximas Citas
-        <div v-if="activeTab === 'upcoming'" class="absolute bottom-0 left-0 w-full h-[3px] bg-blue-600 rounded-t-full"></div>
+        <div v-if="activeTab === 'upcoming'" class="absolute bottom-0 left-0 w-full h-[3px] bg-[#418FC8] rounded-t-full"></div>
       </button>
       <button 
         @click="activeTab = 'past'"
         class="pb-4 font-bold text-[15px] transition-all relative"
-        :class="activeTab === 'past' ? 'text-blue-600' : 'text-slate-500 hover:text-slate-700'"
+        :class="activeTab === 'past' ? 'text-[#418FC8]' : 'text-slate-500 hover:text-slate-700'"
       >
         Citas Pasadas
-        <div v-if="activeTab === 'past'" class="absolute bottom-0 left-0 w-full h-[3px] bg-blue-600 rounded-t-full"></div>
+        <div v-if="activeTab === 'past'" class="absolute bottom-0 left-0 w-full h-[3px] bg-[#418FC8] rounded-t-full"></div>
       </button>
     </div>
 
@@ -191,12 +191,12 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
         <!-- Card Header -->
         <div class="p-6 border-b border-slate-100 flex justify-between items-start gap-4 bg-slate-50/50">
           <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xl shrink-0">
+            <div class="w-14 h-14 rounded-full bg-[#418FC8]/10 text-[#418FC8] flex items-center justify-center font-bold text-xl shrink-0">
               {{ app.doctor.charAt(4) }}
             </div>
             <div>
               <h3 class="font-bold text-slate-800 text-lg">{{ app.doctor }}</h3>
-              <p class="text-sm font-medium text-blue-600">{{ app.specialty }}</p>
+              <p class="text-sm font-medium text-[#418FC8]">{{ app.specialty }}</p>
             </div>
           </div>
           
@@ -256,7 +256,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
 
         <!-- Card Footer / Acciones -->
         <div v-if="app.type === 'upcoming'" class="p-4 border-t border-slate-100 bg-slate-50 flex gap-3">
-          <button @click="openRescheduleModal(app)" class="flex-1 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-200 text-blue-600 font-bold py-2.5 rounded-xl transition-colors text-sm">
+          <button @click="openRescheduleModal(app)" class="flex-1 bg-white hover:bg-[#418FC8]/10 border border-slate-200 hover:border-[#418FC8]/30 text-[#418FC8] font-bold py-2.5 rounded-xl transition-colors text-sm">
             Reprogramar Cita
           </button>
           <button @click="openCancelModal(app)" class="flex-1 bg-white hover:bg-red-50 border border-slate-200 hover:border-red-200 text-red-600 font-bold py-2.5 rounded-xl transition-colors text-sm">
@@ -280,7 +280,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
       </div>
       <h3 class="text-xl font-bold text-slate-700 mb-2">No tienes {{ activeTab === 'upcoming' ? 'próximas citas' : 'citas pasadas' }}</h3>
       <p class="text-slate-500 max-w-md">Cuando agendes una nueva consulta médica, aparecerá en esta sección.</p>
-      <router-link v-if="activeTab === 'upcoming'" to="/agendar" class="mt-6 text-blue-600 font-bold hover:underline">
+      <router-link v-if="activeTab === 'upcoming'" to="/agendar" class="mt-6 text-[#418FC8] font-bold hover:underline">
         Agendar mi primera cita &rarr;
       </router-link>
     </div>
@@ -309,7 +309,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
             <input 
               type="date" 
               v-model="newSelectedDate"
-              class="w-full border border-slate-300 rounded-xl px-4 py-3 text-lg font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              class="w-full border border-slate-300 rounded-xl px-4 py-3 text-lg font-medium text-slate-800 focus:outline-none focus:border-[#418FC8] focus:ring-1 focus:ring-[#6DC7DC]"
             />
           </div>
 
@@ -323,8 +323,8 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
                 @click="newSelectedTime = time"
                 class="py-3 px-2 rounded-xl text-sm font-bold transition-all border"
                 :class="newSelectedTime === time 
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200 scale-105' 
-                  : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:bg-blue-50'"
+                  ? 'bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] text-white shadow-md shadow-[#418FC8]/30 scale-105 border-transparent' 
+                  : 'bg-white text-slate-600 border-slate-200 hover:border-[#418FC8]/50 hover:bg-[#418FC8]/5'"
               >
                 {{ time }}
               </button>
@@ -332,9 +332,9 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
           </div>
 
           <!-- Alert/Warning -->
-          <div class="flex items-start gap-3 bg-blue-50 p-4 rounded-xl border border-blue-100 mb-8">
-            <PhInfo class="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
-            <p class="text-xs font-medium text-blue-800">
+          <div class="flex items-start gap-3 bg-[#418FC8]/10 p-4 rounded-xl border border-[#418FC8]/20 mb-8">
+            <PhInfo class="h-5 w-5 text-[#418FC8] mt-0.5 shrink-0" />
+            <p class="text-xs font-medium text-[#418FC8]">
               Al confirmar, tu cita anterior quedará liberada. Esta reprogramación no tiene costo adicional.
             </p>
           </div>
@@ -343,7 +343,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
             <button @click="closeRescheduleModal" class="flex-1 font-bold text-slate-600 hover:bg-slate-100 py-4 rounded-xl transition-colors">
               Cancelar
             </button>
-            <button @click="confirmReschedule" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-colors">
+            <button @click="confirmReschedule" class="flex-1 bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-4 rounded-xl shadow-lg shadow-[#418FC8]/30 transition-all hover:-translate-y-0.5">
               Confirmar cambio
             </button>
           </div>

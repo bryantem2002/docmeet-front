@@ -10,35 +10,53 @@ const specialties = ref([
 
 <template>
   <div class="max-w-7xl mx-auto w-full px-4 sm:px-0 font-sans">
-    <div class="mb-8 flex justify-between items-center">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
       <div>
         <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Especialidades Médicas</h1>
         <p class="text-slate-500 mt-2 font-medium">Catálogo de especialidades disponibles en la clínica.</p>
       </div>
-      <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+      <button class="w-full sm:w-auto bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5">
         Nueva Especialidad
       </button>
     </div>
 
-    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-      <table class="w-full text-left text-sm text-slate-600">
-        <thead class="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
-          <tr>
-            <th class="px-6 py-4 w-1/3">Nombre</th>
-            <th class="px-6 py-4">Descripción</th>
-            <th class="px-6 py-4 text-right">Acciones</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-          <tr v-for="spec in specialties" :key="spec.id" class="hover:bg-slate-50/50 transition-colors">
-            <td class="px-6 py-4 font-bold text-slate-800">{{ spec.name }}</td>
-            <td class="px-6 py-4">{{ spec.description }}</td>
-            <td class="px-6 py-4 text-right">
-              <button class="text-purple-600 hover:text-purple-800 font-medium text-sm">Editar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Contenedor Principal -->
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden transition-colors">
+      
+      <!-- Vista Móvil (Tarjetas) -->
+      <div class="block sm:hidden divide-y divide-slate-100">
+        <div v-for="spec in specialties" :key="'mob-'+spec.id" class="p-5 hover:bg-slate-50 transition-colors">
+          <h3 class="font-bold text-slate-800 text-base mb-2">{{ spec.name }}</h3>
+          <p class="text-slate-500 text-sm mb-4 leading-relaxed">{{ spec.description }}</p>
+          <button class="w-full text-[#418FC8] font-bold hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] py-2.5 rounded-xl text-sm transition-colors text-center">
+            Editar
+          </button>
+        </div>
+      </div>
+
+      <!-- Vista Desktop (Tabla) -->
+      <div class="hidden sm:block overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50/50 border-b border-slate-200">
+              <th class="p-5 text-xs font-bold text-slate-400 uppercase tracking-wider w-1/3">Nombre</th>
+              <th class="p-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Descripción</th>
+              <th class="p-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr v-for="spec in specialties" :key="spec.id" class="hover:bg-slate-50/50 transition-colors">
+              <td class="p-5 font-bold text-slate-800">{{ spec.name }}</td>
+              <td class="p-5 text-slate-600 text-sm leading-relaxed">{{ spec.description }}</td>
+              <td class="p-5 text-right">
+                <button class="text-[#418FC8] font-bold hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] px-4 py-2 rounded-lg text-sm transition-all shadow-sm hover:shadow-[#418FC8]/20">
+                  Editar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>

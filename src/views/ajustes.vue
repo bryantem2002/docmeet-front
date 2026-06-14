@@ -1,8 +1,18 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
-import { PhMoon, PhBell, PhLockKey } from '@phosphor-icons/vue'
+import { PhMoon, PhBell, PhLockKey, PhUser, PhCamera } from '@phosphor-icons/vue'
 
 // --- ESTADOS DE CONFIGURACIÓN ---
+const userProfile = ref({
+  firstName: 'Juan',
+  lastName: 'Pérez',
+  email: 'juan.perez@example.com',
+  phone: '987654321',
+  dni: '71234567',
+  birthDate: '1990-05-15',
+  gender: 'Masculino',
+  avatar: ''
+})
 
 // 1. Apariencia (Modo Oscuro)
 const isDarkMode = ref(false)
@@ -28,7 +38,7 @@ onMounted(() => {
   }
 })
 
-// Observamos los cambios en el switch para aplicar la clase al <html>
+// Observamos los cambios en el switch para aplicar la clase al nodo html
 watch(isDarkMode, (newValue) => {
   if (newValue) {
     document.documentElement.classList.add('dark')
@@ -57,10 +67,73 @@ const saveSettings = () => {
 
     <div class="space-y-6">
 
+      <!-- TARJETA 0: PERFIL PERSONAL -->
+      <section class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300">
+        <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-2">
+          <PhUser class="h-5 w-5 text-[#418FC8]" />
+          Información Personal
+        </h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Actualiza tus datos básicos de contacto.</p>
+
+        <div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
+          
+          <!-- Foto de Perfil -->
+          <div class="shrink-0 flex flex-col items-center gap-3">
+            <div class="relative group cursor-pointer">
+              <div class="h-32 w-32 rounded-full bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] flex items-center justify-center text-white text-4xl font-black shadow-lg overflow-hidden border-4 border-white dark:border-slate-700 transition-transform group-hover:scale-105">
+                <span v-if="!userProfile.avatar">JP</span>
+                <img v-else :src="userProfile.avatar" class="w-full h-full object-cover" />
+              </div>
+              <div class="absolute bottom-1 right-1 p-2.5 bg-white text-[#418FC8] rounded-full shadow-md border border-slate-100 hover:bg-slate-50 transition-colors">
+                <PhCamera class="h-5 w-5" weight="fill" />
+              </div>
+            </div>
+            <p class="text-xs font-semibold text-[#418FC8] hover:underline cursor-pointer">Cambiar foto</p>
+          </div>
+
+          <!-- Campos del Formulario -->
+          <div class="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="space-y-1.5">
+              <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Nombres</label>
+              <input type="text" v-model="userProfile.firstName" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] text-sm text-slate-800 dark:text-slate-200 transition-colors shadow-sm" />
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Apellidos</label>
+              <input type="text" v-model="userProfile.lastName" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] text-sm text-slate-800 dark:text-slate-200 transition-colors shadow-sm" />
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">DNI / Pasaporte</label>
+              <input type="text" v-model="userProfile.dni" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] text-sm text-slate-800 dark:text-slate-200 transition-colors shadow-sm" />
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Fecha de Nacimiento</label>
+              <input type="date" v-model="userProfile.birthDate" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] text-sm text-slate-800 dark:text-slate-200 transition-colors shadow-sm" />
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Género</label>
+              <select v-model="userProfile.gender" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] text-sm text-slate-800 dark:text-slate-200 transition-colors shadow-sm">
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+                <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+              </select>
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Teléfono</label>
+              <input type="tel" v-model="userProfile.phone" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] text-sm text-slate-800 dark:text-slate-200 transition-colors shadow-sm" />
+            </div>
+            <div class="space-y-1.5 sm:col-span-2">
+              <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Correo Electrónico</label>
+              <input type="email" v-model="userProfile.email" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] text-sm text-slate-800 dark:text-slate-200 transition-colors shadow-sm" />
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- TARJETA 1: APARIENCIA -->
       <section class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300">
         <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-2">
-          <PhMoon class="h-5 w-5 text-blue-500" />
+          <PhMoon class="h-5 w-5 text-[#418FC8]" />
           Apariencia
         </h2>
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Ajusta cómo se ve la interfaz de la plataforma.</p>
@@ -75,12 +148,12 @@ const saveSettings = () => {
           <button 
             @click="isDarkMode = !isDarkMode"
             class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
-            :class="isDarkMode ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-600'"
+            :class="isDarkMode ? 'bg-[#418FC8]' : 'bg-slate-200 dark:bg-slate-600'"
           >
             <span 
               class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
               :class="isDarkMode ? 'translate-x-6' : 'translate-x-1'"
-            />
+            ></span>
           </button>
         </div>
       </section>
@@ -88,7 +161,7 @@ const saveSettings = () => {
       <!-- TARJETA 2: NOTIFICACIONES -->
       <section class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300">
         <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-2">
-          <PhBell class="h-5 w-5 text-blue-500" />
+          <PhBell class="h-5 w-5 text-[#418FC8]" />
           Notificaciones
         </h2>
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Elige qué tipo de alertas quieres recibir por correo y WhatsApp.</p>
@@ -100,8 +173,8 @@ const saveSettings = () => {
               <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Recordatorios de Citas</h3>
               <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Te avisaremos 24 horas antes de tu consulta.</p>
             </div>
-            <button @click="notifyAppointments = !notifyAppointments" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none" :class="notifyAppointments ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-600'">
-              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" :class="notifyAppointments ? 'translate-x-6' : 'translate-x-1'"/>
+            <button @click="notifyAppointments = !notifyAppointments" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none" :class="notifyAppointments ? 'bg-[#418FC8]' : 'bg-slate-200 dark:bg-slate-600'">
+              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" :class="notifyAppointments ? 'translate-x-6' : 'translate-x-1'"></span>
             </button>
           </div>
           <hr class="border-slate-100 dark:border-slate-700">
@@ -112,8 +185,8 @@ const saveSettings = () => {
               <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Resultados Disponibles</h3>
               <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Alertas cuando el doctor suba una nueva receta o diagnóstico.</p>
             </div>
-            <button @click="notifyResults = !notifyResults" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none" :class="notifyResults ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-600'">
-              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" :class="notifyResults ? 'translate-x-6' : 'translate-x-1'"/>
+            <button @click="notifyResults = !notifyResults" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none" :class="notifyResults ? 'bg-[#418FC8]' : 'bg-slate-200 dark:bg-slate-600'">
+              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" :class="notifyResults ? 'translate-x-6' : 'translate-x-1'"></span>
             </button>
           </div>
           <hr class="border-slate-100 dark:border-slate-700">
@@ -124,8 +197,8 @@ const saveSettings = () => {
               <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Promociones y Salud</h3>
               <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Boletines informativos y descuentos en clínicas.</p>
             </div>
-            <button @click="notifyPromotions = !notifyPromotions" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none" :class="notifyPromotions ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-600'">
-              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" :class="notifyPromotions ? 'translate-x-6' : 'translate-x-1'"/>
+            <button @click="notifyPromotions = !notifyPromotions" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none" :class="notifyPromotions ? 'bg-[#418FC8]' : 'bg-slate-200 dark:bg-slate-600'">
+              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" :class="notifyPromotions ? 'translate-x-6' : 'translate-x-1'"></span>
             </button>
           </div>
         </div>
@@ -134,7 +207,7 @@ const saveSettings = () => {
       <!-- TARJETA 3: SEGURIDAD -->
       <section class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300">
         <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-2">
-          <PhLockKey class="h-5 w-5 text-blue-500" />
+          <PhLockKey class="h-5 w-5 text-[#418FC8]" />
           Seguridad y Privacidad
         </h2>
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Protege tu cuenta y gestiona quién ve tus datos.</p>
@@ -157,8 +230,8 @@ const saveSettings = () => {
               <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Compartir historial</h3>
               <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Permitir que nuevos doctores vean tu historial clínico pasado.</p>
             </div>
-            <button @click="shareDataWithDoctors = !shareDataWithDoctors" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none" :class="shareDataWithDoctors ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-600'">
-              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" :class="shareDataWithDoctors ? 'translate-x-6' : 'translate-x-1'"/>
+            <button @click="shareDataWithDoctors = !shareDataWithDoctors" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none" :class="shareDataWithDoctors ? 'bg-[#418FC8]' : 'bg-slate-200 dark:bg-slate-600'">
+              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" :class="shareDataWithDoctors ? 'translate-x-6' : 'translate-x-1'"></span>
             </button>
           </div>
         </div>
@@ -166,7 +239,7 @@ const saveSettings = () => {
 
       <!-- Botón Guardar -->
       <div class="flex justify-end pt-4">
-        <button @click="saveSettings" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-md hover:shadow-lg active:scale-95">
+        <button @click="saveSettings" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 hover:-translate-y-0.5">
           Guardar Cambios
         </button>
       </div>

@@ -5,6 +5,7 @@ import { RouterView, useRoute } from 'vue-router'
 import AppHeader from '@/components/layout/app-header.vue'
 import AppFooter from '@/components/layout/app-footer.vue'
 import PatientSidebar from '@/components/layout/PatientSidebar.vue'
+import DashboardHeader from '@/components/layout/DashboardHeader.vue'
 import DevSwitcher from '@/components/layout/DevSwitcher.vue' 
 import { PhWhatsappLogo } from '@phosphor-icons/vue'
 
@@ -16,7 +17,7 @@ const isDashboardRoute = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col bg-gradient-to-b from-doc-blue-50 to-white text-slate-800 font-sans overflow-x-hidden" :class="isDashboardRoute ? 'h-screen overflow-hidden' : 'min-h-svh'">
+  <div class="flex flex-col bg-gradient-to-b from-doc-blue-50 to-white text-slate-800 font-sans" :class="isDashboardRoute ? 'h-screen overflow-hidden' : 'min-h-svh'">
     
     <AppHeader v-if="!isDashboardRoute" />
     
@@ -24,12 +25,15 @@ const isDashboardRoute = computed(() => {
     <div class="flex-1 w-full flex items-start">
         <PatientSidebar v-if="isDashboardRoute" />
       
-      <main class="flex-1 w-full flex flex-col min-w-0" :class="isDashboardRoute ? 'p-6 lg:p-10 h-screen overflow-y-auto bg-slate-50/50' : ''">
-        <RouterView v-slot="{ Component }">
-          <transition name="fade" mode="out-in">
-            <component :is="Component" :key="route.path" />
-          </transition>
-        </RouterView>
+      <main class="flex-1 w-full flex flex-col min-w-0" :class="isDashboardRoute ? 'h-screen overflow-y-auto bg-slate-50/50' : ''">
+        <DashboardHeader v-if="isDashboardRoute" />
+        <div :class="isDashboardRoute ? 'p-6 lg:p-10 flex-1' : 'flex-1 flex flex-col'">
+          <RouterView v-slot="{ Component }">
+            <transition name="fade" mode="out-in">
+              <component :is="Component" :key="route.path" />
+            </transition>
+          </RouterView>
+        </div>
       </main>
       
     </div>

@@ -16,7 +16,28 @@ const todayAppointments = ref([
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-      <table class="w-full text-left text-sm text-slate-600">
+      <!-- Vista Móvil -->
+      <div class="block sm:hidden divide-y divide-slate-100">
+        <div v-for="app in todayAppointments" :key="'mob-'+app.id" class="p-5 hover:bg-slate-50 transition-colors">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">{{ app.patient }}</h3>
+              <p class="text-xs text-slate-500 mt-1">Hora: <span class="font-bold text-slate-700">{{ app.time }}</span></p>
+              <p class="text-xs text-slate-500 mt-1">Motivo: <span class="font-medium text-slate-700">{{ app.type }}</span></p>
+            </div>
+            <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider" :class="app.status === 'En Espera' ? 'bg-amber-100 text-amber-800' : 'bg-[#418FC8]/10 text-[#418FC8]'">
+              {{ app.status }}
+            </span>
+          </div>
+          <button class="w-full bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 text-center mt-2">
+            Atender Paciente
+          </button>
+        </div>
+      </div>
+
+      <!-- Vista Desktop -->
+      <div class="hidden sm:block overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-600 min-w-[600px]">
         <thead class="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
           <tr>
             <th class="px-6 py-4">Hora</th>
@@ -34,19 +55,20 @@ const todayAppointments = ref([
             <td class="px-6 py-4">
               <span 
                 class="px-2 py-1 rounded text-xs font-bold"
-                :class="app.status === 'En Espera' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'"
+                :class="app.status === 'En Espera' ? 'bg-amber-100 text-amber-800' : 'bg-[#418FC8]/10 text-[#418FC8]'"
               >
                 {{ app.status }}
               </span>
             </td>
             <td class="px-6 py-4 text-right">
-              <button class="bg-[var(--color-doc-teal-600)] hover:bg-teal-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">
+              <button class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
                 Atender Paciente
               </button>
             </td>
           </tr>
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   </div>
 </template>

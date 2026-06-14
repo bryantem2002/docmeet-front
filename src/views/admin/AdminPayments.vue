@@ -21,21 +21,74 @@ const processRefund = (txn: any) => {
     </div>
     
     <!-- Filtros -->
-    <div class="flex gap-4 mb-6">
-      <div class="relative flex-1 max-w-md">
+    <!-- Filtros -->
+    <div class="flex flex-col sm:flex-row gap-4 mb-6">
+      <div class="relative w-full sm:flex-1 sm:max-w-md">
         <PhMagnifyingGlass class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
         <input type="text" placeholder="Buscar transacción o paciente..." class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-sm text-slate-700" />
       </div>
-      <select class="bg-white border border-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+      <select class="w-full sm:w-auto bg-white border border-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
         <option value="">Todos los movimientos</option>
         <option value="Ingreso">Ingresos</option>
         <option value="Reembolso">Reembolsos Pendientes</option>
       </select>
     </div>
 
-    <!-- Tabla -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="overflow-x-auto">
+    <!-- Contenedor Principal -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-colors">
+      
+      <!-- Vista Móvil (Tarjetas) -->
+      <div class="block sm:hidden divide-y divide-slate-100">
+        <div v-for="txn in transactions" :key="'mob-'+txn.id" class="p-5 hover:bg-slate-50 transition-colors">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">{{ txn.patient }}</h3>
+              <p class="text-xs font-bold text-slate-400 mt-0.5">{{ txn.id }}</p>
+            </div>
+            <div class="text-right">
+              <span v-if="txn.status === 'Pendiente'" class="px-2.5 py-1 text-[10px] font-bold rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+                Pendiente
+              </span>
+              <span v-else class="px-2.5 py-1 text-[10px] font-bold rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
+                Completado
+              </span>
+            </div>
+          </div>
+          <div class="flex flex-col gap-1.5 mb-4 text-sm bg-slate-50 p-3 rounded-lg border border-slate-100">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-slate-500">Monto:</span>
+              <span class="font-black text-slate-800 text-lg">{{ txn.amount }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">Tipo:</span>
+              <span class="font-bold" :class="txn.type.includes('Reembolso') ? 'text-amber-600' : 'text-emerald-600'">{{ txn.type }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">Método:</span>
+              <span class="font-medium text-slate-700">{{ txn.method }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">Fecha:</span>
+              <span class="font-medium text-slate-700">{{ txn.date }}</span>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <template v-if="txn.status === 'Pendiente' && txn.type.includes('Reembolso')">
+              <button @click="processRefund(txn)" class="w-full text-emerald-600 font-bold hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 py-2.5 rounded-xl text-sm transition-colors text-center">
+                Emitir Reembolso
+              </button>
+            </template>
+            <template v-else>
+              <button class="w-full text-slate-600 font-bold hover:text-[#418FC8] bg-white border border-slate-200 hover:bg-[#418FC8]/10 py-2.5 rounded-xl text-sm transition-colors text-center flex items-center justify-center gap-2">
+                <PhFileText class="h-4 w-4" weight="bold" /> Ver Recibo
+              </button>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista Desktop (Tabla) -->
+      <div class="hidden sm:block overflow-x-auto custom-scrollbar">
         <table class="w-full text-left border-collapse min-w-[900px]">
           <thead>
             <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-extrabold uppercase tracking-widest">
@@ -73,7 +126,7 @@ const processRefund = (txn: any) => {
                   </button>
                 </template>
                 <template v-else>
-                  <button class="text-slate-500 hover:text-[#3E90C8] bg-white border border-slate-200 hover:bg-[#3E90C8]/10 px-3 py-2 rounded-lg text-sm transition-colors" title="Ver Recibo">
+                  <button class="text-slate-500 hover:text-[#418FC8] bg-white border border-slate-200 hover:bg-[#418FC8]/10 px-3 py-2 rounded-lg text-sm transition-colors" title="Ver Recibo">
                     <PhFileText class="h-4 w-4" weight="bold" />
                   </button>
                 </template>

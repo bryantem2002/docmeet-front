@@ -106,7 +106,7 @@ const savePrescription = () => {
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
       <!-- Card: Atendidos -->
       <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+        <div class="w-12 h-12 rounded-xl bg-[#418FC8]/10 text-[#418FC8] flex items-center justify-center shrink-0">
           <PhUsers class="h-6 w-6" />
         </div>
         <div>
@@ -197,7 +197,7 @@ const savePrescription = () => {
             <button 
               @click="openDiagnosisModal(app)" 
               class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-sm transition-colors whitespace-nowrap"
-              :class="app.hasDiagnosis ? 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100' : 'bg-slate-800 text-white hover:bg-slate-700 shadow-md'"
+              :class="app.hasDiagnosis ? 'bg-[#418FC8]/10 text-[#418FC8] border border-[#418FC8]/20 hover:bg-[#418FC8]/20' : 'bg-slate-800 text-white hover:bg-slate-700 shadow-md'"
             >
               <PhFileText class="h-4 w-4" />
               {{ app.hasDiagnosis ? 'Ver/Editar Diagnóstico' : 'Hacer Diagnóstico' }}
@@ -222,7 +222,7 @@ const savePrescription = () => {
             <button @click="markAsNoShow(app.id)" class="bg-white border border-red-200 hover:bg-red-50 text-red-600 font-bold py-2.5 px-4 rounded-xl text-sm transition-colors whitespace-nowrap">
               No asistió
             </button>
-            <button @click="markAsAttended(app.id)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-md shadow-blue-200 transition-colors whitespace-nowrap">
+            <button @click="markAsAttended(app.id)" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-[#418FC8]/30 transition-all whitespace-nowrap hover:shadow-xl hover:-translate-y-0.5">
               Marcar como Atendido
             </button>
           </template>
@@ -235,10 +235,10 @@ const savePrescription = () => {
     <!-- ============================================================== -->
     <div v-if="isDiagnosisModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#111111]/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
-        <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-blue-50/50">
+        <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-[#418FC8]/5">
           <div>
             <h2 class="text-xl font-bold text-slate-800">Historia Clínica y Diagnóstico</h2>
-            <p class="text-sm font-medium text-blue-600">Paciente: {{ activeClinicalApp?.patient }}</p>
+            <p class="text-sm font-medium text-[#418FC8]">Paciente: {{ activeClinicalApp?.patient }}</p>
           </div>
           <button @click="isDiagnosisModalOpen = false" class="bg-white hover:bg-slate-200 text-slate-500 p-2 rounded-full border border-slate-200 transition-colors">
             <PhX class="h-5 w-5" />
@@ -247,19 +247,19 @@ const savePrescription = () => {
         <div class="p-8">
           <div class="mb-5">
             <label class="block text-sm font-bold text-slate-700 mb-2">Síntomas presentados</label>
-            <textarea v-model="diagSymptoms" rows="3" placeholder="Ej. Dolor de cabeza intenso, fiebre de 38°C..." class="w-full border border-slate-300 rounded-xl p-4 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"></textarea>
+            <textarea v-model="diagSymptoms" rows="3" placeholder="Ej. Dolor de cabeza intenso, fiebre de 38°C..." class="w-full border border-slate-300 rounded-xl p-4 text-sm focus:outline-none focus:border-[#418FC8] focus:ring-1 focus:ring-[#6DC7DC] resize-none"></textarea>
           </div>
           <div class="mb-5">
             <label class="block text-sm font-bold text-slate-700 mb-2">Diagnóstico Médico (CIE-10 o descripción)</label>
-            <input type="text" placeholder="Ej. J02.9 - Faringitis aguda no especificada" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+            <input type="text" placeholder="Ej. J02.9 - Faringitis aguda no especificada" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#418FC8] focus:ring-1 focus:ring-[#6DC7DC]" />
           </div>
           <div class="mb-8">
             <label class="block text-sm font-bold text-slate-700 mb-2">Notas Privadas / Plan de acción</label>
-            <textarea v-model="diagNotes" rows="2" placeholder="Indicaciones internas, reposo recomendado..." class="w-full border border-slate-300 rounded-xl p-4 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"></textarea>
+            <textarea v-model="diagNotes" rows="2" placeholder="Indicaciones internas, reposo recomendado..." class="w-full border border-slate-300 rounded-xl p-4 text-sm focus:outline-none focus:border-[#418FC8] focus:ring-1 focus:ring-[#6DC7DC] resize-none"></textarea>
           </div>
           <div class="flex gap-4">
             <button @click="isDiagnosisModalOpen = false" class="flex-1 font-bold text-slate-600 hover:bg-slate-100 py-4 rounded-xl transition-colors">Cancelar</button>
-            <button @click="saveDiagnosis" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-colors">Guardar Historia Clínica</button>
+            <button @click="saveDiagnosis" class="flex-1 bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-4 rounded-xl shadow-lg shadow-[#418FC8]/30 transition-all hover:-translate-y-0.5">Guardar Historia Clínica</button>
           </div>
         </div>
       </div>
