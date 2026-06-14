@@ -7,7 +7,6 @@ import { PhArrowsOutCardinal, PhMinus, PhX } from '@phosphor-icons/vue'
 const auth = useAuthStore()
 const router = useRouter()
 
-const isDev = import.meta.env.DEV
 const isVisible = ref(true)
 const isMinimized = ref(false)
 
