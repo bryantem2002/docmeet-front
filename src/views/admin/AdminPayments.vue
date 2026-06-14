@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { PhMagnifyingGlass, PhFileText } from '@phosphor-icons/vue'
 
 const transactions = ref([
   { id: 'TXN-9021', date: '18 May 2026', patient: 'María Flores', amount: 'S/ 120.00', type: 'Ingreso', status: 'Completado', method: 'Yape' },
@@ -22,7 +23,7 @@ const processRefund = (txn: any) => {
     <!-- Filtros -->
     <div class="flex gap-4 mb-6">
       <div class="relative flex-1 max-w-md">
-        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+        <PhMagnifyingGlass class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
         <input type="text" placeholder="Buscar transacción o paciente..." class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-sm text-slate-700" />
       </div>
       <select class="bg-white border border-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
@@ -72,8 +73,8 @@ const processRefund = (txn: any) => {
                   </button>
                 </template>
                 <template v-else>
-                  <button class="text-slate-500 hover:text-blue-600 bg-white border border-slate-200 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm transition-colors" title="Ver Recibo">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  <button class="text-slate-500 hover:text-[#3E90C8] bg-white border border-slate-200 hover:bg-[#3E90C8]/10 px-3 py-2 rounded-lg text-sm transition-colors" title="Ver Recibo">
+                    <PhFileText class="h-4 w-4" weight="bold" />
                   </button>
                 </template>
               </td>

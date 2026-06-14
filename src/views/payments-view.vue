@@ -6,7 +6,7 @@
 </script>
 
 <template>
-  <div class="space-y-4 max-w-xl">
+  <div class="space-y-4 max-w-xl p-4 sm:p-6 lg:p-8">
     <h1 class="text-2xl font-bold text-slate-900">Pagos</h1>
     <p class="text-slate-600 text-sm">
       Aquí irá la confirmación de pago y el retorno de la pasarela. Los servicios

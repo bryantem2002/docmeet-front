@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { PhX } from '@phosphor-icons/vue'
 
 const requests = ref([
   { id: 'REQ-01', doctor: 'Dra. Patricia Vargas', patient: 'Luis Rodríguez', date: '15 May 2026', time: '02:00 PM', reason: 'Emergencia médica', status: 'pending' },
@@ -58,9 +59,9 @@ const rejectRequest = (req: any) => {
               <td class="p-5 text-right flex justify-end gap-2">
                 <template v-if="req.status === 'pending'">
                   <button @click="rejectRequest(req)" class="text-red-600 font-bold hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg text-sm transition-colors" title="Rechazar">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    <PhX class="h-4 w-4" weight="bold" />
                   </button>
-                  <button @click="approveRequest(req)" class="text-blue-600 font-bold hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg text-sm transition-colors">
+                  <button @click="approveRequest(req)" class="text-[#3E90C8] font-bold hover:text-[#2d7ab5] bg-[#3E90C8]/10 hover:bg-[#3E90C8]/20 px-4 py-2 rounded-lg text-sm transition-colors">
                     Aprobar y Reasignar
                   </button>
                 </template>

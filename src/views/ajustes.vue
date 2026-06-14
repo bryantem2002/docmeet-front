@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
+import { PhMoon, PhBell, PhLockKey } from '@phosphor-icons/vue'
 
 // --- ESTADOS DE CONFIGURACIÓN ---
 
@@ -59,9 +60,7 @@ const saveSettings = () => {
       <!-- TARJETA 1: APARIENCIA -->
       <section class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300">
         <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
+          <PhMoon class="h-5 w-5 text-blue-500" />
           Apariencia
         </h2>
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Ajusta cómo se ve la interfaz de la plataforma.</p>
@@ -89,9 +88,7 @@ const saveSettings = () => {
       <!-- TARJETA 2: NOTIFICACIONES -->
       <section class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300">
         <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
+          <PhBell class="h-5 w-5 text-blue-500" />
           Notificaciones
         </h2>
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Elige qué tipo de alertas quieres recibir por correo y WhatsApp.</p>
@@ -137,9 +134,7 @@ const saveSettings = () => {
       <!-- TARJETA 3: SEGURIDAD -->
       <section class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300">
         <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
+          <PhLockKey class="h-5 w-5 text-blue-500" />
           Seguridad y Privacidad
         </h2>
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Protege tu cuenta y gestiona quién ve tus datos.</p>

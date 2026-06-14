@@ -13,6 +13,12 @@ export interface AuthFormInput {
   password: string
   fullName?: string
   confirmPassword?: string
+  dni?: string
+  fechaNacimiento?: string
+  genero?: string
+  telefono?: string
+  nombreContactoEmergencia?: string
+  telefonoContactoEmergencia?: string
 }
 
 export class AuthValidationError extends Error {
@@ -58,11 +64,40 @@ export const authController = {
     if (input.confirmPassword !== undefined && input.password !== input.confirmPassword) {
       throw new AuthValidationError('Las contraseñas no coinciden.')
     }
+    const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/
+    const regexNumeros = /^\d+$/
+
+    if (!regexLetras.test(fullName)) {
+      throw new AuthValidationError('El nombre completo solo debe contener letras.')
+    }
+
+    if (input.dni && !regexNumeros.test(input.dni)) {
+      throw new AuthValidationError('El DNI solo debe contener números.')
+    }
+
+    if (input.telefono && !regexNumeros.test(input.telefono)) {
+      throw new AuthValidationError('El teléfono solo debe contener números.')
+    }
+
+    if (input.nombreContactoEmergencia && !regexLetras.test(input.nombreContactoEmergencia)) {
+      throw new AuthValidationError('El nombre del contacto de emergencia solo debe contener letras.')
+    }
+
+    if (input.telefonoContactoEmergencia && !regexNumeros.test(input.telefonoContactoEmergencia)) {
+      throw new AuthValidationError('El teléfono del contacto de emergencia solo debe contener números.')
+    }
+
     return {
       role: 'paciente',
       fullName,
       email,
       password: input.password,
+      dni: input.dni?.trim(),
+      fechaNacimiento: input.fechaNacimiento,
+      genero: input.genero,
+      telefono: input.telefono?.trim(),
+      nombreContactoEmergencia: input.nombreContactoEmergencia?.trim(),
+      telefonoContactoEmergencia: input.telefonoContactoEmergencia?.trim()
     }
   },
 

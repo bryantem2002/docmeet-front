@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import NewAppointmentModal from '@/components/NewAppointmentModal.vue'
+import { PhPlus, PhCaretLeft, PhCaretRight, PhClock, PhDotsThree, PhVideoCamera, PhCalendarBlank } from '@phosphor-icons/vue'
 
 // --- ESTADOS DEL CALENDARIO ---
 const today = new Date()
@@ -147,9 +148,7 @@ const handleNewAppointment = (data: any) => {
         <p class="text-sm text-slate-500 mt-1">Administra tus citas y horarios de manera sencilla.</p>
       </div>
       <button @click="isModalOpen = true" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors shadow-sm shadow-blue-200 flex items-center gap-2 active:scale-95">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-        </svg>
+        <PhPlus class="h-5 w-5" weight="bold" />
         Nueva Cita
       </button>
     </div>
@@ -164,14 +163,10 @@ const handleNewAppointment = (data: any) => {
           <h2 class="text-xl font-bold text-slate-800">{{ currentMonthName }}</h2>
           <div class="flex gap-2">
             <button @click="prevMonth" class="p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all focus:ring-2 focus:ring-blue-100 outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
+              <PhCaretLeft class="h-5 w-5" weight="bold" />
             </button>
             <button @click="nextMonth" class="p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all focus:ring-2 focus:ring-blue-100 outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
+              <PhCaretRight class="h-5 w-5" weight="bold" />
             </button>
           </div>
         </div>
@@ -234,9 +229,7 @@ const handleNewAppointment = (data: any) => {
             <div class="flex justify-between items-start mb-4 ml-2">
               <div class="flex items-center gap-2">
                 <span class="px-2.5 py-1 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg flex items-center gap-1.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                  <PhClock class="h-3.5 w-3.5 text-blue-600" />
                   {{ app.time }}
                 </span>
                 <span 
@@ -248,9 +241,7 @@ const handleNewAppointment = (data: any) => {
               </div>
               
               <button class="text-slate-300 hover:text-slate-600 transition-colors p-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                </svg>
+                <PhDotsThree class="h-5 w-5" weight="bold" />
               </button>
             </div>
 
@@ -260,9 +251,7 @@ const handleNewAppointment = (data: any) => {
               
               <div class="flex items-center gap-3">
                 <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-lg w-fit">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
+                  <PhVideoCamera class="h-4 w-4 text-blue-500" />
                   {{ app.type }}
                 </div>
               </div>
@@ -273,9 +262,7 @@ const handleNewAppointment = (data: any) => {
         <!-- Estado Vacío (Empty State) -->
         <div v-else class="flex flex-col items-center justify-center py-12 px-4 text-center bg-white rounded-3xl border border-dashed border-slate-200">
           <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+            <PhCalendarBlank class="h-8 w-8 text-slate-300" />
           </div>
           <h4 class="text-slate-700 font-bold mb-1">Día libre</h4>
           <p class="text-sm text-slate-500 max-w-[200px]">No tienes citas programadas para esta fecha.</p>

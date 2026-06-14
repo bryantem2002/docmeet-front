@@ -6,7 +6,7 @@
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div class="space-y-4 p-4 sm:p-6 lg:p-8">
     <h1 class="text-2xl font-bold text-slate-900">Panel administración</h1>
     <p class="text-slate-600 text-sm">
       Conecta aquí las pantallas de gestión cuando los endpoints admin estén

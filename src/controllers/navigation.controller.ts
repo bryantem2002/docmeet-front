@@ -28,6 +28,10 @@ export const navigationController = {
       return { path: '/' }
     }
 
+    if (to.meta.requiresSecretary && user?.role !== 'secretaria') {
+      return { path: '/' }
+    }
+
     return true
   },
 }

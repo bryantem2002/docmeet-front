@@ -8,25 +8,25 @@ export interface IDoctorListItem extends IDoctor {
 const MOCK_DOCTORS: Omit<IDoctorListItem, 'avatar'>[] = [
   {
     id: '1',
-    fullName: 'Dr. Carlos Mendoza',
+    fullName: 'Dr. Yalico',
     specialty: 'Cardiología',
     bio: 'Especialista en diagnóstico y tratamiento de enfermedades del corazón con 15 años de experiencia.',
   },
   {
     id: '2',
-    fullName: 'Dra. Laura Ríos',
+    fullName: 'Dra. Trujillo',
     specialty: 'Pediatría',
     bio: 'Atención integral para niños y adolescentes, enfocada en el desarrollo saludable integral.',
   },
   {
     id: '3',
-    fullName: 'Dr. Jorge Silva',
+    fullName: 'Dr. Amilcar Quispe',
     specialty: 'Dermatología',
     bio: 'Experto en el cuidado de la piel, cabello y uñas. Tratamientos clínicos y estéticos de vanguardia.',
   },
   {
     id: '4',
-    fullName: 'Dra. Ana Torres',
+    fullName: 'Dra. Huaccha',
     specialty: 'Neurología',
     bio: 'Especialista en trastornos del sistema nervioso central y periférico. Diagnósticos de precisión.',
   },

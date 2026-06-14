@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { PhPlus, PhMagnifyingGlass, PhFileText, PhPrinter } from '@phosphor-icons/vue'
 
 const prescriptions = ref([
   { id: 'REC-2051', patient: 'Ana Gómez', date: '12 May 2026', items: 2, status: 'Vigente' },
@@ -16,7 +17,7 @@ const prescriptions = ref([
         <p class="text-slate-500 mt-2 font-medium">Control y seguimiento de todas las recetas médicas emitidas por ti.</p>
       </div>
       <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-lg shadow-emerald-200 flex items-center justify-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+        <PhPlus class="h-5 w-5" weight="bold" />
         Nueva Receta Libre
       </button>
     </div>
@@ -24,7 +25,7 @@ const prescriptions = ref([
     <!-- Filtros (Mockup visual) -->
     <div class="flex gap-4 mb-6">
       <div class="relative flex-1 max-w-md">
-        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+        <PhMagnifyingGlass class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
         <input type="text" placeholder="Buscar por paciente o código de receta..." class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-sm text-slate-700" />
       </div>
     </div>
@@ -46,7 +47,7 @@ const prescriptions = ref([
             <tr v-for="rec in prescriptions" :key="rec.id" class="hover:bg-emerald-50/50 transition-colors group">
               <td class="p-5 font-bold text-slate-500 text-sm">
                 <span class="flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  <PhFileText class="h-5 w-5 text-slate-300" />
                   {{ rec.id }}
                 </span>
               </td>
@@ -59,7 +60,7 @@ const prescriptions = ref([
               </td>
               <td class="p-5 text-right flex justify-end gap-2">
                 <button class="text-slate-500 hover:text-emerald-600 bg-white border border-slate-200 hover:bg-emerald-50 px-3 py-2 rounded-lg text-sm transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100" title="Imprimir Receta">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                  <PhPrinter class="h-5 w-5" />
                 </button>
                 <button class="text-emerald-600 font-bold hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-lg text-sm transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
                   Ver Receta

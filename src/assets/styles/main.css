@@ -1,9 +1,31 @@
 @import 'tailwindcss';
+
+
+@font-face {
+  font-family: 'DocmeetFont';
+  src: url('/etc/CircularXXSub-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DocmeetFont';
+  src: url('/etc/CircularXXSub-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DocmeetFont';
+  src: url('/etc/CircularXXSub-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+}
 
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'DocmeetFont', 'Inter', 'Segoe UI', system-ui, sans-serif;
 
   /* Fondos limpios y clínicos */
   --color-hospital-bg: #f8fafc;

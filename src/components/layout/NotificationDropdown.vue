@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { PhBell, PhCalendarCheck, PhClock, PhInfo } from '@phosphor-icons/vue'
 
 const isOpen = ref(false)
 
@@ -61,9 +62,7 @@ onUnmounted(() => {
       class="relative p-2 text-slate-400 hover:text-[var(--color-doc-blue-600)] transition-all duration-300 rounded-full hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-100"
       title="Notificaciones"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-      </svg>
+      <PhBell class="h-6 w-6" />
       
       <!-- Indicador de notificaciones (Ping más elegante) -->
       <span v-if="unreadCount > 0" class="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
@@ -102,9 +101,7 @@ onUnmounted(() => {
           <!-- Estado Vacío Ilustrado -->
           <div v-if="notifications.length === 0" class="px-6 py-10 flex flex-col items-center justify-center text-center">
             <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-              </svg>
+              <PhBell class="h-8 w-8 text-slate-300" />
             </div>
             <p class="text-sm font-medium text-slate-800">Todo al día</p>
             <p class="text-xs text-slate-500 mt-1">No tienes notificaciones nuevas por ahora.</p>
@@ -131,17 +128,11 @@ onUnmounted(() => {
                   }"
                 >
                   <!-- Icono Cita -->
-                  <svg v-if="notif.type === 'appointment'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
+                  <PhCalendarCheck v-if="notif.type === 'appointment'" class="h-5 w-5" />
                   <!-- Icono Recordatorio -->
-                  <svg v-else-if="notif.type === 'reminder'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                  <PhClock v-else-if="notif.type === 'reminder'" class="h-5 w-5" />
                   <!-- Icono Sistema/Info -->
-                  <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                  <PhInfo v-else class="h-5 w-5" />
                 </div>
               </div>
 

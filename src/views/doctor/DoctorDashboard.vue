@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { PhUsers, PhCheckCircle, PhCalendarCheck, PhFolderOpen, PhClock, PhUser, PhCheck, PhFileText, PhX, PhPlus, PhPrinter } from '@phosphor-icons/vue'
 
 // --- ESTADOS MOCK DE CITAS DEL DOCTOR ---
 const todayAppointments = ref([
@@ -106,7 +107,7 @@ const savePrescription = () => {
       <!-- Card: Atendidos -->
       <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+          <PhUsers class="h-6 w-6" />
         </div>
         <div>
           <p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Atendidos</p>
@@ -116,7 +117,7 @@ const savePrescription = () => {
       <!-- Card: No Shows -->
       <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+          <PhCheckCircle class="h-6 w-6" />
         </div>
         <div>
           <p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Inasistencias</p>
@@ -126,7 +127,7 @@ const savePrescription = () => {
       <!-- Card: Reprogramaciones -->
       <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          <PhCalendarCheck class="h-6 w-6" />
         </div>
         <div>
           <p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Solicitudes</p>
@@ -136,7 +137,7 @@ const savePrescription = () => {
       <!-- Card: Recetas -->
       <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+          <PhFolderOpen class="h-6 w-6" />
         </div>
         <div>
           <p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Recetas Emitidas</p>
@@ -175,20 +176,20 @@ const savePrescription = () => {
           
           <!-- Estado: Solicitud Reprogramar -->
           <div v-if="app.status === 'reschedule_requested'" class="text-amber-600 bg-amber-50 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 whitespace-nowrap">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <PhClock class="h-4 w-4" />
             Reprogramación en evaluación
           </div>
 
           <!-- Estado: No Asistió -->
           <div v-else-if="app.status === 'no_show'" class="text-red-600 bg-red-50 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 whitespace-nowrap">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <PhUser class="h-4 w-4" />
             Inasistencia Registrada
           </div>
 
           <!-- Estado: Ya Atendido (Muestra herramientas clínicas) -->
           <template v-else-if="app.status === 'attended'">
             <div class="flex items-center gap-2 mr-2 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-lg text-sm font-bold whitespace-nowrap border border-emerald-100">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+              <PhCheck class="h-4 w-4" />
               Atendido
             </div>
 
@@ -198,7 +199,7 @@ const savePrescription = () => {
               class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-sm transition-colors whitespace-nowrap"
               :class="app.hasDiagnosis ? 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100' : 'bg-slate-800 text-white hover:bg-slate-700 shadow-md'"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              <PhFileText class="h-4 w-4" />
               {{ app.hasDiagnosis ? 'Ver/Editar Diagnóstico' : 'Hacer Diagnóstico' }}
             </button>
 
@@ -208,7 +209,7 @@ const savePrescription = () => {
               class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-sm transition-colors whitespace-nowrap"
               :class="app.hasPrescription ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100' : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+              <PhFolderOpen class="h-4 w-4" />
               {{ app.hasPrescription ? 'Ver Receta Emitida' : 'Generar Receta' }}
             </button>
           </template>
@@ -216,7 +217,7 @@ const savePrescription = () => {
           <!-- Estado: Confirmado / Pendiente de Asistencia -->
           <template v-else>
             <button @click="openRescheduleModal(app)" class="text-slate-400 hover:text-amber-600 font-medium px-2 py-2 text-sm transition-colors" title="Solicitar cambio de horario">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <PhClock class="h-5 w-5" />
             </button>
             <button @click="markAsNoShow(app.id)" class="bg-white border border-red-200 hover:bg-red-50 text-red-600 font-bold py-2.5 px-4 rounded-xl text-sm transition-colors whitespace-nowrap">
               No asistió
@@ -240,7 +241,7 @@ const savePrescription = () => {
             <p class="text-sm font-medium text-blue-600">Paciente: {{ activeClinicalApp?.patient }}</p>
           </div>
           <button @click="isDiagnosisModalOpen = false" class="bg-white hover:bg-slate-200 text-slate-500 p-2 rounded-full border border-slate-200 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            <PhX class="h-5 w-5" />
           </button>
         </div>
         <div class="p-8">
@@ -275,7 +276,7 @@ const savePrescription = () => {
             <p class="text-sm font-medium text-emerald-600">Paciente: {{ activeClinicalApp?.patient }}</p>
           </div>
           <button @click="isPrescriptionModalOpen = false" class="bg-white hover:bg-slate-200 text-slate-500 p-2 rounded-full border border-slate-200 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            <PhX class="h-5 w-5" />
           </button>
         </div>
         <div class="p-8">
@@ -290,7 +291,7 @@ const savePrescription = () => {
               <input type="text" v-model="presDosage" placeholder="Ej. 1 tableta cada 8 horas por 5 días" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" />
             </div>
             <button class="mt-4 w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+              <PhPlus class="h-4 w-4" weight="bold" />
               Añadir otro medicamento
             </button>
           </div>
@@ -298,7 +299,7 @@ const savePrescription = () => {
           <div class="flex gap-4">
             <button @click="isPrescriptionModalOpen = false" class="flex-1 font-bold text-slate-600 hover:bg-slate-100 py-4 rounded-xl transition-colors">Cancelar</button>
             <button @click="savePrescription" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-200 transition-colors flex justify-center items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+              <PhPrinter class="h-5 w-5" />
               Emitir e Imprimir
             </button>
           </div>
@@ -317,7 +318,7 @@ const savePrescription = () => {
             <p class="text-sm text-slate-500">Paciente: {{ appointmentToReschedule?.patient }}</p>
           </div>
           <button @click="isRescheduleModalOpen = false" class="bg-white hover:bg-slate-200 text-slate-500 p-2 rounded-full border border-slate-200 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            <PhX class="h-5 w-5" />
           </button>
         </div>
         <div class="p-8">

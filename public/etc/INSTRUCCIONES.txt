@@ -1,0 +1,5 @@
+Por favor sube las siguientes tipografías en esta misma carpeta (public/etc):
+- CircularXXSub-Bold.woff
+- CircularXXSub-Black.woff
+- CircularXXSub-Regular.woff
+- RalewayThin-SemiBold_3.woff2

@@ -31,21 +31,25 @@ const maxChartValue = 100
 
     <!-- KPIs -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
         <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Ingresos del Mes</p>
-        <p class="text-3xl font-black text-emerald-600">{{ metrics.totalIncome }}</p>
+        <p class="text-3xl font-black text-emerald-500">{{ metrics.totalIncome }}</p>
       </div>
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#3E90C8]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
         <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Citas Realizadas</p>
-        <p class="text-3xl font-black text-blue-600">{{ metrics.appointmentsMonth }}</p>
+        <p class="text-3xl font-black text-[#3E90C8]">{{ metrics.appointmentsMonth }}</p>
       </div>
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#70C6DC]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
         <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Pacientes Nuevos</p>
-        <p class="text-3xl font-black text-indigo-600">{{ metrics.newPatients }}</p>
+        <p class="text-3xl font-black text-[#70C6DC]">{{ metrics.newPatients }}</p>
       </div>
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
         <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Doctores Activos</p>
-        <p class="text-3xl font-black text-amber-600">{{ metrics.activeDoctors }}</p>
+        <p class="text-3xl font-black text-amber-500">{{ metrics.activeDoctors }}</p>
       </div>
     </div>
 
@@ -58,11 +62,11 @@ const maxChartValue = 100
         </div>
         <div class="flex gap-4">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+            <span class="w-3 h-3 rounded-full bg-[#3E90C8]"></span>
             <span class="text-sm font-medium text-slate-600">Completadas</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-red-400"></span>
+            <span class="w-3 h-3 rounded-full bg-slate-300"></span>
             <span class="text-sm font-medium text-slate-600">Canceladas</span>
           </div>
         </div>
@@ -82,20 +86,20 @@ const maxChartValue = 100
           <div class="w-full flex justify-center items-end gap-1 h-full">
             <!-- Barra Completadas -->
             <div 
-              class="w-full max-w-[2rem] bg-blue-500 rounded-t-sm transition-all duration-500 hover:opacity-80 relative"
+              class="w-full max-w-[2rem] bg-[#3E90C8] rounded-t-md transition-all duration-500 hover:opacity-80 relative"
               :style="{ height: `${(day.completed / maxChartValue) * 100}%` }"
             >
               <!-- Tooltip hover -->
-              <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
                 {{ day.completed }}
               </span>
             </div>
             <!-- Barra Canceladas -->
             <div 
-              class="w-full max-w-[2rem] bg-red-400 rounded-t-sm transition-all duration-500 hover:opacity-80 relative"
+              class="w-full max-w-[2rem] bg-slate-300 rounded-t-md transition-all duration-500 hover:opacity-80 relative"
               :style="{ height: `${(day.cancelled / maxChartValue) * 100}%` }"
             >
-              <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
                 {{ day.cancelled }}
               </span>
             </div>

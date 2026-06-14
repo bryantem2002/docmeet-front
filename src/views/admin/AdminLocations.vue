@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { PhPlus, PhMapPin } from '@phosphor-icons/vue'
 
 const locations = ref([
   { id: 'SED-01', name: 'Sede Miraflores', address: 'Av. Pardo 123', phone: '01 456-7890', status: 'active' },
@@ -15,8 +16,8 @@ const locations = ref([
         <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Gestor de Sedes</h1>
         <p class="text-slate-500 mt-2 font-medium">Administra las ubicaciones físicas de la clínica.</p>
       </div>
-      <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-lg shadow-blue-200 flex items-center justify-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+      <button class="bg-[#3E90C8] hover:bg-[#2d7ab5] text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-lg shadow-[#3E90C8]/20 flex items-center justify-center gap-2">
+        <PhPlus class="h-5 w-5" weight="bold" />
         Añadir Nueva Sede
       </button>
     </div>
@@ -39,7 +40,7 @@ const locations = ref([
             <tr v-for="sede in locations" :key="sede.id" class="hover:bg-slate-50 transition-colors">
               <td class="p-5 font-bold text-slate-500 text-sm">{{ sede.id }}</td>
               <td class="p-5 font-bold text-slate-800 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                <PhMapPin class="h-5 w-5 text-blue-500" />
                 {{ sede.name }}
               </td>
               <td class="p-5 text-slate-600 font-medium text-sm">{{ sede.address }}</td>
@@ -50,7 +51,7 @@ const locations = ref([
                 </span>
               </td>
               <td class="p-5 text-right">
-                <button class="text-blue-600 font-bold hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg text-sm transition-colors">
+                <button class="text-[#3E90C8] font-bold hover:text-[#2d7ab5] bg-[#3E90C8]/10 hover:bg-[#3E90C8]/20 px-4 py-2 rounded-lg text-sm transition-colors">
                   Editar
                 </button>
               </td>

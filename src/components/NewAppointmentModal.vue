@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-
+import { 
+  PhX, PhCheckCircle, PhStar, PhCalendarBlank, PhClock, PhCaretLeft, PhCaretRight, PhInfo, PhBuildings, PhCreditCard, PhDeviceMobile, PhMoney, PhArrowRight, PhStethoscope, PhUser, PhCheck, PhMapPin, PhClipboardText
+} from '@phosphor-icons/vue'
 const props = defineProps<{
   isOpen: boolean
 }>()
@@ -58,9 +60,9 @@ onUnmounted(() => {
 
 // --- DATOS MOCK ---
 const locations = [
-  { id: '1', name: 'Sede San Isidro', address: 'Av. Javier Prado Este 456', icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>' },
-  { id: '2', name: 'Sede Miraflores', address: 'Av. José Pardo 789', icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" /></svg>' },
-  { id: '3', name: 'Sede Los Olivos', address: 'Av. Carlos Izaguirre 123', icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" /></svg>' }
+  { id: '1', name: 'Sede San Isidro', address: 'Av. Javier Prado Este 456', icon: PhBuildings },
+  { id: '2', name: 'Sede Miraflores', address: 'Av. José Pardo 789', icon: PhBuildings },
+  { id: '3', name: 'Sede Los Olivos', address: 'Av. Carlos Izaguirre 123', icon: PhBuildings }
 ]
 
 const specialties = [
@@ -269,9 +271,7 @@ const goToAppointments = () => {
           <p class="text-sm text-slate-500 font-medium mt-1">Sigue los pasos para confirmar tu atención.</p>
         </div>
         <button @click="closeModal" class="bg-slate-50 hover:bg-slate-200 text-slate-500 p-2.5 rounded-full transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <PhX class="h-5 w-5" weight="bold" />
         </button>
       </div>
 
@@ -285,9 +285,7 @@ const goToAppointments = () => {
           <div v-for="s in steps" :key="s.id" class="relative z-10 flex flex-col items-center gap-2 group">
             <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300"
                  :class="step >= s.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-110' : 'bg-white text-slate-400 border-2 border-slate-200'">
-              <svg v-if="step > s.id" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-              </svg>
+              <PhCheck v-if="step > s.id" class="h-5 w-5" weight="bold" />
               <span v-else>{{ s.id }}</span>
             </div>
             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden sm:block transition-colors" :class="{ 'text-blue-700': step >= s.id }">
@@ -301,7 +299,7 @@ const goToAppointments = () => {
           <div>
             <div class="flex items-center gap-2 mb-4">
               <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>
+                <PhMapPin class="h-4 w-4" weight="fill" />
               </div>
               <h3 class="text-base font-extrabold text-slate-800">Selecciona la Sede</h3>
             </div>
@@ -310,7 +308,7 @@ const goToAppointments = () => {
                 @click="selectedLocation = loc.name; selectedDoctor = null"
                 class="text-left p-4 rounded-2xl border-2 transition-all duration-200 outline-none flex items-center gap-3"
                 :class="selectedLocation === loc.name ? 'border-indigo-600 bg-indigo-50 shadow-md shadow-indigo-100' : 'border-slate-200 bg-white hover:border-indigo-300'">
-                <div v-html="loc.icon"></div>
+                <component :is="loc.icon" class="w-8 h-8 text-slate-500" />
                 <div>
                   <h4 class="font-bold text-slate-800 text-sm" :class="{ 'text-indigo-700': selectedLocation === loc.name }">{{ loc.name }}</h4>
                   <p class="text-xs text-slate-500 mt-0.5">{{ loc.address }}</p>
@@ -321,7 +319,7 @@ const goToAppointments = () => {
           <div v-if="selectedLocation">
             <div class="flex items-center gap-2 mb-4 border-t border-slate-200 pt-8">
               <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>
+                <PhStethoscope class="h-4 w-4" weight="fill" />
               </div>
               <h3 class="text-base font-extrabold text-slate-800">Especialidad</h3>
             </div>
@@ -356,7 +354,7 @@ const goToAppointments = () => {
               <div class="flex-1">
                 <h4 class="font-extrabold text-slate-800 text-base mb-0.5 group-hover:text-blue-700 transition-colors">{{ doc.name }}</h4>
                 <div class="flex items-center text-yellow-500 text-xs font-bold mb-1.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                  <PhStar class="h-3.5 w-3.5 mr-0.5" weight="fill" />
                   {{ doc.rating }}
                 </div>
                 <span class="inline-block px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-extrabold rounded-lg">S/ {{ doc.price }}</span>
@@ -372,11 +370,11 @@ const goToAppointments = () => {
             <!-- Header del calendario -->
             <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
               <button @click="prevCalMonth" class="p-2 rounded-xl hover:bg-slate-200 text-slate-500 hover:text-blue-600 transition-all outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                <PhCaretLeft class="h-4 w-4" weight="bold" />
               </button>
               <span class="font-bold text-slate-800 text-sm">{{ calendarMonthLabel }}</span>
               <button @click="nextCalMonth" class="p-2 rounded-xl hover:bg-slate-200 text-slate-500 hover:text-blue-600 transition-all outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                <PhCaretRight class="h-4 w-4" weight="bold" />
               </button>
             </div>
             <!-- Días de la semana -->
@@ -435,7 +433,7 @@ const goToAppointments = () => {
             </div>
           </div>
           <div v-else class="flex flex-col items-center justify-center py-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"/></svg>
+            <PhCalendarBlank class="h-8 w-8 text-slate-300 mb-2" />
             <p class="text-sm text-slate-400 font-medium">Selecciona un día en el calendario</p>
           </div>
         </div>
@@ -446,7 +444,7 @@ const goToAppointments = () => {
             <div class="absolute -right-20 -top-20 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
             <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
             <h4 class="text-slate-300 font-bold text-xs uppercase tracking-widest mb-6 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" /></svg>
+              <PhClipboardText class="h-4 w-4" />
               Resumen de Cita
             </h4>
             <div class="flex items-center gap-5 mb-8">
@@ -484,8 +482,8 @@ const goToAppointments = () => {
           class="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 text-white px-5 sm:px-8 py-3 sm:py-3.5 rounded-xl font-extrabold text-sm transition-all shadow-lg shadow-blue-200/50 active:scale-95 disabled:shadow-none flex items-center gap-2">
           <span v-if="step < 4">Continuar</span>
           <span v-else>Proceder al Pago</span>
-          <svg v-if="step < 4" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-          <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <PhCaretRight v-if="step < 4" class="h-4 w-4" weight="bold" />
+          <PhArrowRight v-else class="h-4 w-4" weight="bold" />
         </button>
       </div>
     </div>
@@ -497,7 +495,7 @@ const goToAppointments = () => {
     <div v-if="step === 5" class="bg-[#FFFFFF] rounded-xl shadow-2xl w-full max-w-[1000px] h-[700px] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 font-sans relative">
       <!-- Banner de Temporizador -->
       <div class="bg-amber-50 border-b border-amber-200 py-2 px-4 flex items-center justify-center gap-2 z-50 shadow-sm shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <PhClock class="h-5 w-5 text-amber-600 animate-pulse" />
         <span class="text-sm font-bold text-amber-800">Tienes <span class="font-black text-amber-600 text-base">{{ formatTime(paymentTimeLeft) }}</span> minutos para completar el pago y asegurar tu cita.</span>
       </div>
       
@@ -509,11 +507,11 @@ const goToAppointments = () => {
         
         <div class="flex items-center gap-6">
           <div class="flex items-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#00B5AD]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+            <PhMoney class="h-6 w-6 text-[#00B5AD]" />
             <span class="text-[#00B5AD] font-bold text-[28px]">S/. {{ selectedDoctor?.price || '100.00' }}</span>
           </div>
           <button @click="closeModal" class="text-white/60 hover:text-white transition-colors p-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            <PhX class="h-7 w-7" />
           </button>
         </div>
       </div>
@@ -527,7 +525,7 @@ const goToAppointments = () => {
             
             <button @click="changePaymentTab('tarjeta')" class="w-full text-left px-6 py-5 flex items-center gap-4 transition-colors group relative" :class="selectedPaymentTab === 'tarjeta' ? 'text-[#00B5AD] bg-white shadow-sm' : 'text-[#555555] hover:bg-black/5'">
               <div v-if="selectedPaymentTab === 'tarjeta'" class="absolute left-0 top-0 bottom-0 w-[4px] bg-[#00B5AD]"></div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 opacity-70 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+              <PhCreditCard class="h-6 w-6 opacity-70 group-hover:opacity-100" />
               <span class="font-medium text-[15px]" :class="{ 'font-semibold': selectedPaymentTab === 'tarjeta' }">Tarjeta débito / crédito</span>
             </button>
             
@@ -539,25 +537,25 @@ const goToAppointments = () => {
             
             <button @click="changePaymentTab('billeteras')" class="w-full text-left px-6 py-5 flex items-center gap-4 transition-colors group relative" :class="selectedPaymentTab === 'billeteras' ? 'text-[#00B5AD] bg-white shadow-sm' : 'text-[#555555] hover:bg-black/5'">
               <div v-if="selectedPaymentTab === 'billeteras'" class="absolute left-0 top-0 bottom-0 w-[4px] bg-[#00B5AD]"></div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 opacity-70 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+              <PhDeviceMobile class="h-6 w-6 opacity-70 group-hover:opacity-100" />
               <span class="font-medium text-[15px]" :class="{ 'font-semibold': selectedPaymentTab === 'billeteras' }">Billeteras móviles</span>
             </button>
 
             <button @click="changePaymentTab('banca')" class="w-full text-left px-6 py-5 flex items-center gap-4 transition-colors group relative" :class="selectedPaymentTab === 'banca' ? 'text-[#00B5AD] bg-white shadow-sm' : 'text-[#555555] hover:bg-black/5'">
               <div v-if="selectedPaymentTab === 'banca'" class="absolute left-0 top-0 bottom-0 w-[4px] bg-[#00B5AD]"></div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 opacity-70 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+              <PhMoney class="h-6 w-6 opacity-70 group-hover:opacity-100" />
               <span class="font-medium text-[15px]" :class="{ 'font-semibold': selectedPaymentTab === 'banca' }">Banca móvil o internet</span>
             </button>
 
             <button @click="changePaymentTab('agentes')" class="w-full text-left px-6 py-5 flex items-center gap-4 transition-colors group relative" :class="selectedPaymentTab === 'agentes' ? 'text-[#00B5AD] bg-white shadow-sm' : 'text-[#555555] hover:bg-black/5'">
                <div v-if="selectedPaymentTab === 'agentes'" class="absolute left-0 top-0 bottom-0 w-[4px] bg-[#00B5AD]"></div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 opacity-70 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+              <PhBuildings class="h-6 w-6 opacity-70 group-hover:opacity-100" />
               <span class="font-medium text-[15px]" :class="{ 'font-semibold': selectedPaymentTab === 'agentes' }">Agentes y bodegas</span>
             </button>
 
             <button @click="changePaymentTab('cuotealo')" class="w-full text-left px-6 py-5 flex items-center gap-4 transition-colors group relative" :class="selectedPaymentTab === 'cuotealo' ? 'text-[#00B5AD] bg-white shadow-sm' : 'text-[#555555] hover:bg-black/5'">
                <div v-if="selectedPaymentTab === 'cuotealo'" class="absolute left-0 top-0 bottom-0 w-[4px] bg-[#00B5AD]"></div>
-               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 opacity-70 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+               <PhInfo class="h-6 w-6 opacity-70 group-hover:opacity-100" />
               <span class="font-medium text-[15px]" :class="{ 'font-semibold': selectedPaymentTab === 'cuotealo' }">Cuotéalo BCP</span>
             </button>
           </div>
@@ -581,7 +579,7 @@ const goToAppointments = () => {
                 <label class="block text-sm font-medium text-[#555] mb-2">Número de tarjeta</label>
                 <div class="relative">
                   <input type="text" placeholder="0000 0000 0000 0000" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 absolute right-4 top-1/2 -translate-y-1/2 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                  <PhCreditCard class="h-6 w-6 absolute right-4 top-1/2 -translate-y-1/2 text-slate-300" />
                 </div>
               </div>
               <div class="grid grid-cols-2 gap-5">
@@ -593,7 +591,7 @@ const goToAppointments = () => {
                   <label class="block text-sm font-medium text-[#555] mb-2">CVV</label>
                   <div class="relative">
                     <input type="text" placeholder="123" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <PhInfo class="h-5 w-5 absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" />
                   </div>
                 </div>
               </div>
@@ -684,7 +682,7 @@ const goToAppointments = () => {
               </div>
               <p class="text-sm font-semibold text-slate-700 mb-2">Escanea el código para pagar</p>
               <div class="flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <PhClock class="h-4 w-4 text-slate-500" />
                 <span class="font-bold text-slate-700 font-mono">{{ formatTime(qrTimeLeft) }}</span>
               </div>
             </div>
@@ -746,7 +744,7 @@ const goToAppointments = () => {
             <h3 class="text-[#555555] font-semibold text-[20px] mb-8">Paga en cuotas sin tarjeta de crédito:</h3>
             <div class="flex items-start gap-4 mb-8">
               <div class="w-12 h-12 rounded-full bg-[#FF7800] flex items-center justify-center text-white shrink-0 shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <PhInfo class="h-6 w-6" />
               </div>
               <div>
                 <h4 class="font-bold text-slate-800 text-lg mb-1">Cuotéalo BCP</h4>
@@ -780,9 +778,7 @@ const goToAppointments = () => {
       
       <!-- Check Icon -->
       <div class="w-24 h-24 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(16,185,129,0.2)] animate-bounce-short z-10">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
+        <PhCheckCircle class="h-12 w-12" weight="fill" />
       </div>
 
       <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight mb-2 z-10">¡Cita Confirmada!</h2>
@@ -798,7 +794,7 @@ const goToAppointments = () => {
         <div class="space-y-4">
           <div class="flex items-start gap-3">
             <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+              <PhUser class="h-4 w-4" />
             </div>
             <div>
               <p class="text-sm font-bold text-slate-800">{{ selectedDoctor?.name || 'Por asignar' }}</p>
@@ -808,7 +804,7 @@ const goToAppointments = () => {
           
           <div class="flex items-start gap-3">
             <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              <PhCalendarBlank class="h-4 w-4" />
             </div>
             <div>
               <p class="text-sm font-bold text-slate-800">{{ selectedDate }} a las {{ selectedTime }}</p>

@@ -3,6 +3,12 @@ import { navigationController } from '@/controllers/navigation.controller'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, _from, _savedPosition) {
+    if (to.hash) {
+      return { el: to.hash, behavior: 'smooth' }
+    }
+    return { top: 0 }
+  },
   routes: [
     {
       path: '/',
@@ -40,6 +46,12 @@ const router = createRouter({
       path: '/configuracion',
       name: 'settings',
       component: () => import('@/views/ajustes.vue'), // ¡Única ruta de configuración, apuntando al archivo correcto!
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/pagos',
+      name: 'patient-payments',
+      component: () => import('@/views/patient/PatientPayments.vue'), 
       meta: { requiresAuth: true },
     },
 
@@ -91,8 +103,20 @@ const router = createRouter({
     },
     {
       path: '/admin/pagos',
-      name: 'payments',
+      name: 'admin-payments',
       component: () => import('@/views/admin/AdminPayments.vue'), 
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/secretarias',
+      name: 'admin-secretaries',
+      component: () => import('@/views/admin/AdminSecretaries.vue'), 
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/especialidades',
+      name: 'admin-specialties',
+      component: () => import('@/views/admin/AdminSpecialties.vue'), 
       meta: { requiresAuth: true, requiresAdmin: true },
     },
 
@@ -101,6 +125,18 @@ const router = createRouter({
       path: '/medico/dashboard',
       name: 'doctor-dashboard',
       component: () => import('@/views/doctor/DoctorDashboard.vue'), 
+      meta: { requiresAuth: true, requiresDoctor: true }
+    },
+    {
+      path: '/medico/agenda',
+      name: 'doctor-agenda',
+      component: () => import('@/views/doctor/DoctorAgenda.vue'), 
+      meta: { requiresAuth: true, requiresDoctor: true }
+    },
+    {
+      path: '/medico/horario',
+      name: 'doctor-schedule',
+      component: () => import('@/views/doctor/DoctorSchedule.vue'), 
       meta: { requiresAuth: true, requiresDoctor: true }
     },
     {
@@ -120,6 +156,32 @@ const router = createRouter({
       name: 'doctor-prescriptions',
       component: () => import('@/views/doctor/DoctorPrescriptions.vue'), 
       meta: { requiresAuth: true, requiresDoctor: true }
+    },
+
+    // --- RUTAS EXCLUSIVAS DE LA SECRETARIA ---
+    {
+      path: '/secretaria/dashboard',
+      name: 'secretary-dashboard',
+      component: () => import('@/views/secretary/SecretaryDashboard.vue'), 
+      meta: { requiresAuth: true, requiresSecretary: true }
+    },
+    {
+      path: '/secretaria/pacientes',
+      name: 'secretary-patients',
+      component: () => import('@/views/secretary/SecretaryPatients.vue'), 
+      meta: { requiresAuth: true, requiresSecretary: true }
+    },
+    {
+      path: '/secretaria/citas',
+      name: 'secretary-appointments',
+      component: () => import('@/views/secretary/SecretaryAppointments.vue'), 
+      meta: { requiresAuth: true, requiresSecretary: true }
+    },
+    {
+      path: '/secretaria/pagos',
+      name: 'secretary-payments',
+      component: () => import('@/views/secretary/SecretaryPayments.vue'), 
+      meta: { requiresAuth: true, requiresSecretary: true }
     }
   ],
 })

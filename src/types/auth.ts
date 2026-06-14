@@ -8,6 +8,12 @@ export interface ILoginCredentials {
 export interface IRegisterPayload extends ILoginCredentials {
   fullName: string
   role?: UserRole | 'paciente'
+  dni?: string
+  fechaNacimiento?: string
+  genero?: string
+  telefono?: string
+  nombreContactoEmergencia?: string
+  telefonoContactoEmergencia?: string
 }
 
 export interface IUpdateProfilePayload {

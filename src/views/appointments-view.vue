@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-
+import { PhPlus, PhCalendarBlank, PhMapPin, PhX, PhInfo, PhCheckCircle, PhWarning, PhXCircle } from '@phosphor-icons/vue'
 // --- ESTADOS MOCK DE CITAS ---
 const appointments = ref([
   {
@@ -155,7 +155,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
         <p class="text-slate-500 mt-2 font-medium">Administra tus próximas consultas y revisa tu historial de atenciones.</p>
       </div>
       <router-link to="/agendar" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-lg shadow-blue-200 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+        <PhPlus class="h-5 w-5" weight="bold" />
         Agendar nueva cita
       </router-link>
     </div>
@@ -231,7 +231,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
             
             <div class="flex items-start gap-3">
               <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                <PhCalendarBlank class="h-4 w-4" />
               </div>
               <div>
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Fecha y Hora</p>
@@ -242,7 +242,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
 
             <div class="flex items-start gap-3">
               <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                <PhMapPin class="h-4 w-4" />
               </div>
               <div>
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Sede</p>
@@ -276,9 +276,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
     <!-- Empty State -->
     <div v-else class="flex flex-col items-center justify-center py-20 px-4 text-center bg-white rounded-3xl border border-dashed border-slate-300">
       <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
+        <PhCalendarBlank class="h-10 w-10 text-slate-300" />
       </div>
       <h3 class="text-xl font-bold text-slate-700 mb-2">No tienes {{ activeTab === 'upcoming' ? 'próximas citas' : 'citas pasadas' }}</h3>
       <p class="text-slate-500 max-w-md">Cuando agendes una nueva consulta médica, aparecerá en esta sección.</p>
@@ -300,9 +298,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
             <p class="text-sm text-slate-500">{{ appointmentToReschedule?.doctor }}</p>
           </div>
           <button @click="closeRescheduleModal" class="bg-white hover:bg-slate-200 text-slate-500 p-2 rounded-full border border-slate-200 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <PhX class="h-5 w-5" />
           </button>
         </div>
 
@@ -337,7 +333,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
 
           <!-- Alert/Warning -->
           <div class="flex items-start gap-3 bg-blue-50 p-4 rounded-xl border border-blue-100 mb-8">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <PhInfo class="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
             <p class="text-xs font-medium text-blue-800">
               Al confirmar, tu cita anterior quedará liberada. Esta reprogramación no tiene costo adicional.
             </p>
@@ -365,7 +361,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
         <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
           <h2 class="text-xl font-bold text-slate-800">Cancelar Cita</h2>
           <button @click="closeCancelModal" class="bg-white hover:bg-slate-200 text-slate-500 p-2 rounded-full border border-slate-200 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            <PhX class="h-5 w-5" />
           </button>
         </div>
 
@@ -384,9 +380,9 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
             }"
           >
             <!-- Ícono dinámico -->
-            <svg v-if="cancellationPolicy.type === 'full'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <svg v-else-if="cancellationPolicy.type === 'partial'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <PhCheckCircle v-if="cancellationPolicy.type === 'full'" class="h-6 w-6 text-emerald-600 shrink-0" weight="fill" />
+            <PhWarning v-else-if="cancellationPolicy.type === 'partial'" class="h-6 w-6 text-amber-600 shrink-0" weight="fill" />
+            <PhXCircle v-else class="h-6 w-6 text-red-600 shrink-0" weight="fill" />
             
             <div>
               <p class="text-sm font-bold uppercase tracking-wider mb-1" :class="`text-${cancellationPolicy.color}-700`">Política de Reembolso</p>

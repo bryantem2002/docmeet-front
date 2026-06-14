@@ -1,39 +1,53 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { useAuthStore } from '@/store/auth-store'
+import { computed } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
 
 import AppHeader from '@/components/layout/app-header.vue'
+import AppFooter from '@/components/layout/app-footer.vue'
 import PatientSidebar from '@/components/layout/PatientSidebar.vue'
 import DevSwitcher from '@/components/layout/DevSwitcher.vue' 
+import { PhWhatsappLogo } from '@phosphor-icons/vue'
 
-const auth = useAuthStore()
-const { isAuthenticated } = storeToRefs(auth)
+const route = useRoute()
+
+const isDashboardRoute = computed(() => {
+  return route.meta.requiresAuth === true
+})
 </script>
 
 <template>
-  <div class="min-h-svh flex flex-col bg-gradient-to-b from-doc-blue-50 to-white text-slate-800 font-sans">
+  <div class="flex flex-col bg-gradient-to-b from-doc-blue-50 to-white text-slate-800 font-sans overflow-x-hidden" :class="isDashboardRoute ? 'h-screen overflow-hidden' : 'min-h-svh'">
     
-    <AppHeader />
+    <AppHeader v-if="!isDashboardRoute" />
     
     <!-- 1. ELIMINAMOS max-w-7xl y mx-auto para que crezca al 100% de la pantalla -->
     <div class="flex-1 w-full flex items-start">
-        <PatientSidebar v-if="isAuthenticated" />
+        <PatientSidebar v-if="isDashboardRoute" />
       
-      <main class="flex-1 w-full flex flex-col p-4 sm:p-6 lg:p-8 min-w-0">
+      <main class="flex-1 w-full flex flex-col min-w-0" :class="isDashboardRoute ? 'p-6 lg:p-10 h-screen overflow-y-auto bg-slate-50/50' : ''">
         <RouterView v-slot="{ Component }">
           <transition name="fade" mode="out-in">
-            <component :is="Component" />
+            <component :is="Component" :key="route.path" />
           </transition>
         </RouterView>
       </main>
       
     </div>
     
-    <footer class="border-t border-slate-200/80 py-6 text-center text-sm text-slate-500 mt-auto bg-white/50 backdrop-blur-sm">
-      Docmeet — Gestión de citas médicas
-    </footer>
+    <AppFooter v-if="!isDashboardRoute" />
     
+    <!-- WhatsApp Flotante -->
+    <a 
+      v-if="!isDashboardRoute"
+      href="https://wa.me/51987654321" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      class="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
+      aria-label="Contactar por WhatsApp"
+    >
+      <PhWhatsappLogo class="w-8 h-8" weight="fill" />
+    </a>
+
     <!-- El DevSwitcher sigue flotando aquí abajo -->
     <DevSwitcher />
     
