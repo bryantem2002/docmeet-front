@@ -91,7 +91,7 @@ function logout() {
 
 <template>
   <div 
-    v-if="isDev && isVisible" 
+    v-if="isVisible" 
     class="fixed z-[9999] shadow-2xl border border-slate-700 bg-slate-900/95 backdrop-blur-md rounded-2xl overflow-hidden flex flex-col"
     :style="{ top: position.y + 'px', left: position.x + 'px' }"
     :class="isDragging ? 'opacity-90 scale-105' : ''"
