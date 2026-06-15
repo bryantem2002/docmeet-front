@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/store/auth-store'
 import { RouterLink, useRouter, useRoute } from 'vue-router'
+import { useDarkMode } from '@/composables/useDarkMode'
 import AuthModal from '@/components/layout/AuthModal.vue'
 import NotificationDropdown from '@/components/layout/NotificationDropdown.vue'
 import {
@@ -66,26 +67,7 @@ const dashboardRouteName = computed(() => {
   return 'appointments'
 })
 
-// ── Dark Mode ──
-const isDark = ref(false)
-
-function initDarkMode() {
-  const stored = localStorage.getItem('docmeet-dark')
-  if (stored === 'true' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    isDark.value = true
-    document.documentElement.classList.add('dark')
-  }
-}
-
-function toggleDark() {
-  isDark.value = !isDark.value
-  document.documentElement.classList.toggle('dark', isDark.value)
-  localStorage.setItem('docmeet-dark', String(isDark.value))
-}
-
-onMounted(() => {
-  initDarkMode()
-})
+const { isDark, toggleDark } = useDarkMode()
 </script>
 
 <template>

@@ -89,12 +89,12 @@ const filteredHistory = computed(() => {
     
     <!-- Encabezado de la página -->
     <div class="mb-8">
-      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Historial Clínico</h1>
-      <p class="text-sm text-slate-500 mt-1">Revisa el detalle de tus consultas y diagnósticos pasados.</p>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Historial Clínico</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Revisa el detalle de tus consultas y diagnósticos pasados.</p>
     </div>
 
     <!-- Barra de Búsqueda y Filtros -->
-    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mb-8 flex flex-col sm:flex-row gap-4 items-center justify-between">
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm mb-8 flex flex-col sm:flex-row gap-4 items-center justify-between">
       
       <!-- Buscador -->
       <div class="relative w-full sm:w-96">
@@ -104,18 +104,18 @@ const filteredHistory = computed(() => {
         <input 
           v-model="searchQuery"
           type="text" 
-          class="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] focus:bg-white transition-colors sm:text-sm" 
+          class="block w-full pl-10 pr-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl leading-5 bg-slate-50 dark:bg-slate-700 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] focus:bg-white dark:focus:bg-slate-700 transition-colors sm:text-sm text-slate-700 dark:text-slate-200" 
           placeholder="Buscar doctor o diagnóstico..."
         >
       </div>
 
       <!-- Filtro Especialidad -->
       <div class="w-full sm:w-auto flex items-center gap-3">
-        <label for="specialty" class="text-sm font-medium text-slate-600 whitespace-nowrap">Especialidad:</label>
+        <label for="specialty" class="text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Especialidad:</label>
         <select 
           id="specialty" 
           v-model="filterSpecialty"
-          class="block w-full sm:w-48 pl-3 pr-10 py-2.5 text-base border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] sm:text-sm rounded-xl bg-slate-50"
+          class="block w-full sm:w-48 pl-3 pr-10 py-2.5 text-base border-slate-200 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200"
         >
           <option v-for="spec in availableSpecialties" :key="spec" :value="spec">
             {{ spec }}
@@ -129,49 +129,49 @@ const filteredHistory = computed(() => {
       <div 
         v-for="record in filteredHistory" 
         :key="record.id"
-        class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow relative"
+        class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow relative"
       >
         <!-- Línea decorativa izquierda -->
-        <div class="absolute left-0 top-0 bottom-0 w-2 bg-slate-300 rounded-l-2xl"></div>
+        <div class="absolute left-0 top-0 bottom-0 w-2 bg-slate-300 dark:bg-slate-600 rounded-l-2xl"></div>
 
         <div class="ml-4">
           <!-- Fila superior: Fecha y Doctor -->
           <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
             <div>
               <div class="flex items-center gap-2 mb-1">
-                <PhCalendarBlank class="h-5 w-5 text-slate-400" />
-                <h3 class="text-lg font-bold text-slate-800 capitalize">{{ formatDate(record.date) }}</h3>
+                <PhCalendarBlank class="h-5 w-5 text-slate-400 dark:text-slate-500" />
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white capitalize">{{ formatDate(record.date) }}</h3>
               </div>
-              <p class="text-sm text-slate-500 flex items-center gap-1.5 ml-7">
+              <p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 ml-7">
                 <PhClock class="h-4 w-4" />
                 {{ record.time }}
               </p>
             </div>
             
-            <div class="bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 flex items-center gap-3 w-fit">
-              <div class="h-8 w-8 rounded-full bg-[#418FC8]/10 text-[#418FC8] flex items-center justify-center font-bold text-sm">
-                {{ record.doctor.charAt(4) }} <!-- Letra inicial del doctor -->
+            <div class="bg-slate-50 dark:bg-slate-700 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-600 flex items-center gap-3 w-fit">
+              <div class="h-8 w-8 rounded-full bg-[#418FC8]/10 dark:bg-[#418FC8]/20 text-[#418FC8] dark:text-[#6DC7DC] flex items-center justify-center font-bold text-sm">
+                {{ record.doctor.charAt(4) }}
               </div>
               <div>
-                <p class="text-sm font-bold text-slate-800">{{ record.doctor }}</p>
-                <p class="text-xs font-medium text-[#418FC8]">{{ record.specialty }}</p>
+                <p class="text-sm font-bold text-slate-800 dark:text-white">{{ record.doctor }}</p>
+                <p class="text-xs font-medium text-[#418FC8] dark:text-[#6DC7DC]">{{ record.specialty }}</p>
               </div>
             </div>
           </div>
 
-          <hr class="border-slate-100 my-4">
+          <hr class="border-slate-100 dark:border-slate-700 my-4">
 
           <!-- Cuerpo: Diagnóstico y Notas -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Diagnóstico Principal</h4>
-              <p class="text-slate-700 text-sm leading-relaxed font-medium">
+              <h4 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Diagnóstico Principal</h4>
+              <p class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed font-medium">
                 {{ record.diagnosis }}
               </p>
             </div>
             <div>
-              <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Notas del Especialista</h4>
-              <p class="text-slate-600 text-sm leading-relaxed">
+              <h4 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Notas del Especialista</h4>
+              <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
                 {{ record.notes }}
               </p>
             </div>
@@ -181,12 +181,12 @@ const filteredHistory = computed(() => {
           <div class="mt-6 flex justify-end">
             <button 
               v-if="record.prescription"
-              class="flex items-center gap-2 text-sm font-semibold text-[#418FC8] bg-[#418FC8]/10 hover:bg-[#418FC8]/20 px-4 py-2 rounded-lg transition-colors"
+              class="flex items-center gap-2 text-sm font-semibold text-[#418FC8] dark:text-[#6DC7DC] bg-[#418FC8]/10 dark:bg-[#418FC8]/20 hover:bg-[#418FC8]/20 dark:hover:bg-[#418FC8]/30 px-4 py-2 rounded-lg transition-colors"
             >
               <PhFileText class="h-5 w-5" />
               Ver Receta Médica
             </button>
-            <span v-else class="text-sm text-slate-400 italic py-2">
+            <span v-else class="text-sm text-slate-400 dark:text-slate-500 italic py-2">
               Sin receta emitida en esta consulta.
             </span>
           </div>
@@ -195,12 +195,12 @@ const filteredHistory = computed(() => {
     </div>
 
     <!-- Estado Vacío (Empty State) para Búsqueda -->
-    <div v-else class="flex flex-col items-center justify-center py-16 px-4 text-center bg-white rounded-3xl border border-dashed border-slate-300">
-      <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-        <PhFileText class="h-10 w-10 text-slate-300" />
+    <div v-else class="flex flex-col items-center justify-center py-16 px-4 text-center bg-white dark:bg-slate-800 rounded-3xl border border-dashed border-slate-300 dark:border-slate-700">
+      <div class="w-20 h-20 bg-slate-50 dark:bg-slate-700 rounded-full flex items-center justify-center mb-4">
+        <PhFileText class="h-10 w-10 text-slate-300 dark:text-slate-500" />
       </div>
-      <h3 class="text-lg font-bold text-slate-700 mb-2">No se encontraron resultados</h3>
-      <p class="text-slate-500 max-w-md">No tienes registros médicos que coincidan con tu búsqueda actual. Intenta cambiar los filtros o los términos de búsqueda.</p>
+      <h3 class="text-lg font-bold text-slate-700 dark:text-slate-200 mb-2">No se encontraron resultados</h3>
+      <p class="text-slate-500 dark:text-slate-400 max-w-md">No tienes registros médicos que coincidan con tu búsqueda actual. Intenta cambiar los filtros o los términos de búsqueda.</p>
       <button @click="searchQuery = ''; filterSpecialty = 'Todas'" class="mt-4 text-[#418FC8] font-medium hover:underline focus:outline-none">
         Limpiar filtros
       </button>

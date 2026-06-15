@@ -25,62 +25,62 @@ const maxChartValue = 100
 <template>
   <div class="max-w-7xl mx-auto w-full px-4 sm:px-0 font-sans">
     <div class="mb-8">
-      <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Panel de Administración</h1>
-      <p class="text-slate-500 mt-2 font-medium">Visión global del rendimiento de la clínica y gestión general.</p>
+      <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Panel de Administración</h1>
+      <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Visión global del rendimiento de la clínica y gestión general.</p>
     </div>
 
     <!-- KPIs -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Ingresos del Mes</p>
+        <p class="text-sm font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider mb-2">Ingresos del Mes</p>
         <p class="text-3xl font-black text-emerald-500">{{ metrics.totalIncome }}</p>
       </div>
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-br from-[#418FC8]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Citas Realizadas</p>
+        <p class="text-sm font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider mb-2">Citas Realizadas</p>
         <p class="text-3xl font-black text-[#418FC8]">{{ metrics.appointmentsMonth }}</p>
       </div>
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-br from-[#70C6DC]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Pacientes Nuevos</p>
+        <p class="text-sm font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider mb-2">Pacientes Nuevos</p>
         <p class="text-3xl font-black text-[#70C6DC]">{{ metrics.newPatients }}</p>
       </div>
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Doctores Activos</p>
+        <p class="text-sm font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider mb-2">Doctores Activos</p>
         <p class="text-3xl font-black text-amber-500">{{ metrics.activeDoctors }}</p>
       </div>
     </div>
 
     <!-- Gráfico Visual con CSS/Tailwind -->
-    <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm mb-8">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm mb-8">
       <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-8">
         <div>
-          <h2 class="text-lg font-bold text-slate-800">Flujo de Citas (Semana Actual)</h2>
-          <p class="text-sm text-slate-500">Citas completadas vs Cancelaciones</p>
+          <h2 class="text-lg font-bold text-slate-800 dark:text-white">Flujo de Citas (Semana Actual)</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Citas completadas vs Cancelaciones</p>
         </div>
         <div class="flex flex-wrap gap-4">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-[#418FC8]"></span>
-            <span class="text-sm font-medium text-slate-600">Completadas</span>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Completadas</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-slate-300"></span>
-            <span class="text-sm font-medium text-slate-600">Canceladas</span>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Canceladas</span>
           </div>
         </div>
       </div>
 
       <!-- Diagrama de barras CSS -->
       <div class="overflow-x-auto custom-scrollbar pb-2">
-        <div class="h-64 min-w-[500px] flex items-end justify-between gap-2 border-b border-slate-200 pb-2 relative">
+        <div class="h-64 min-w-[500px] flex items-end justify-between gap-2 border-b border-slate-200 dark:border-slate-700 pb-2 relative">
           <!-- Líneas guía -->
         <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
-          <div class="border-t border-slate-100 w-full h-0"></div>
-          <div class="border-t border-slate-100 w-full h-0"></div>
-          <div class="border-t border-slate-100 w-full h-0"></div>
-          <div class="border-t border-slate-100 w-full h-0"></div>
+          <div class="border-t border-slate-100 dark:border-slate-700 w-full h-0"></div>
+          <div class="border-t border-slate-100 dark:border-slate-700 w-full h-0"></div>
+          <div class="border-t border-slate-100 dark:border-slate-700 w-full h-0"></div>
+          <div class="border-t border-slate-100 dark:border-slate-700 w-full h-0"></div>
         </div>
 
         <div v-for="day in chartData" :key="day.day" class="flex-1 flex flex-col items-center gap-1 group relative z-10">
@@ -109,7 +109,7 @@ const maxChartValue = 100
         </div>
         <!-- Etiquetas eje X -->
         <div class="flex justify-between mt-4 min-w-[500px]">
-          <span v-for="day in chartData" :key="'label-'+day.day" class="flex-1 text-center text-sm font-bold text-slate-500">
+          <span v-for="day in chartData" :key="'label-'+day.day" class="flex-1 text-center text-sm font-bold text-slate-500 dark:text-slate-400">
             {{ day.day }}
           </span>
         </div>

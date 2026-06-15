@@ -151,8 +151,8 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
     <!-- Encabezado -->
     <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Mis Citas</h1>
-        <p class="text-slate-500 mt-2 font-medium">Administra tus próximas consultas y revisa tu historial de atenciones.</p>
+        <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Mis Citas</h1>
+        <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Administra tus próximas consultas y revisa tu historial de atenciones.</p>
       </div>
       <router-link to="/agendar" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2">
         <PhPlus class="h-5 w-5" weight="bold" />
@@ -161,11 +161,11 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
     </div>
 
     <!-- Pestañas (Tabs) -->
-    <div class="flex items-center gap-6 border-b border-slate-200 mb-8">
+    <div class="flex items-center gap-6 border-b border-slate-200 dark:border-slate-700 mb-8">
       <button 
         @click="activeTab = 'upcoming'"
         class="pb-4 font-bold text-[15px] transition-all relative"
-        :class="activeTab === 'upcoming' ? 'text-[#418FC8]' : 'text-slate-500 hover:text-slate-700'"
+        :class="activeTab === 'upcoming' ? 'text-[#418FC8]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
       >
         Próximas Citas
         <div v-if="activeTab === 'upcoming'" class="absolute bottom-0 left-0 w-full h-[3px] bg-[#418FC8] rounded-t-full"></div>
@@ -173,7 +173,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
       <button 
         @click="activeTab = 'past'"
         class="pb-4 font-bold text-[15px] transition-all relative"
-        :class="activeTab === 'past' ? 'text-[#418FC8]' : 'text-slate-500 hover:text-slate-700'"
+        :class="activeTab === 'past' ? 'text-[#418FC8]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
       >
         Citas Pasadas
         <div v-if="activeTab === 'past'" class="absolute bottom-0 left-0 w-full h-[3px] bg-[#418FC8] rounded-t-full"></div>
@@ -186,27 +186,27 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
       <div 
         v-for="app in filteredAppointments" 
         :key="app.id"
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col"
+        class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col"
       >
         <!-- Card Header -->
-        <div class="p-6 border-b border-slate-100 flex justify-between items-start gap-4 bg-slate-50/50">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-start gap-4 bg-slate-50/50 dark:bg-slate-700/50">
           <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-full bg-[#418FC8]/10 text-[#418FC8] flex items-center justify-center font-bold text-xl shrink-0">
+            <div class="w-14 h-14 rounded-full bg-[#418FC8]/10 dark:bg-[#418FC8]/20 text-[#418FC8] dark:text-[#6DC7DC] flex items-center justify-center font-bold text-xl shrink-0">
               {{ app.doctor.charAt(4) }}
             </div>
             <div>
-              <h3 class="font-bold text-slate-800 text-lg">{{ app.doctor }}</h3>
-              <p class="text-sm font-medium text-[#418FC8]">{{ app.specialty }}</p>
+              <h3 class="font-bold text-slate-800 dark:text-white text-lg">{{ app.doctor }}</h3>
+              <p class="text-sm font-medium text-[#418FC8] dark:text-[#6DC7DC]">{{ app.specialty }}</p>
             </div>
           </div>
           
           <span 
             class="text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg flex items-center gap-1.5"
             :class="{
-              'bg-green-100 text-green-700': app.status === 'confirmed',
-              'bg-amber-100 text-amber-700': app.status === 'pending',
-              'bg-slate-200 text-slate-700': app.status === 'completed',
-              'bg-red-100 text-red-700': app.status === 'cancelled'
+              'bg-green-100 dark:bg-emerald-900/40 text-green-700 dark:text-emerald-300': app.status === 'confirmed',
+              'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300': app.status === 'pending',
+              'bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300': app.status === 'completed',
+              'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300': app.status === 'cancelled'
             }"
           >
             <div class="w-1.5 h-1.5 rounded-full"
@@ -230,24 +230,24 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
           <div class="grid grid-cols-2 gap-y-6 gap-x-4">
             
             <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
+              <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 shrink-0">
                 <PhCalendarBlank class="h-4 w-4" />
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Fecha y Hora</p>
-                <p class="text-sm font-semibold text-slate-800 capitalize">{{ formatDate(app.date) }}</p>
-                <p class="text-sm font-medium text-slate-500">{{ app.time }}</p>
+                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">Fecha y Hora</p>
+                <p class="text-sm font-semibold text-slate-800 dark:text-white capitalize">{{ formatDate(app.date) }}</p>
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">{{ app.time }}</p>
               </div>
             </div>
 
             <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
+              <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 shrink-0">
                 <PhMapPin class="h-4 w-4" />
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Sede</p>
-                <p class="text-sm font-semibold text-slate-800">{{ app.location }}</p>
-                <p class="text-xs font-medium text-slate-500">Presencial</p>
+                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">Sede</p>
+                <p class="text-sm font-semibold text-slate-800 dark:text-white">{{ app.location }}</p>
+                <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Presencial</p>
               </div>
             </div>
 
@@ -255,16 +255,16 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
         </div>
 
         <!-- Card Footer / Acciones -->
-        <div v-if="app.type === 'upcoming'" class="p-4 border-t border-slate-100 bg-slate-50 flex gap-3">
-          <button @click="openRescheduleModal(app)" class="flex-1 bg-white hover:bg-[#418FC8]/10 border border-slate-200 hover:border-[#418FC8]/30 text-[#418FC8] font-bold py-2.5 rounded-xl transition-colors text-sm">
+        <div v-if="app.type === 'upcoming'" class="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 flex gap-3">
+          <button @click="openRescheduleModal(app)" class="flex-1 bg-white dark:bg-slate-700 hover:bg-[#418FC8]/10 dark:hover:bg-[#418FC8]/20 border border-slate-200 dark:border-slate-600 hover:border-[#418FC8]/30 dark:hover:border-[#418FC8]/50 text-[#418FC8] dark:text-[#6DC7DC] font-bold py-2.5 rounded-xl transition-colors text-sm">
             Reprogramar Cita
           </button>
-          <button @click="openCancelModal(app)" class="flex-1 bg-white hover:bg-red-50 border border-slate-200 hover:border-red-200 text-red-600 font-bold py-2.5 rounded-xl transition-colors text-sm">
+          <button @click="openCancelModal(app)" class="flex-1 bg-white dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-900/30 border border-slate-200 dark:border-slate-600 hover:border-red-200 dark:hover:border-red-800 text-red-600 dark:text-red-400 font-bold py-2.5 rounded-xl transition-colors text-sm">
             Cancelar Cita
           </button>
         </div>
-        <div v-else class="p-4 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end">
-          <button class="bg-white border border-slate-200 text-slate-600 font-bold py-2 px-4 rounded-xl text-sm opacity-50 cursor-not-allowed">
+        <div v-else class="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 flex gap-3 justify-end">
+          <button class="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-400 font-bold py-2 px-4 rounded-xl text-sm opacity-50 cursor-not-allowed">
             Ver receta médica
           </button>
         </div>
@@ -274,13 +274,13 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
     </div>
 
     <!-- Empty State -->
-    <div v-else class="flex flex-col items-center justify-center py-20 px-4 text-center bg-white rounded-3xl border border-dashed border-slate-300">
-      <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-        <PhCalendarBlank class="h-10 w-10 text-slate-300" />
+    <div v-else class="flex flex-col items-center justify-center py-20 px-4 text-center bg-white dark:bg-slate-800 rounded-3xl border border-dashed border-slate-300 dark:border-slate-700">
+      <div class="w-20 h-20 bg-slate-50 dark:bg-slate-700 rounded-full flex items-center justify-center mb-4">
+        <PhCalendarBlank class="h-10 w-10 text-slate-300 dark:text-slate-500" />
       </div>
-      <h3 class="text-xl font-bold text-slate-700 mb-2">No tienes {{ activeTab === 'upcoming' ? 'próximas citas' : 'citas pasadas' }}</h3>
-      <p class="text-slate-500 max-w-md">Cuando agendes una nueva consulta médica, aparecerá en esta sección.</p>
-      <router-link v-if="activeTab === 'upcoming'" to="/agendar" class="mt-6 text-[#418FC8] font-bold hover:underline">
+      <h3 class="text-xl font-bold text-slate-700 dark:text-slate-200 mb-2">No tienes {{ activeTab === 'upcoming' ? 'próximas citas' : 'citas pasadas' }}</h3>
+      <p class="text-slate-500 dark:text-slate-400 max-w-md">Cuando agendes una nueva consulta médica, aparecerá en esta sección.</p>
+      <router-link v-if="activeTab === 'upcoming'" to="/agendar" class="mt-6 text-[#418FC8] dark:text-[#6DC7DC] font-bold hover:underline">
         Agendar mi primera cita &rarr;
       </router-link>
     </div>
@@ -289,15 +289,15 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
     <!-- MODAL DE REPROGRAMACIÓN -->
     <!-- ============================================================== -->
     <div v-if="isRescheduleModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#111111]/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+      <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
         
         <!-- Header del modal -->
-        <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+        <div class="px-8 py-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-700/50">
           <div>
-            <h2 class="text-xl font-bold text-slate-800">Reprogramar Cita</h2>
-            <p class="text-sm text-slate-500">{{ appointmentToReschedule?.doctor }}</p>
+            <h2 class="text-xl font-bold text-slate-800 dark:text-white">Reprogramar Cita</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400">{{ appointmentToReschedule?.doctor }}</p>
           </div>
-          <button @click="closeRescheduleModal" class="bg-white hover:bg-slate-200 text-slate-500 p-2 rounded-full border border-slate-200 transition-colors">
+          <button @click="closeRescheduleModal" class="bg-white dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-400 p-2 rounded-full border border-slate-200 dark:border-slate-600 transition-colors">
             <PhX class="h-5 w-5" />
           </button>
         </div>
@@ -305,17 +305,17 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
         <div class="p-8">
           <!-- Selector de Nueva Fecha -->
           <div class="mb-6">
-            <label class="block text-sm font-bold text-slate-700 mb-3">1. Selecciona la nueva fecha:</label>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-3">1. Selecciona la nueva fecha:</label>
             <input 
               type="date" 
               v-model="newSelectedDate"
-              class="w-full border border-slate-300 rounded-xl px-4 py-3 text-lg font-medium text-slate-800 focus:outline-none focus:border-[#418FC8] focus:ring-1 focus:ring-[#6DC7DC]"
+              class="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-3 text-lg font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#418FC8] focus:ring-1 focus:ring-[#6DC7DC]"
             />
           </div>
 
           <!-- Selector de Nueva Hora -->
           <div class="mb-8">
-            <label class="block text-sm font-bold text-slate-700 mb-3">2. Selecciona el nuevo horario:</label>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-3">2. Selecciona el nuevo horario:</label>
             <div class="grid grid-cols-3 gap-3">
               <button 
                 v-for="time in availableTimes" 
@@ -324,7 +324,7 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
                 class="py-3 px-2 rounded-xl text-sm font-bold transition-all border"
                 :class="newSelectedTime === time 
                   ? 'bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] text-white shadow-md shadow-[#418FC8]/30 scale-105 border-transparent' 
-                  : 'bg-white text-slate-600 border-slate-200 hover:border-[#418FC8]/50 hover:bg-[#418FC8]/5'"
+                  : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-[#418FC8]/50 hover:bg-[#418FC8]/5'"
               >
                 {{ time }}
               </button>
@@ -332,15 +332,15 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
           </div>
 
           <!-- Alert/Warning -->
-          <div class="flex items-start gap-3 bg-[#418FC8]/10 p-4 rounded-xl border border-[#418FC8]/20 mb-8">
-            <PhInfo class="h-5 w-5 text-[#418FC8] mt-0.5 shrink-0" />
-            <p class="text-xs font-medium text-[#418FC8]">
+          <div class="flex items-start gap-3 bg-[#418FC8]/10 dark:bg-[#418FC8]/20 p-4 rounded-xl border border-[#418FC8]/20 dark:border-[#418FC8]/30 mb-8">
+            <PhInfo class="h-5 w-5 text-[#418FC8] dark:text-[#6DC7DC] mt-0.5 shrink-0" />
+            <p class="text-xs font-medium text-[#418FC8] dark:text-[#6DC7DC]">
               Al confirmar, tu cita anterior quedará liberada. Esta reprogramación no tiene costo adicional.
             </p>
           </div>
 
           <div class="flex gap-4">
-            <button @click="closeRescheduleModal" class="flex-1 font-bold text-slate-600 hover:bg-slate-100 py-4 rounded-xl transition-colors">
+            <button @click="closeRescheduleModal" class="flex-1 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 py-4 rounded-xl transition-colors">
               Cancelar
             </button>
             <button @click="confirmReschedule" class="flex-1 bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-4 rounded-xl shadow-lg shadow-[#418FC8]/30 transition-all hover:-translate-y-0.5">
@@ -356,27 +356,27 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
     <!-- MODAL DE CANCELACIÓN (POLÍTICAS DE REEMBOLSO)                  -->
     <!-- ============================================================== -->
     <div v-if="isCancelModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#111111]/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+      <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
         
-        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-          <h2 class="text-xl font-bold text-slate-800">Cancelar Cita</h2>
-          <button @click="closeCancelModal" class="bg-white hover:bg-slate-200 text-slate-500 p-2 rounded-full border border-slate-200 transition-colors">
+        <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-700/50">
+          <h2 class="text-xl font-bold text-slate-800 dark:text-white">Cancelar Cita</h2>
+          <button @click="closeCancelModal" class="bg-white dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-400 p-2 rounded-full border border-slate-200 dark:border-slate-600 transition-colors">
             <PhX class="h-5 w-5" />
           </button>
         </div>
 
         <div class="p-8">
           <div class="mb-6">
-            <p class="text-slate-600 font-medium mb-1">Cita con <strong>{{ appointmentToCancel?.doctor }}</strong></p>
-            <p class="text-sm text-slate-500">{{ formatDate(appointmentToCancel?.date) }} a las {{ appointmentToCancel?.time }}</p>
+            <p class="text-slate-600 dark:text-slate-300 font-medium mb-1">Cita con <strong>{{ appointmentToCancel?.doctor }}</strong></p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">{{ formatDate(appointmentToCancel?.date) }} a las {{ appointmentToCancel?.time }}</p>
           </div>
 
           <div 
             class="flex items-start gap-3 p-4 rounded-xl border mb-8"
             :class="{
-              'bg-emerald-50 border-emerald-100 text-emerald-800': cancellationPolicy.type === 'full',
-              'bg-amber-50 border-amber-100 text-amber-800': cancellationPolicy.type === 'partial',
-              'bg-red-50 border-red-100 text-red-800': cancellationPolicy.type === 'none'
+              'bg-emerald-50 dark:bg-emerald-900/40 border-emerald-100 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300': cancellationPolicy.type === 'full',
+              'bg-amber-50 dark:bg-amber-900/40 border-amber-100 dark:border-amber-800 text-amber-800 dark:text-amber-300': cancellationPolicy.type === 'partial',
+              'bg-red-50 dark:bg-red-900/40 border-red-100 dark:border-red-800 text-red-800 dark:text-red-300': cancellationPolicy.type === 'none'
             }"
           >
             <!-- Ícono dinámico -->
@@ -391,10 +391,10 @@ const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 P
           </div>
 
           <div class="flex gap-4">
-            <button @click="closeCancelModal" class="flex-1 font-bold text-slate-600 hover:bg-slate-100 py-4 rounded-xl transition-colors">
+            <button @click="closeCancelModal" class="flex-1 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 py-4 rounded-xl transition-colors">
               Volver
             </button>
-            <button @click="confirmCancel" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-200 transition-colors">
+            <button @click="confirmCancel" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-200 dark:shadow-red-900/30 transition-colors">
               Sí, cancelar cita
             </button>
           </div>

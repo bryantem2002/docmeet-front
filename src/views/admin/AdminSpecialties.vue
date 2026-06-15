@@ -12,8 +12,8 @@ const specialties = ref([
   <div class="max-w-7xl mx-auto w-full px-4 sm:px-0 font-sans">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
       <div>
-        <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Especialidades Médicas</h1>
-        <p class="text-slate-500 mt-2 font-medium">Catálogo de especialidades disponibles en la clínica.</p>
+        <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Especialidades Médicas</h1>
+        <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Catálogo de especialidades disponibles en la clínica.</p>
       </div>
       <button class="w-full sm:w-auto bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5">
         Nueva Especialidad
@@ -21,13 +21,13 @@ const specialties = ref([
     </div>
 
     <!-- Contenedor Principal -->
-    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden transition-colors">
+    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden transition-colors">
       
       <!-- Vista Móvil (Tarjetas) -->
-      <div class="block sm:hidden divide-y divide-slate-100">
-        <div v-for="spec in specialties" :key="'mob-'+spec.id" class="p-5 hover:bg-slate-50 transition-colors">
-          <h3 class="font-bold text-slate-800 text-base mb-2">{{ spec.name }}</h3>
-          <p class="text-slate-500 text-sm mb-4 leading-relaxed">{{ spec.description }}</p>
+      <div class="block sm:hidden divide-y divide-slate-100 dark:divide-slate-700">
+        <div v-for="spec in specialties" :key="'mob-'+spec.id" class="p-5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+          <h3 class="font-bold text-slate-800 dark:text-white text-base mb-2">{{ spec.name }}</h3>
+          <p class="text-slate-500 dark:text-slate-400 text-sm mb-4 leading-relaxed">{{ spec.description }}</p>
           <button class="w-full text-[#418FC8] font-bold hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] py-2.5 rounded-xl text-sm transition-colors text-center">
             Editar
           </button>
@@ -38,16 +38,16 @@ const specialties = ref([
       <div class="hidden sm:block overflow-x-auto custom-scrollbar">
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="bg-slate-50/50 border-b border-slate-200">
-              <th class="p-5 text-xs font-bold text-slate-400 uppercase tracking-wider w-1/3">Nombre</th>
-              <th class="p-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Descripción</th>
-              <th class="p-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Acciones</th>
+            <tr class="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
+              <th class="p-5 text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider w-1/3">Nombre</th>
+              <th class="p-5 text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Descripción</th>
+              <th class="p-5 text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider text-right">Acciones</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100">
-            <tr v-for="spec in specialties" :key="spec.id" class="hover:bg-slate-50/50 transition-colors">
-              <td class="p-5 font-bold text-slate-800">{{ spec.name }}</td>
-              <td class="p-5 text-slate-600 text-sm leading-relaxed">{{ spec.description }}</td>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+            <tr v-for="spec in specialties" :key="spec.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+              <td class="p-5 font-bold text-slate-800 dark:text-white">{{ spec.name }}</td>
+              <td class="p-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{{ spec.description }}</td>
               <td class="p-5 text-right">
                 <button class="text-[#418FC8] font-bold hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] px-4 py-2 rounded-lg text-sm transition-all shadow-sm hover:shadow-[#418FC8]/20">
                   Editar

@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref } from 'vue'
+import { useDarkMode } from '@/composables/useDarkMode'
 import { PhMoon, PhBell, PhLockKey, PhUser, PhCamera } from '@phosphor-icons/vue'
+
+const { isDark: isDarkMode, toggleDark } = useDarkMode()
 
 // --- ESTADOS DE CONFIGURACIÓN ---
 const userProfile = ref({
@@ -14,40 +17,13 @@ const userProfile = ref({
   avatar: ''
 })
 
-// 1. Apariencia (Modo Oscuro)
-const isDarkMode = ref(false)
-
-// 2. Notificaciones
+// 1. Notificaciones
 const notifyAppointments = ref(true)
 const notifyResults = ref(true)
 const notifyPromotions = ref(false)
 
-// 3. Privacidad y Seguridad
+// 2. Privacidad y Seguridad
 const shareDataWithDoctors = ref(true)
-
-// --- LÓGICA DEL MODO OSCURO ---
-// Al cargar la página, revisamos si el usuario ya tenía el modo oscuro guardado
-onMounted(() => {
-  if (localStorage.getItem('theme') === 'dark' || 
-     (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    isDarkMode.value = true
-    document.documentElement.classList.add('dark')
-  } else {
-    isDarkMode.value = false
-    document.documentElement.classList.remove('dark')
-  }
-})
-
-// Observamos los cambios en el switch para aplicar la clase al nodo html
-watch(isDarkMode, (newValue) => {
-  if (newValue) {
-    document.documentElement.classList.add('dark')
-    localStorage.setItem('theme', 'dark')
-  } else {
-    document.documentElement.classList.remove('dark')
-    localStorage.setItem('theme', 'light')
-  }
-})
 
 // Función para simular guardar cambios
 const saveSettings = () => {
@@ -146,7 +122,7 @@ const saveSettings = () => {
           
           <!-- Switch Toggle Custom -->
           <button 
-            @click="isDarkMode = !isDarkMode"
+            @click="toggleDark"
             class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
             :class="isDarkMode ? 'bg-[#418FC8]' : 'bg-slate-200 dark:bg-slate-600'"
           >

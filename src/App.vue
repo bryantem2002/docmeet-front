@@ -27,7 +27,7 @@ const isDashboardRoute = computed(() => {
     <div class="flex-1 w-full flex items-start">
         <PatientSidebar v-if="isDashboardRoute" />
       
-      <main class="flex-1 w-full flex flex-col min-w-0" :class="isDashboardRoute ? 'h-screen overflow-y-auto bg-slate-50/50' : ''">
+      <main class="flex-1 w-full flex flex-col min-w-0" :class="isDashboardRoute ? 'h-screen overflow-y-auto bg-slate-50/50 dark:bg-slate-900/80' : ''">
         <DashboardHeader v-if="isDashboardRoute" />
         <div :class="isDashboardRoute ? 'p-6 lg:p-10 flex-1' : 'flex-1 flex flex-col'">
           <RouterView v-slot="{ Component }">

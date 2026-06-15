@@ -3,11 +3,14 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/store/auth-store'
-import { PhBell, PhGear, PhSignOut, PhMagnifyingGlass } from '@phosphor-icons/vue'
+import { useDarkMode } from '@/composables/useDarkMode'
+import { PhBell, PhGear, PhSignOut, PhMagnifyingGlass, PhSun, PhMoon } from '@phosphor-icons/vue'
 
 const auth = useAuthStore()
 const { user } = storeToRefs(auth)
 const router = useRouter()
+
+const { isDark, toggleDark } = useDarkMode()
 
 const showProfileMenu = ref(false)
 
@@ -45,15 +48,15 @@ const userInitials = computed(() => {
 </script>
 
 <template>
-  <header class="flex items-center justify-between px-4 sm:px-6 lg:px-10 py-3 sm:py-4 bg-white border-b border-slate-200 shrink-0 z-10 sticky top-0">
+  <header class="flex items-center justify-between px-4 sm:px-6 lg:px-10 py-3 sm:py-4 bg-white dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-700 shrink-0 z-10 sticky top-0">
     <!-- Left side (Search or Title) -->
     <div class="flex-1 flex items-center">
       <div class="relative hidden sm:block max-w-xs w-full">
         <PhMagnifyingGlass class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-        <input type="text" placeholder="Buscar..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] text-sm text-slate-700 transition-all shadow-sm focus:shadow-md" />
+        <input type="text" placeholder="Buscar..." class="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] text-sm text-slate-700 dark:text-slate-200 transition-all shadow-sm focus:shadow-md" />
       </div>
       <!-- Logo/Título para móvil -->
-      <h1 class="block sm:hidden text-xl font-black text-slate-800 tracking-tight">
+      <h1 class="block sm:hidden text-xl font-black text-slate-800 dark:text-white tracking-tight">
         <span class="text-[#3E90C8]">Doc</span>Meet
       </h1>
     </div>
@@ -72,13 +75,23 @@ const userInitials = computed(() => {
         <PhGear class="h-6 w-6" />
       </router-link>
 
+      <!-- Dark mode toggle -->
+      <button
+        @click="toggleDark"
+        class="p-2 text-slate-400 hover:text-[#418FC8] hover:bg-[#418FC8]/10 rounded-full transition-colors"
+        :title="isDark ? 'Modo claro' : 'Modo oscuro'"
+      >
+        <PhSun v-if="isDark" class="h-6 w-6" />
+        <PhMoon v-else class="h-6 w-6" />
+      </button>
+
       <div class="w-px h-6 bg-slate-200 mx-1"></div>
 
       <!-- Profile -->
       <div class="relative profile-dropdown-container">
         <button @click="toggleProfileMenu" class="flex items-center gap-3 focus:outline-none rounded-full hover:ring-2 hover:ring-[#418FC8]/20 transition-all">
           <div class="flex flex-col items-end hidden sm:flex">
-            <span class="text-sm font-bold text-slate-800 leading-tight">{{ user?.fullName || 'Usuario' }}</span>
+            <span class="text-sm font-bold text-slate-800 dark:text-white leading-tight">{{ user?.fullName || 'Usuario' }}</span>
             <span class="text-[10px] font-bold text-[#418FC8] uppercase tracking-wider bg-[#418FC8]/10 px-2 py-0.5 rounded-full mt-0.5">
               {{ user?.role === 'admin' ? 'Admin' : user?.role === 'doctor' ? 'Médico' : user?.role === 'secretaria' ? 'Secretaria' : 'Paciente' }}
             </span>
@@ -98,21 +111,21 @@ const userInitials = computed(() => {
           leave-from-class="transform opacity-100 scale-100" 
           leave-to-class="transform opacity-0 scale-95"
         >
-          <div v-if="showProfileMenu" class="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50 origin-top-right">
+          <div v-if="showProfileMenu" class="absolute right-0 mt-3 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden z-50 origin-top-right">
             <!-- Solo visible en móvil, ya que en desktop ya sale al lado -->
-            <div class="p-4 border-b border-slate-100 bg-slate-50 sm:hidden">
-              <p class="font-bold text-slate-800 truncate">{{ user?.fullName || 'Usuario' }}</p>
+            <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 sm:hidden">
+              <p class="font-bold text-slate-800 dark:text-white truncate">{{ user?.fullName || 'Usuario' }}</p>
               <p class="text-xs font-bold text-[#418FC8] uppercase mt-1">
                 {{ user?.role === 'admin' ? 'Administrador' : user?.role === 'doctor' ? 'Médico' : user?.role === 'secretaria' ? 'Secretaria' : 'Paciente' }}
               </p>
             </div>
             
             <div class="p-2 flex flex-col gap-1">
-              <router-link :to="{ name: 'settings' }" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#418FC8] hover:bg-[#418FC8]/5 rounded-xl transition-colors" @click="showProfileMenu = false">
+              <router-link :to="{ name: 'settings' }" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-[#418FC8] hover:bg-[#418FC8]/5 rounded-xl transition-colors" @click="showProfileMenu = false">
                 <PhGear class="h-5 w-5" />
                 Ajustes de Perfil
               </router-link>
-              <button @click="logoutUser" class="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition-colors text-left">
+              <button @click="logoutUser" class="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors text-left">
                 <PhSignOut class="h-5 w-5" />
                 Cerrar Sesión
               </button>
