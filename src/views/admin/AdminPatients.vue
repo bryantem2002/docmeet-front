@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { PhPlus, PhMagnifyingGlass, PhCheckCircle, PhProhibit, PhPhone, PhFunnel } from '@phosphor-icons/vue'
+import { PhPlus, PhMagnifyingGlass, PhCheckCircle, PhProhibit, PhPhone, PhFunnel, PhX } from '@phosphor-icons/vue'
 
 const patients = ref([
   { id: 'PAC-001', name: 'Carlos Pérez', dni: '74839210', phone: '987654321', lastVisit: '10 May 2026', sede: 'Miraflores', date: '10 May 2026', status: 'active' },
@@ -12,6 +12,33 @@ const patients = ref([
 const toggleStatus = (patient: any) => {
   patient.status = patient.status === 'active' ? 'inactive' : 'active'
 }
+
+const showModal = ref(false)
+const newPatient = ref({
+  name: '',
+  dni: '',
+  phone: '',
+  sede: ''
+})
+
+function savePatient() {
+  if (!newPatient.value.name || !newPatient.value.dni || !newPatient.value.phone) return
+  
+  const nextId = `PAC-00${patients.value.length + 1}`
+  patients.value.unshift({
+    id: nextId,
+    name: newPatient.value.name,
+    dni: newPatient.value.dni,
+    phone: newPatient.value.phone,
+    sede: newPatient.value.sede || 'Sin sede asignada',
+    lastVisit: 'Sin historial',
+    date: 'Sin historial',
+    status: 'active'
+  })
+  
+  newPatient.value = { name: '', dni: '', phone: '', sede: '' }
+  showModal.value = false
+}
 </script>
 
 <template>
@@ -21,7 +48,7 @@ const toggleStatus = (patient: any) => {
         <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Gestor de Pacientes</h1>
         <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Visualiza y administra todas las cuentas de pacientes a nivel global.</p>
       </div>
-      <button class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2">
+      <button @click="showModal = true" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2">
         <PhPlus class="h-5 w-5" weight="bold" />
         Registrar Paciente
       </button>
@@ -129,6 +156,84 @@ const toggleStatus = (patient: any) => {
         </table>
       </div>
     </div>
+
+    <!-- Modal Añadir Paciente -->
+    <div v-if="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showModal = false"></div>
+      
+      <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+          <h2 class="text-xl font-bold text-slate-800 dark:text-white">Registrar Paciente</h2>
+          <button @click="showModal = false" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-700 rounded-full transition-colors">
+            <PhX class="w-5 h-5" />
+          </button>
+        </div>
+        
+        <form @submit.prevent="savePatient" class="p-6 flex flex-col gap-5">
+          <!-- Nombre Completo -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nombre Completo</label>
+            <input 
+              v-model="newPatient.name"
+              type="text" 
+              required
+              placeholder="Ej. Juan Pérez" 
+              class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all"
+            />
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- DNI -->
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">DNI</label>
+              <input 
+                v-model="newPatient.dni"
+                type="text" 
+                required
+                maxlength="8"
+                placeholder="Nro. Documento" 
+                class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all"
+              />
+            </div>
+            
+            <!-- Teléfono -->
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Celular</label>
+              <input 
+                v-model="newPatient.phone"
+                type="text" 
+                required
+                placeholder="Ej. 987654321" 
+                class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all"
+              />
+            </div>
+          </div>
+          
+          <!-- Sede (Opcional) -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Sede Preferida (Opcional)</label>
+            <select v-model="newPatient.sede" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all appearance-none">
+              <option value="">Ninguna / No sabe aún</option>
+              <option>Miraflores</option>
+              <option>San Isidro</option>
+              <option>Surco</option>
+              <option>Los Olivos</option>
+            </select>
+          </div>
+          
+          <!-- Botones -->
+          <div class="mt-4 flex justify-end gap-3">
+            <button type="button" @click="showModal = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors">
+              Cancelar
+            </button>
+            <button type="submit" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-md shadow-[#418FC8]/20">
+              Registrar Paciente
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 </template>
 

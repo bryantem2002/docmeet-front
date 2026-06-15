@@ -1,12 +1,37 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { PhPlus, PhMagnifyingGlass } from '@phosphor-icons/vue'
+import { PhPlus, PhMagnifyingGlass, PhX } from '@phosphor-icons/vue'
 
 const doctors = ref([
   { id: 'MED-01', name: 'Dr. Roberto Mendoza', specialty: 'Cardiología', sede: 'Miraflores', status: 'active' },
   { id: 'MED-02', name: 'Dra. Patricia Vargas', specialty: 'Dermatología', sede: 'San Isidro', status: 'active' },
   { id: 'MED-03', name: 'Dr. Jorge Castro', specialty: 'Pediatría', sede: 'Surco', status: 'inactive' },
 ])
+
+const showModal = ref(false)
+const newDoctor = ref({
+  name: '',
+  specialty: '',
+  sede: '',
+  status: 'active'
+})
+
+function saveDoctor() {
+  if (!newDoctor.value.name || !newDoctor.value.specialty || !newDoctor.value.sede) return
+  
+  const nextId = `MED-0${doctors.value.length + 1}`
+  doctors.value.unshift({
+    id: nextId,
+    name: newDoctor.value.name,
+    specialty: newDoctor.value.specialty,
+    sede: newDoctor.value.sede,
+    status: newDoctor.value.status
+  })
+  
+  // Reset
+  newDoctor.value = { name: '', specialty: '', sede: '', status: 'active' }
+  showModal.value = false
+}
 </script>
 
 <template>
@@ -16,7 +41,7 @@ const doctors = ref([
         <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Gestor de Doctores</h1>
         <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Administra al personal médico de todas las sedes.</p>
       </div>
-      <button class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2">
+      <button @click="showModal = true" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2">
         <PhPlus class="h-5 w-5" weight="bold" />
         Añadir Nuevo Médico
       </button>
@@ -99,6 +124,87 @@ const doctors = ref([
         </table>
       </div>
     </div>
+
+    <!-- Modal Añadir Médico -->
+    <div v-if="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showModal = false"></div>
+      
+      <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+          <h2 class="text-xl font-bold text-slate-800 dark:text-white">Nuevo Médico</h2>
+          <button @click="showModal = false" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-700 rounded-full transition-colors">
+            <PhX class="w-5 h-5" />
+          </button>
+        </div>
+        
+        <form @submit.prevent="saveDoctor" class="p-6 flex flex-col gap-5">
+          <!-- Nombre -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nombre Completo</label>
+            <input 
+              v-model="newDoctor.name"
+              type="text" 
+              required
+              placeholder="Ej. Dr. Juan Pérez" 
+              class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all"
+            />
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- Especialidad -->
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Especialidad</label>
+              <select v-model="newDoctor.specialty" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all appearance-none">
+                <option value="" disabled>Seleccionar...</option>
+                <option>Cardiología</option>
+                <option>Dermatología</option>
+                <option>Pediatría</option>
+                <option>Neurología</option>
+                <option>Medicina General</option>
+              </select>
+            </div>
+            
+            <!-- Sede -->
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Sede Base</label>
+              <select v-model="newDoctor.sede" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all appearance-none">
+                <option value="" disabled>Seleccionar...</option>
+                <option>Miraflores</option>
+                <option>San Isidro</option>
+                <option>Surco</option>
+                <option>Los Olivos</option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Estado -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Estado</label>
+            <div class="flex gap-4">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" v-model="newDoctor.status" value="active" class="w-4 h-4 text-[#418FC8] focus:ring-[#418FC8] border-slate-300" />
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Activo</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" v-model="newDoctor.status" value="inactive" class="w-4 h-4 text-[#418FC8] focus:ring-[#418FC8] border-slate-300" />
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Vacaciones</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Botones -->
+          <div class="mt-4 flex justify-end gap-3">
+            <button type="button" @click="showModal = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors">
+              Cancelar
+            </button>
+            <button type="submit" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-md shadow-[#418FC8]/20">
+              Guardar Médico
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 </template>
 

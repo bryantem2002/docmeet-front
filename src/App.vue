@@ -9,9 +9,12 @@ import DashboardHeader from '@/components/layout/DashboardHeader.vue'
 import DevSwitcher from '@/components/layout/DevSwitcher.vue' 
 import { PhWhatsappLogo } from '@phosphor-icons/vue'
 
-const route = useRoute()
+import { useAuthStore } from '@/store/auth-store'
 
-const isDev = import.meta.env.DEV
+const route = useRoute()
+const auth = useAuthStore()
+
+const isRealUserLogged = computed(() => auth.isAuthenticated && auth.token !== 'dev-fake-token-999')
 
 const isDashboardRoute = computed(() => {
   return route.meta.requiresAuth === true
@@ -54,7 +57,7 @@ const isDashboardRoute = computed(() => {
       <PhWhatsappLogo class="w-8 h-8" weight="fill" />
     </a>
 
-    <DevSwitcher v-if="isDev" />
+    <DevSwitcher v-if="!isRealUserLogged" />
     
   </div>
 </template>

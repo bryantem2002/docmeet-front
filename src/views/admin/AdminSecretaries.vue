@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { PhX } from '@phosphor-icons/vue'
 
 const secretaries = ref([
   { 
@@ -21,6 +22,33 @@ const secretaries = ref([
     active: true 
   }
 ])
+
+const showModal = ref(false)
+const newSecretary = ref({
+  name: '',
+  dni: '',
+  shift: '',
+  clinic: '',
+  active: true
+})
+
+function saveSecretary() {
+  if (!newSecretary.value.name || !newSecretary.value.dni || !newSecretary.value.shift || !newSecretary.value.clinic) return
+  
+  const nextId = String(secretaries.value.length + 1)
+  secretaries.value.unshift({
+    id: nextId,
+    name: newSecretary.value.name,
+    dni: newSecretary.value.dni,
+    shift: newSecretary.value.shift,
+    clinic: newSecretary.value.clinic,
+    doctorsAssigned: 0,
+    active: newSecretary.value.active
+  })
+  
+  newSecretary.value = { name: '', dni: '', shift: '', clinic: '', active: true }
+  showModal.value = false
+}
 </script>
 
 <template>
@@ -30,7 +58,7 @@ const secretaries = ref([
         <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Secretarias</h1>
         <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Gestión del personal administrativo y asignación a médicos.</p>
       </div>
-      <button class="w-full sm:w-auto bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5">
+      <button @click="showModal = true" class="w-full sm:w-auto bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5">
         Nueva Secretaria
       </button>
     </div>
@@ -109,5 +137,96 @@ const secretaries = ref([
         </table>
       </div>
     </div>
+
+    <!-- Modal Añadir Secretaria -->
+    <div v-if="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showModal = false"></div>
+      
+      <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+          <h2 class="text-xl font-bold text-slate-800 dark:text-white">Nueva Secretaria</h2>
+          <button @click="showModal = false" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-700 rounded-full transition-colors">
+            <PhX class="w-5 h-5" />
+          </button>
+        </div>
+        
+        <form @submit.prevent="saveSecretary" class="p-6 flex flex-col gap-5">
+          <!-- Nombre -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nombre Completo</label>
+            <input 
+              v-model="newSecretary.name"
+              type="text" 
+              required
+              placeholder="Ej. Ana Lopez" 
+              class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all"
+            />
+          </div>
+          
+          <!-- DNI -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">DNI</label>
+            <input 
+              v-model="newSecretary.dni"
+              type="text" 
+              required
+              maxlength="8"
+              placeholder="Nro. Documento" 
+              class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all"
+            />
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- Turno -->
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Turno</label>
+              <select v-model="newSecretary.shift" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all appearance-none">
+                <option value="" disabled>Seleccionar...</option>
+                <option>Mañana</option>
+                <option>Tarde</option>
+                <option>Noche</option>
+              </select>
+            </div>
+            
+            <!-- Sede -->
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Sede Asignada</label>
+              <select v-model="newSecretary.clinic" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all appearance-none">
+                <option value="" disabled>Seleccionar...</option>
+                <option>Sede Principal</option>
+                <option>Sede Norte</option>
+                <option>Sede Sur</option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Estado -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Estado</label>
+            <div class="flex gap-4">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" :value="true" v-model="newSecretary.active" class="w-4 h-4 text-[#418FC8] focus:ring-[#418FC8] border-slate-300" />
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Activa</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" :value="false" v-model="newSecretary.active" class="w-4 h-4 text-[#418FC8] focus:ring-[#418FC8] border-slate-300" />
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Inactiva</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Botones -->
+          <div class="mt-4 flex justify-end gap-3">
+            <button type="button" @click="showModal = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors">
+              Cancelar
+            </button>
+            <button type="submit" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-md shadow-[#418FC8]/20">
+              Guardar Secretaria
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 </template>
