@@ -32,9 +32,9 @@ import { doctorController, type IDoctorListItem } from '@/controllers/doctor.con
 
 // ── Banner Carousel ──
 const slides = [
-  { image: '/img/banner-1.png', mobileImage: '/img/banner-1.1.png' },
-  { image: '/img/banner-2.png', mobileImage: '/img/banner-2.1.png' },
-  { image: '/img/banner-3.png', mobileImage: '/img/banner-3.1.png' }
+  { image: '/img/banner-1.png', mobileImage: '/img/banner-1.1.png', tabletImage: '/img/banner-tablet1.png' },
+  { image: '/img/banner-2.png', mobileImage: '/img/banner-2.1.png', tabletImage: '/img/banner-tablet2.png' },
+  { image: '/img/banner-3.png', mobileImage: '/img/banner-3.1.png', tabletImage: '/img/banner-tablet3.png' }
 ]
 
 const currentSlide = ref(0)
@@ -271,9 +271,8 @@ onUnmounted(() => {
 <template>
   <div class="min-h-screen bg-slate-50/40 dark:bg-slate-900 transition-colors duration-300">
 
-    <!-- ═══ BANNER CAROUSEL ═══ -->
-    <section class="relative w-full overflow-hidden bg-gradient-to-br from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
-      <div class="relative h-[300px] sm:h-[350px] md:h-[400px] lg:h-[420px] xl:h-[460px] 2xl:h-[520px]" role="region" aria-roledescription="carousel" aria-label="Banners promocionales">
+    <section class="relative w-full overflow-hidden">
+      <div class="relative aspect-[9/16] sm:aspect-[2.5/1] md:aspect-[3/1] xl:aspect-[3.5/1] max-h-[520px] w-full bg-[#b8dff3] dark:bg-slate-800" role="region" aria-roledescription="carousel" aria-label="Banners promocionales">
 
         <!-- Slides -->
         <div
@@ -283,17 +282,24 @@ onUnmounted(() => {
           :class="index === currentSlide ? 'opacity-100 translate-x-0' : index < currentSlide ? 'opacity-0 -translate-x-full' : 'opacity-0 translate-x-full'"
           :aria-hidden="index !== currentSlide"
         >
-          <div class="w-full h-full bg-gradient-to-br from-slate-100/90 to-white/80 dark:from-slate-800/80 dark:to-slate-900/70 relative">
-            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(62,144,200,0.08)_0%,transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,rgba(109,199,220,0.06)_0%,transparent_70%)] pointer-events-none"></div>
+          <div class="w-full h-full relative">
+            <!-- Mobile image -->
             <img
               :src="slide.mobileImage"
               :alt="'Banner ' + (index + 1)"
-              class="w-full h-full object-contain object-center sm:hidden"
+              class="w-full h-full object-cover object-top sm:hidden"
             />
+            <!-- Tablet / Laptop -->
+            <img
+              :src="slide.tabletImage"
+              :alt="'Banner ' + (index + 1)"
+              class="hidden sm:block xl:hidden w-full h-full object-cover object-center"
+            />
+            <!-- Desktop XL+ -->
             <img
               :src="slide.image"
               :alt="'Banner ' + (index + 1)"
-              class="hidden sm:block w-full h-full object-contain object-center"
+              class="hidden xl:block w-full h-full object-cover object-center"
             />
           </div>
         </div>

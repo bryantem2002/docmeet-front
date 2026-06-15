@@ -6,6 +6,7 @@ import { RouterLink, useRouter, useRoute } from 'vue-router'
 import { useDarkMode } from '@/composables/useDarkMode'
 import AuthModal from '@/components/layout/AuthModal.vue'
 import NotificationDropdown from '@/components/layout/NotificationDropdown.vue'
+import ProfileDropdown from '@/components/layout/ProfileDropdown.vue'
 import {
   PhSignOut,
   PhPhone,
@@ -15,7 +16,6 @@ import {
   PhStethoscope,
   PhUsers,
   PhHeartbeat,
-  PhCalendarCheck,
   PhSun,
   PhMoon
 } from '@phosphor-icons/vue'
@@ -51,14 +51,7 @@ function scrollToSection(sectionId: string) {
   }
 }
 
-const userInitials = computed(() => {
-  if (!user.value?.fullName) return 'U'
-  const names = user.value.fullName.trim().split(' ')
-  if (names.length >= 2) {
-    return (names[0][0] + names[1][0]).toUpperCase()
-  }
-  return names[0].substring(0, 2).toUpperCase()
-})
+
 
 const dashboardRouteName = computed(() => {
   if (user.value?.role === 'admin') return 'admin'
@@ -72,22 +65,22 @@ const { isDark, toggleDark } = useDarkMode()
 
 <template>
   <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 transition-all duration-300">
-    <div class="mx-auto w-full max-w-[1600px] flex items-center h-[92px] px-6 lg:px-10">
+    <div class="mx-auto w-full max-w-[1600px] flex items-center h-[72px] md:h-[80px] lg:h-[92px] px-4 md:px-6 lg:px-10">
 
       <!-- Logo -->
-      <RouterLink :to="{ name: 'home' }" class="flex items-center gap-1.5 sm:gap-3 shrink-0 mr-auto lg:mr-0 min-w-0">
-        <img src="/img/logodoc.png" alt="DocMeet" class="h-8 w-8 sm:h-12 sm:w-12 object-contain shrink-0" />
+      <RouterLink :to="{ name: 'home' }" class="flex items-center gap-1.5 sm:gap-2 lg:gap-3 shrink-0 mr-auto md:mr-4 lg:mr-0 min-w-0">
+        <img src="/img/logodoc.png" alt="DocMeet" class="h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 object-contain shrink-0" />
         <div class="leading-none shrink-0">
-          <p class="text-lg sm:text-[1.7rem] tracking-tight">
+          <p class="text-lg md:text-xl lg:text-[1.7rem] tracking-tight">
             <span class="font-black text-[#3E90C8]">Doc</span><span class="font-bold text-slate-800 dark:text-white">Meet</span>
           </p>
-          <p class="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500 mt-0.5 hidden sm:block">Salud digital</p>
+          <p class="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500 mt-0.5 hidden md:block">Salud digital</p>
         </div>
       </RouterLink>
 
 
       <!-- Nav center (desktop) -->
-      <nav class="hidden lg:flex items-center gap-8 mx-auto text-base font-bold text-slate-700 dark:text-slate-200">
+      <nav class="hidden md:flex items-center gap-3 lg:gap-6 xl:gap-8 mx-auto text-[13px] lg:text-sm xl:text-base font-bold text-slate-700 dark:text-slate-200">
         <a href="/#nosotros" class="py-2 hover:text-[#3E90C8] dark:hover:text-[#6DC7DC] transition-colors" @click.prevent="scrollToSection('nosotros')">
           Nosotros
         </a>
@@ -111,9 +104,9 @@ const { isDark, toggleDark } = useDarkMode()
       <div class="flex items-center gap-2 sm:gap-5 shrink-0">
 
         <!-- Contact + Buttons in one row (desktop) -->
-        <div class="hidden lg:flex items-center gap-5">
+        <div class="hidden md:flex items-center gap-2 lg:gap-3 xl:gap-5">
           <!-- Contact -->
-          <div class="flex items-center gap-5 text-[14px] font-bold text-slate-700 dark:text-slate-300">
+          <div class="hidden xl:flex items-center gap-5 text-[14px] font-bold text-slate-700 dark:text-slate-300">
             <a href="https://wa.me/51981124011" target="_blank" class="flex items-center gap-2 hover:text-[#3E90C8] dark:hover:text-[#6DC7DC] transition-colors">
               <PhWhatsappLogo class="h-4 w-4 text-emerald-500" weight="fill" />
               927-876-603
@@ -136,16 +129,16 @@ const { isDark, toggleDark } = useDarkMode()
           </button>
 
           <!-- Buttons -->
-          <div v-if="!isAuthenticated" class="flex items-center gap-3">
+          <div v-if="!isAuthenticated" class="flex items-center gap-1.5 lg:gap-2 xl:gap-3">
         <button
           @click="openAuthModal('register')"
-          class="rounded-full border-2 border-[#3E90C8] px-7 py-2.5 text-[#3E90C8] dark:text-white text-[15px] font-bold transition-all hover:bg-[#3E90C8] hover:text-white"
+          class="rounded-full border-2 border-[#3E90C8] px-3 md:px-4 lg:px-6 xl:px-7 py-1.5 md:py-2 lg:py-2.5 text-[#3E90C8] dark:text-white text-[12px] lg:text-[13px] xl:text-[15px] font-bold transition-all hover:bg-[#3E90C8] hover:text-white"
         >
               Regístrate
             </button>
             <button
               @click="openAuthModal('login')"
-              class="rounded-full bg-[#3E90C8] px-7 py-2.5 text-white text-[15px] font-bold transition-all hover:bg-[#2d7ab5] shadow-md shadow-[#3E90C8]/20 hover:shadow-lg hover:-translate-y-0.5"
+              class="rounded-full bg-[#3E90C8] px-3 md:px-4 lg:px-6 xl:px-7 py-1.5 md:py-2 lg:py-2.5 text-white text-[12px] lg:text-[13px] xl:text-[15px] font-bold transition-all hover:bg-[#2d7ab5] shadow-md shadow-[#3E90C8]/20 hover:shadow-lg hover:-translate-y-0.5"
             >
               Iniciar Sesión
             </button>
@@ -153,33 +146,19 @@ const { isDark, toggleDark } = useDarkMode()
         </div>
 
         <!-- Shared Authenticated Profile / Desktop Panel Button -->
-        <div v-if="isAuthenticated" class="flex items-center gap-3">
+        <div v-if="isAuthenticated" class="flex items-center gap-2 sm:gap-3">
           <RouterLink
             :to="{ name: dashboardRouteName }"
-            class="hidden lg:block rounded-full bg-[#3E90C8] px-6 py-2 text-white text-[14px] font-bold transition-all hover:bg-[#2d7ab5] shadow-md shadow-[#3E90C8]/20 hover:-translate-y-0.5 mr-2"
+            class="hidden md:block rounded-full bg-[#3E90C8] px-3 lg:px-5 xl:px-6 py-1.5 lg:py-2 text-white text-[12px] lg:text-[13px] xl:text-[14px] font-bold transition-all hover:bg-[#2d7ab5] shadow-md shadow-[#3E90C8]/20 hover:-translate-y-0.5 mr-1 lg:mr-2"
           >
             Ir a mi panel
           </RouterLink>
 
           <NotificationDropdown />
-
-
-          <div class="hidden lg:flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#68C8E0] to-[#3E90C8] text-white text-sm font-black shadow-sm border-2 border-white">
-            {{ userInitials }}
-          </div>
-
-          <button
-            type="button"
-            class="hidden lg:block p-2 text-slate-400 dark:text-slate-500 hover:text-red-500 rounded-lg transition-colors ml-1"
-            title="Cerrar sesión"
-            @click="logout"
-          >
-            <PhSignOut class="h-5 w-5" weight="bold" />
-          </button>
+          <ProfileDropdown />
         </div>
 
-        <!-- Mobile: dark toggle + auth buttons -->
-        <div class="flex items-center gap-1 sm:gap-2 lg:hidden">
+        <div class="flex items-center gap-1 sm:gap-2 md:hidden">
           <button
             @click="toggleDark"
             class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
@@ -188,26 +167,12 @@ const { isDark, toggleDark } = useDarkMode()
             <PhSun v-if="isDark" class="w-3.5 h-3.5 sm:w-4 sm:h-4" weight="fill" />
             <PhMoon v-else class="w-3.5 h-3.5 sm:w-4 sm:h-4" weight="fill" />
           </button>
-          <template v-if="!isAuthenticated">
-            <button
-              @click="openAuthModal('register')"
-              class="rounded-lg border-2 border-[#3E90C8] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-bold text-[#3E90C8] dark:text-white transition-all hover:bg-[#3E90C8] hover:text-white"
-            >
-              Regístrate
-            </button>
-            <button
-              @click="openAuthModal('login')"
-              class="rounded-lg bg-[#3E90C8] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-bold text-white transition-all hover:bg-[#2d7ab5]"
-            >
-              Iniciar Sesión
-            </button>
-          </template>
         </div>
 
         <!-- Mobile hamburger -->
         <button
           @click="mobileMenuOpen = !mobileMenuOpen"
-          class="lg:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors -mr-2"
+          class="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors -mr-2"
         >
           <PhX v-if="mobileMenuOpen" class="h-6 w-6" weight="bold" />
           <PhList v-else class="h-6 w-6" weight="bold" />
@@ -216,7 +181,7 @@ const { isDark, toggleDark } = useDarkMode()
     </div>
 
     <!-- Mobile menu -->
-    <div v-if="mobileMenuOpen" class="absolute top-[92px] left-0 w-full lg:hidden border-t border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-5 py-4 shadow-2xl">
+    <div v-if="mobileMenuOpen" class="absolute top-[72px] left-0 w-full md:hidden border-t border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-5 py-4 shadow-2xl">
 
       <!-- Nav links -->
       <a href="/#nosotros" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 dark:text-slate-200 font-bold text-base hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" @click="mobileMenuOpen = false; scrollToSection('nosotros')">
@@ -235,10 +200,33 @@ const { isDark, toggleDark } = useDarkMode()
         <PhStethoscope class="h-5 w-5 text-[#3E90C8]" />
         Sucursales
       </a>
-      <RouterLink v-if="isAuthenticated" :to="{ name: 'appointments' }" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 dark:text-slate-200 font-bold text-base hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" @click="mobileMenuOpen = false">
-        <PhCalendarCheck class="h-5 w-5 text-[#3E90C8]" />
-        Mis Citas
-      </RouterLink>
+      <template v-if="isAuthenticated">
+        <div class="px-4 py-2 flex flex-col gap-3">
+          <RouterLink :to="{ name: dashboardRouteName }" class="w-full flex items-center justify-center gap-2 rounded-xl bg-[#3E90C8] px-4 py-3.5 text-base font-bold text-white transition-all hover:bg-[#2d7ab5] shadow-md shadow-[#3E90C8]/20" @click="mobileMenuOpen = false">
+            <PhList class="h-5 w-5" />
+            Ir a mi panel
+          </RouterLink>
+          <button type="button" class="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-red-500 px-4 py-3 text-base font-bold text-red-500 transition-all hover:bg-red-500 hover:text-white" @click="logout(); mobileMenuOpen = false;">
+            <PhSignOut class="h-5 w-5" />
+            Cerrar sesión
+          </button>
+        </div>
+      </template>
+
+      <div v-else class="px-4 py-3 flex flex-col gap-3">
+        <button
+          @click="openAuthModal('login')"
+          class="w-full rounded-xl bg-[#3E90C8] px-4 py-3 text-sm font-bold text-white transition-all hover:bg-[#2d7ab5]"
+        >
+          Iniciar Sesión
+        </button>
+        <button
+          @click="openAuthModal('register')"
+          class="w-full rounded-xl border-2 border-[#3E90C8] px-4 py-3 text-sm font-bold text-[#3E90C8] dark:text-white transition-all hover:bg-[#3E90C8] hover:text-white"
+        >
+          Regístrate
+        </button>
+      </div>
 
       <hr class="my-2 border-slate-100 dark:border-slate-700" />
 
