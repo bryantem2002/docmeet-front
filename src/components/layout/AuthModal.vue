@@ -79,18 +79,18 @@ async function submit(): Promise<void> {
 </script>
 
 <template>
-  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 transition-all">
-    <div class="relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden flex min-h-[600px] max-h-[90vh]">
+  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-sm p-4 transition-all">
+    <div class="relative w-full max-w-5xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex min-h-[600px] max-h-[90vh]">
       <button
         type="button"
-        class="absolute top-4 right-4 z-50 p-2 bg-slate-100 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded-full transition-colors"
+        class="absolute top-4 right-4 z-50 p-2 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors"
         title="Cerrar"
         @click="$emit('close')"
       >
         <PhX class="h-6 w-6" />
       </button>
 
-      <div class="hidden lg:flex lg:w-5/12 relative bg-[#3E90C8] flex-col justify-center px-10 border-r border-[#347BAE]">
+      <div class="hidden lg:flex lg:w-5/12 relative bg-[#3E90C8] flex-col justify-center px-10 border-r border-[#347BAE] dark:border-slate-700">
         <div class="absolute inset-0 bg-gradient-to-b from-[#3E90C8] to-[#2A6A96] opacity-90"></div>
         <div class="relative z-10 w-full max-w-md mx-auto">
           <h1 class="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6">
@@ -116,7 +116,7 @@ async function submit(): Promise<void> {
           </div>
 
           <form @submit.prevent="submit" class="space-y-4">
-            <div v-if="errorMessage" class="rounded-lg bg-red-50 text-red-700 text-sm px-4 py-3 border border-red-200">
+            <div v-if="errorMessage" class="rounded-lg bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-sm px-4 py-3 border border-red-200 dark:border-red-800">
               {{ errorMessage }}
             </div>
 
@@ -131,7 +131,7 @@ async function submit(): Promise<void> {
                   pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+"
                   title="Solo se permiten letras y espacios"
                   placeholder="Ej. Juan Pérez"
-                  class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-[var(--color-doc-text-main)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3E90C8] focus:border-[#3E90C8] transition-colors bg-white"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
                 />
               </div>
 
@@ -145,7 +145,7 @@ async function submit(): Promise<void> {
                   pattern="\d+"
                   title="Solo se permiten números"
                   placeholder="Nro. de Documento"
-                  class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-[var(--color-doc-text-main)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3E90C8] focus:border-[#3E90C8] transition-colors bg-white"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
                 />
               </div>
 
@@ -159,7 +159,7 @@ async function submit(): Promise<void> {
                   pattern="\d+"
                   title="Solo se permiten números"
                   placeholder="Tu número celular"
-                  class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-[var(--color-doc-text-main)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3E90C8] focus:border-[#3E90C8] transition-colors bg-white"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
                 />
               </div>
 
@@ -169,7 +169,7 @@ async function submit(): Promise<void> {
                   v-model="fechaNacimiento"
                   type="date"
                   required
-                  class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-[var(--color-doc-text-main)] focus:outline-none focus:ring-2 focus:ring-[#3E90C8] focus:border-[#3E90C8] transition-colors bg-white"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
                 />
               </div>
 
@@ -178,7 +178,7 @@ async function submit(): Promise<void> {
                 <select
                   v-model="genero"
                   required
-                  class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-[var(--color-doc-text-main)] focus:outline-none focus:ring-2 focus:ring-[#3E90C8] focus:border-[#3E90C8] transition-colors bg-white"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
                 >
                   <option value="" disabled>Seleccione</option>
                   <option value="M">Masculino</option>
@@ -187,8 +187,8 @@ async function submit(): Promise<void> {
                 </select>
               </div>
 
-              <div class="sm:col-span-2 pt-2 border-t border-slate-100 mt-2">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Contacto de Emergencia</p>
+              <div class="sm:col-span-2 pt-2 border-t border-slate-100 dark:border-slate-700 mt-2">
+                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Contacto de Emergencia</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label class="block text-sm font-semibold text-[var(--color-doc-text-main)] mb-1.5">Nombre</label>
@@ -199,7 +199,7 @@ async function submit(): Promise<void> {
                       pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+"
                       title="Solo se permiten letras y espacios"
                       placeholder="Familiar o amigo"
-                      class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-[var(--color-doc-text-main)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3E90C8] focus:border-[#3E90C8] transition-colors bg-white"
+                      class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
                     />
                   </div>
                   <div>
@@ -211,7 +211,7 @@ async function submit(): Promise<void> {
                       pattern="\d+"
                       title="Solo se permiten números"
                       placeholder="Teléfono"
-                      class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-[var(--color-doc-text-main)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3E90C8] focus:border-[#3E90C8] transition-colors bg-white"
+                      class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
                     />
                   </div>
                 </div>
@@ -225,18 +225,18 @@ async function submit(): Promise<void> {
                 type="email"
                 required
                 placeholder="tu@correo.com"
-                class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-[var(--color-doc-text-main)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3E90C8] focus:border-[#3E90C8] transition-colors bg-white"
+                class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
               />
             </div>
 
-            <div v-if="mode === 'register'" class="sm:col-span-2 border-t border-slate-100 pt-4 mt-2">
+            <div v-if="mode === 'register'" class="sm:col-span-2 border-t border-slate-100 dark:border-slate-700 pt-4 mt-2">
               <label class="block text-sm font-semibold text-[var(--color-doc-text-main)] mb-1.5">Correo electrónico</label>
               <input
                 v-model="email"
                 type="email"
                 required
                 placeholder="tu@correo.com"
-                class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-[var(--color-doc-text-main)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3E90C8] focus:border-[#3E90C8] transition-colors bg-white"
+                class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
               />
             </div>
 
@@ -249,7 +249,7 @@ async function submit(): Promise<void> {
                   required
                   :minlength="mode === 'register' ? 6 : 1"
                   placeholder="Mínimo 6 caracteres"
-                  class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-[var(--color-doc-text-main)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3E90C8] focus:border-[#3E90C8] transition-colors bg-white"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
                 />
               </div>
 
@@ -260,14 +260,14 @@ async function submit(): Promise<void> {
                   type="password"
                   required
                   placeholder="Repite tu contraseña"
-                  class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-[var(--color-doc-text-main)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3E90C8] focus:border-[#3E90C8] transition-colors bg-white"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
                 />
               </div>
             </div>
 
             <button
               type="submit"
-              class="w-full mt-6 rounded-xl bg-[#3E90C8] text-white py-3.5 font-semibold shadow-md hover:bg-[#347BAE] transition-all disabled:opacity-70 flex justify-center items-center"
+              class="w-full mt-6 rounded-xl bg-[#3E90C8] text-white py-3.5 font-semibold shadow-md shadow-[#3E90C8]/20 hover:bg-[#347BAE] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-70 disabled:hover:translate-y-0 flex justify-center items-center"
               :disabled="loading"
             >
               <PhSpinner v-if="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
@@ -275,7 +275,7 @@ async function submit(): Promise<void> {
             </button>
           </form>
 
-          <div class="mt-8 pt-6 border-t border-slate-100 text-center">
+          <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700 text-center">
             <p v-if="mode === 'register'" class="text-sm text-[var(--color-doc-text-muted)]">
               ¿Ya tienes una cuenta registrada?
               <button type="button" class="text-[#3E90C8] font-semibold hover:underline ml-1" @click="switchMode('login')">

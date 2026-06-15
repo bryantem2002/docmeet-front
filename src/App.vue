@@ -11,6 +11,8 @@ import { PhWhatsappLogo } from '@phosphor-icons/vue'
 
 const route = useRoute()
 
+const isDev = import.meta.env.DEV
+
 const isDashboardRoute = computed(() => {
   return route.meta.requiresAuth === true
 })
@@ -52,8 +54,7 @@ const isDashboardRoute = computed(() => {
       <PhWhatsappLogo class="w-8 h-8" weight="fill" />
     </a>
 
-    <!-- El DevSwitcher sigue flotando aquí abajo -->
-    <DevSwitcher />
+    <DevSwitcher v-if="isDev" />
     
   </div>
 </template>

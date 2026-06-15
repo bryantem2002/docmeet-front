@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/store/auth-store'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRouter, useRoute } from 'vue-router'
 import AuthModal from '@/components/layout/AuthModal.vue'
 import NotificationDropdown from '@/components/layout/NotificationDropdown.vue'
 import {
@@ -14,12 +14,15 @@ import {
   PhStethoscope,
   PhUsers,
   PhHeartbeat,
-  PhCalendarCheck
+  PhCalendarCheck,
+  PhSun,
+  PhMoon
 } from '@phosphor-icons/vue'
 
 const auth = useAuthStore()
 const { isAuthenticated, user } = storeToRefs(auth)
 const router = useRouter()
+const route = useRoute()
 
 const showAuthModal = ref(false)
 const initialAuthMode = ref<'login' | 'register'>('login')
@@ -34,6 +37,17 @@ function openAuthModal(mode: 'login' | 'register') {
 function logout(): void {
   auth.logout()
   void router.push({ name: 'home' })
+}
+
+function scrollToSection(sectionId: string) {
+  if (route.name !== 'home') {
+    void router.push({ name: 'home', hash: `#${sectionId}` })
+    return
+  }
+  const el = document.getElementById(sectionId)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' })
+  }
 }
 
 const userInitials = computed(() => {
@@ -51,10 +65,31 @@ const dashboardRouteName = computed(() => {
   if (user.value?.role === 'secretaria') return 'secretary-dashboard'
   return 'appointments'
 })
+
+// ── Dark Mode ──
+const isDark = ref(false)
+
+function initDarkMode() {
+  const stored = localStorage.getItem('docmeet-dark')
+  if (stored === 'true' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    isDark.value = true
+    document.documentElement.classList.add('dark')
+  }
+}
+
+function toggleDark() {
+  isDark.value = !isDark.value
+  document.documentElement.classList.toggle('dark', isDark.value)
+  localStorage.setItem('docmeet-dark', String(isDark.value))
+}
+
+onMounted(() => {
+  initDarkMode()
+})
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all duration-300">
+  <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 transition-all duration-300">
     <div class="mx-auto w-full max-w-[1600px] flex items-center h-[92px] px-6 lg:px-10">
 
       <!-- Logo -->
@@ -62,30 +97,30 @@ const dashboardRouteName = computed(() => {
         <img src="/img/logodoc.png" alt="DocMeet" class="h-8 w-8 sm:h-12 sm:w-12 object-contain shrink-0" />
         <div class="leading-none shrink-0">
           <p class="text-lg sm:text-[1.7rem] tracking-tight">
-            <span class="font-black text-[#3E90C8]">Doc</span><span class="font-bold text-slate-800">Meet</span>
+            <span class="font-black text-[#3E90C8]">Doc</span><span class="font-bold text-slate-800 dark:text-white">Meet</span>
           </p>
-          <p class="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-400 mt-0.5 hidden sm:block">Salud digital</p>
+          <p class="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500 mt-0.5 hidden sm:block">Salud digital</p>
         </div>
       </RouterLink>
 
 
       <!-- Nav center (desktop) -->
-      <nav class="hidden lg:flex items-center gap-8 mx-auto text-base font-bold text-slate-700">
-        <RouterLink to="/#nosotros" class="py-2 hover:text-[#3E90C8] transition-colors">
+      <nav class="hidden lg:flex items-center gap-8 mx-auto text-base font-bold text-slate-700 dark:text-slate-200">
+        <a href="/#nosotros" class="py-2 hover:text-[#3E90C8] dark:hover:text-[#6DC7DC] transition-colors" @click.prevent="scrollToSection('nosotros')">
           Nosotros
-        </RouterLink>
+        </a>
 
-        <RouterLink :to="{ name: 'doctors' }" class="py-2 hover:text-[#3E90C8] transition-colors">
+        <RouterLink :to="{ name: 'doctors' }" class="py-2 hover:text-[#3E90C8] dark:hover:text-[#6DC7DC] transition-colors">
           Médicos
         </RouterLink>
 
-        <RouterLink to="/#servicios" class="py-2 hover:text-[#3E90C8] transition-colors">
+        <a href="/#servicios" class="py-2 hover:text-[#3E90C8] dark:hover:text-[#6DC7DC] transition-colors" @click.prevent="scrollToSection('servicios')">
           Servicios
-        </RouterLink>
+        </a>
 
-        <RouterLink to="/#sedes" class="py-2 hover:text-[#3E90C8] transition-colors">
+        <a href="/#sedes" class="py-2 hover:text-[#3E90C8] dark:hover:text-[#6DC7DC] transition-colors" @click.prevent="scrollToSection('sedes')">
           Sucursales
-        </RouterLink>
+        </a>
 
       </nav>
 
@@ -96,23 +131,34 @@ const dashboardRouteName = computed(() => {
         <!-- Contact + Buttons in one row (desktop) -->
         <div class="hidden lg:flex items-center gap-5">
           <!-- Contact -->
-          <div class="flex items-center gap-5 text-[14px] font-bold text-slate-700">
-            <a href="https://wa.me/51981124011" target="_blank" class="flex items-center gap-2 hover:text-[#3E90C8] transition-colors">
+          <div class="flex items-center gap-5 text-[14px] font-bold text-slate-700 dark:text-slate-300">
+            <a href="https://wa.me/51981124011" target="_blank" class="flex items-center gap-2 hover:text-[#3E90C8] dark:hover:text-[#6DC7DC] transition-colors">
               <PhWhatsappLogo class="h-4 w-4 text-emerald-500" weight="fill" />
               927-876-603
             </a>
-            <span class="w-px h-4 bg-slate-200"></span>
-            <a href="tel:016103333" class="flex items-center gap-2 hover:text-[#3E90C8] transition-colors">
+            <span class="w-px h-4 bg-slate-200 dark:bg-slate-600"></span>
+            <a href="tel:016103333" class="flex items-center gap-2 hover:text-[#3E90C8] dark:hover:text-[#6DC7DC] transition-colors">
               <PhPhone class="h-4 w-4 text-[#3E90C8]" weight="fill" />
               (01)610-3333
             </a>
           </div>
+
+          <!-- Dark mode toggle -->
+          <button
+            @click="toggleDark"
+            class="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+            :title="isDark ? 'Modo claro' : 'Modo oscuro'"
+          >
+            <PhSun v-if="isDark" class="w-4 h-4" weight="fill" />
+            <PhMoon v-else class="w-4 h-4" weight="fill" />
+          </button>
+
           <!-- Buttons -->
           <div v-if="!isAuthenticated" class="flex items-center gap-3">
-            <button
-              @click="openAuthModal('register')"
-              class="rounded-full border-2 border-[#3E90C8] px-7 py-2.5 text-[#3E90C8] text-[15px] font-bold transition-all hover:bg-[#3E90C8] hover:text-white"
-            >
+        <button
+          @click="openAuthModal('register')"
+          class="rounded-full border-2 border-[#3E90C8] px-7 py-2.5 text-[#3E90C8] dark:text-white text-[15px] font-bold transition-all hover:bg-[#3E90C8] hover:text-white"
+        >
               Regístrate
             </button>
             <button
@@ -124,55 +170,62 @@ const dashboardRouteName = computed(() => {
           </div>
         </div>
 
-        <!-- Mobile: solo botones sin contactos -->
-        <template v-if="!isAuthenticated">
-          <button
-            @click="openAuthModal('login')"
-            class="lg:hidden rounded-full bg-[#3E90C8] px-5 py-2 text-white text-sm font-bold transition-all hover:bg-[#2d7ab5]"
-          >
-            Ingresar
-          </button>
-        </template>
-        <template v-else>
-          <!-- Mobile "Mi Panel" Button -->
+        <!-- Shared Authenticated Profile / Desktop Panel Button -->
+        <div v-if="isAuthenticated" class="flex items-center gap-3">
           <RouterLink
             :to="{ name: dashboardRouteName }"
-            class="lg:hidden rounded-full bg-[#3E90C8] px-3 sm:px-5 py-1.5 sm:py-2 text-white text-xs sm:text-sm font-bold transition-all hover:bg-[#2d7ab5]"
+            class="hidden lg:block rounded-full bg-[#3E90C8] px-6 py-2 text-white text-[14px] font-bold transition-all hover:bg-[#2d7ab5] shadow-md shadow-[#3E90C8]/20 hover:-translate-y-0.5 mr-2"
           >
-            Mi Panel
+            Ir a mi panel
           </RouterLink>
 
-          <!-- Shared Authenticated Profile / Desktop Panel Button -->
-          <div class="flex items-center gap-3">
-            <RouterLink
-              :to="{ name: dashboardRouteName }"
-              class="hidden lg:block rounded-full bg-[#3E90C8] px-6 py-2 text-white text-[14px] font-bold transition-all hover:bg-[#2d7ab5] shadow-md shadow-[#3E90C8]/20 hover:-translate-y-0.5 mr-2"
-            >
-              Ir a mi panel
-            </RouterLink>
-
-            <NotificationDropdown />
+          <NotificationDropdown />
 
 
-            <div class="hidden lg:flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#68C8E0] to-[#3E90C8] text-white text-sm font-black shadow-sm border-2 border-white">
-              {{ userInitials }}
-            </div>
-
-            <button
-              type="button"
-              class="hidden lg:block p-2 text-slate-400 hover:text-red-500 rounded-lg transition-colors ml-1"
-              title="Cerrar sesión"
-              @click="logout"
-            >
-              <PhSignOut class="h-5 w-5" weight="bold" />
-            </button>
+          <div class="hidden lg:flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#68C8E0] to-[#3E90C8] text-white text-sm font-black shadow-sm border-2 border-white">
+            {{ userInitials }}
           </div>
-        </template>
+
+          <button
+            type="button"
+            class="hidden lg:block p-2 text-slate-400 dark:text-slate-500 hover:text-red-500 rounded-lg transition-colors ml-1"
+            title="Cerrar sesión"
+            @click="logout"
+          >
+            <PhSignOut class="h-5 w-5" weight="bold" />
+          </button>
+        </div>
+
+        <!-- Mobile: dark toggle + auth buttons -->
+        <div class="flex items-center gap-1 sm:gap-2 lg:hidden">
+          <button
+            @click="toggleDark"
+            class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+            :title="isDark ? 'Modo claro' : 'Modo oscuro'"
+          >
+            <PhSun v-if="isDark" class="w-3.5 h-3.5 sm:w-4 sm:h-4" weight="fill" />
+            <PhMoon v-else class="w-3.5 h-3.5 sm:w-4 sm:h-4" weight="fill" />
+          </button>
+          <template v-if="!isAuthenticated">
+            <button
+              @click="openAuthModal('register')"
+              class="rounded-lg border-2 border-[#3E90C8] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-bold text-[#3E90C8] dark:text-white transition-all hover:bg-[#3E90C8] hover:text-white"
+            >
+              Regístrate
+            </button>
+            <button
+              @click="openAuthModal('login')"
+              class="rounded-lg bg-[#3E90C8] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-bold text-white transition-all hover:bg-[#2d7ab5]"
+            >
+              Iniciar Sesión
+            </button>
+          </template>
+        </div>
 
         <!-- Mobile hamburger -->
         <button
           @click="mobileMenuOpen = !mobileMenuOpen"
-          class="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors -mr-2"
+          class="lg:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors -mr-2"
         >
           <PhX v-if="mobileMenuOpen" class="h-6 w-6" weight="bold" />
           <PhList v-else class="h-6 w-6" weight="bold" />
@@ -181,57 +234,43 @@ const dashboardRouteName = computed(() => {
     </div>
 
     <!-- Mobile menu -->
-    <div v-if="mobileMenuOpen" class="absolute top-[92px] left-0 w-full lg:hidden border-t border-slate-200 bg-white/95 backdrop-blur-md px-5 py-4 space-y-1 shadow-2xl">
-      <RouterLink to="/#nosotros" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 font-bold text-base hover:bg-slate-50 transition-colors" @click="mobileMenuOpen = false">
+    <div v-if="mobileMenuOpen" class="absolute top-[92px] left-0 w-full lg:hidden border-t border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-5 py-4 shadow-2xl">
+
+      <!-- Nav links -->
+      <a href="/#nosotros" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 dark:text-slate-200 font-bold text-base hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" @click="mobileMenuOpen = false; scrollToSection('nosotros')">
         <PhUsers class="h-5 w-5 text-[#3E90C8]" />
         Nosotros
-      </RouterLink>
-      <RouterLink :to="{ name: 'doctors' }" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 font-bold text-base hover:bg-slate-50 transition-colors" @click="mobileMenuOpen = false">
+      </a>
+      <RouterLink :to="{ name: 'doctors' }" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 dark:text-slate-200 font-bold text-base hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" @click="mobileMenuOpen = false">
         <PhStethoscope class="h-5 w-5 text-[#3E90C8]" />
         Médicos
       </RouterLink>
-      <RouterLink to="/#servicios" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 font-bold text-base hover:bg-slate-50 transition-colors" @click="mobileMenuOpen = false">
+      <a href="/#servicios" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 dark:text-slate-200 font-bold text-base hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" @click="mobileMenuOpen = false; scrollToSection('servicios')">
         <PhHeartbeat class="h-5 w-5 text-[#3E90C8]" />
         Servicios
-      </RouterLink>
-      <RouterLink to="/#sedes" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 font-bold text-base hover:bg-slate-50 transition-colors" @click="mobileMenuOpen = false">
+      </a>
+      <a href="/#sedes" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 dark:text-slate-200 font-bold text-base hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" @click="mobileMenuOpen = false; scrollToSection('sedes')">
         <PhStethoscope class="h-5 w-5 text-[#3E90C8]" />
         Sucursales
-      </RouterLink>
-      <RouterLink v-if="isAuthenticated" :to="{ name: 'appointments' }" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 font-bold text-base hover:bg-slate-50 transition-colors" @click="mobileMenuOpen = false">
+      </a>
+      <RouterLink v-if="isAuthenticated" :to="{ name: 'appointments' }" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-700 dark:text-slate-200 font-bold text-base hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" @click="mobileMenuOpen = false">
         <PhCalendarCheck class="h-5 w-5 text-[#3E90C8]" />
         Mis Citas
       </RouterLink>
-      <hr class="my-3 border-slate-100" />
-      <div class="flex items-center gap-5 px-4 py-2 text-sm text-slate-500 font-bold">
-        <a href="https://wa.me/51981124011" target="_blank" class="flex items-center gap-1.5 hover:text-emerald-600 transition-colors">
+
+      <hr class="my-2 border-slate-100 dark:border-slate-700" />
+
+      <!-- Phone numbers -->
+      <div class="flex items-center gap-5 px-4 py-3 text-sm text-slate-500 dark:text-slate-400 font-bold">
+        <a href="https://wa.me/51981124011" target="_blank" class="flex items-center gap-1.5 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
           <PhWhatsappLogo class="h-4 w-4 text-emerald-500" weight="fill" />
           927-876-603
         </a>
-        <a href="tel:016103333" class="flex items-center gap-1.5 hover:text-[#3E90C8] transition-colors">
+        <a href="tel:016103333" class="flex items-center gap-1.5 hover:text-[#3E90C8] dark:hover:text-[#6DC7DC] transition-colors">
           <PhPhone class="h-4 w-4 text-[#3E90C8]" weight="fill" />
           (01)610-3333
         </a>
       </div>
-      <template v-if="!isAuthenticated">
-        <button @click="openAuthModal('login')" class="w-full mt-2 rounded-xl bg-[#3E90C8] px-5 py-3.5 text-white text-sm font-bold transition-colors hover:bg-[#2d7ab5]">
-          Iniciar Sesión
-        </button>
-      </template>
-      <template v-else>
-        <div class="flex items-center gap-3 px-4 py-3 mt-2 bg-slate-50 rounded-xl">
-          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#68C8E0] to-[#3E90C8] text-white text-sm font-black shadow-sm">
-            {{ userInitials }}
-          </div>
-          <div class="flex-1">
-            <p class="text-sm font-bold text-slate-800">{{ user?.fullName || 'Usuario' }}</p>
-            <p class="text-xs font-medium text-slate-500 capitalize">{{ user?.role }}</p>
-          </div>
-          <button @click="logout" class="p-2 text-slate-400 hover:text-red-500 rounded-lg bg-white border border-slate-200 transition-colors">
-            <PhSignOut class="h-5 w-5" weight="bold" />
-          </button>
-        </div>
-      </template>
     </div>
   </header>
 
