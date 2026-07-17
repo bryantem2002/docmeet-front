@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useDarkMode } from '@/composables/useDarkMode'
-import { PhMoon, PhBell, PhLockKey, PhUser, PhCamera } from '@phosphor-icons/vue'
+import { PhMoon, PhBell, PhLockKey, PhUser, PhCamera, PhSpinner, PhCheckCircle } from '@phosphor-icons/vue'
+import { changePassword } from '@/services/auth-service'
 
 const { isDark: isDarkMode, toggleDark } = useDarkMode()
 
 // --- ESTADOS DE CONFIGURACIÓN ---
 const userProfile = ref({
-  firstName: 'Juan',
-  lastName: 'Pérez',
-  email: 'juan.perez@example.com',
-  phone: '987654321',
-  dni: '71234567',
-  birthDate: '1990-05-15',
-  gender: 'Masculino',
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  dni: '',
+  birthDate: '',
+  gender: '',
   avatar: ''
 })
 
@@ -25,10 +26,45 @@ const notifyPromotions = ref(false)
 // 2. Privacidad y Seguridad
 const shareDataWithDoctors = ref(true)
 
-// Función para simular guardar cambios
+const settingsNotice = ref('')
+
 const saveSettings = () => {
-  // Aquí enviarías los datos al Spring Boot de tu amigo
-  alert('¡Configuraciones guardadas con éxito!')
+  settingsNotice.value = 'El guardado del perfil estará disponible cuando el backend exponga su endpoint de actualización.'
+}
+
+// Cambiar contraseña
+const showChangePasswordForm = ref(false)
+const cpOldPassword = ref('')
+const cpNewPassword = ref('')
+const cpConfirmPassword = ref('')
+const cpLoading = ref(false)
+const cpError = ref<string | null>(null)
+const cpSuccess = ref<string | null>(null)
+
+async function submitChangePassword() {
+  cpError.value = null
+  cpSuccess.value = null
+  if (cpNewPassword.value !== cpConfirmPassword.value) {
+    cpError.value = 'Las contraseñas nuevas no coinciden'
+    return
+  }
+  if (cpNewPassword.value.length < 6) {
+    cpError.value = 'La nueva contraseña debe tener al menos 6 caracteres'
+    return
+  }
+  cpLoading.value = true
+  try {
+    await changePassword({ oldPassword: cpOldPassword.value, newPassword: cpNewPassword.value })
+    cpSuccess.value = '¡Contraseña actualizada correctamente!'
+    cpOldPassword.value = ''
+    cpNewPassword.value = ''
+    cpConfirmPassword.value = ''
+    showChangePasswordForm.value = false
+  } catch (e: any) {
+    cpError.value = e.response?.data?.message || 'Error al actualizar la contraseña.'
+  } finally {
+    cpLoading.value = false
+  }
 }
 </script>
 
@@ -192,11 +228,42 @@ const saveSettings = () => {
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Contraseña de acceso</h3>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Última actualización hace 3 meses.</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Actualiza tu contraseña periódicamente para mayor seguridad.</p>
             </div>
-            <button class="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-lg transition-colors">
-              Cambiar contraseña
+            <button @click="showChangePasswordForm = !showChangePasswordForm" class="shrink-0 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-lg transition-colors">
+              {{ showChangePasswordForm ? 'Cancelar' : 'Cambiar contraseña' }}
             </button>
+          </div>
+          
+          <!-- Formulario inline de cambio de contraseña -->
+          <div v-if="showChangePasswordForm" class="border border-slate-200 dark:border-slate-700 rounded-xl p-5 bg-slate-50 dark:bg-slate-900 space-y-4">
+            <div v-if="cpError" class="rounded-lg bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-sm px-4 py-3 border border-red-200 dark:border-red-800">
+              {{ cpError }}
+            </div>
+            <div v-if="cpSuccess" class="rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-sm px-4 py-3 border border-emerald-200 dark:border-emerald-800 flex items-center gap-2">
+              <PhCheckCircle class="w-5 h-5" weight="fill" />
+              {{ cpSuccess }}
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Contraseña actual</label>
+              <input v-model="cpOldPassword" type="password" class="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8]" />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Nueva contraseña</label>
+                <input v-model="cpNewPassword" type="password" minlength="6" class="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8]" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Confirmar nueva contraseña</label>
+                <input v-model="cpConfirmPassword" type="password" minlength="6" class="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8]" />
+              </div>
+            </div>
+            <div class="flex justify-end">
+              <button @click="submitChangePassword" :disabled="cpLoading" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-6 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-all disabled:opacity-70">
+                <PhSpinner v-if="cpLoading" class="animate-spin w-4 h-4" />
+                Actualizar
+              </button>
+            </div>
           </div>
           
           <hr class="border-slate-100 dark:border-slate-700">
@@ -215,6 +282,9 @@ const saveSettings = () => {
 
       <!-- Botón Guardar -->
       <div class="flex justify-end pt-4">
+        <p v-if="settingsNotice" class="mr-4 self-center text-sm font-medium text-amber-700 dark:text-amber-300">
+          {{ settingsNotice }}
+        </p>
         <button @click="saveSettings" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 hover:-translate-y-0.5">
           Guardar Cambios
         </button>

@@ -32,6 +32,10 @@ export const navigationController = {
       return { path: '/' }
     }
 
+    if (to.meta.allowedRoles?.length && (!user?.role || !to.meta.allowedRoles.includes(user.role))) {
+      return { path: '/' }
+    }
+
     return true
   },
 }

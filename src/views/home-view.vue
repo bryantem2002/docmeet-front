@@ -80,7 +80,7 @@ const specialties = [
 async function loadDoctors() {
   doctorsLoading.value = true
   try {
-    doctors.value = await doctorController.list('', { useMock: true })
+    doctors.value = await doctorController.list('', { useMock: import.meta.env.DEV })
   } catch {
     doctors.value = []
   } finally {
@@ -190,17 +190,17 @@ function resetServiceAutoplay() {
 }
 
 // ── Doctor rating helper ──
-const doctorRatings: Record<string, { rating: number; reviews: number }> = {
+const doctorRatings: Record<string, { rating: number; reviews: number }> = import.meta.env.DEV ? {
   'Dr. Yalico': { rating: 4.8, reviews: 127 },
   'Dra. Trujillo': { rating: 4.9, reviews: 203 },
   'Dr. Amilcar Quispe': { rating: 4.7, reviews: 89 },
   'Dra. Huaccha': { rating: 4.6, reviews: 64 },
   'Dr. Luis Gómez': { rating: 4.5, reviews: 156 },
   'Dra. Sofía Castro': { rating: 4.9, reviews: 312 }
-}
+} : {}
 
 function getRating(name: string) {
-  return doctorRatings[name] ?? { rating: 4.5, reviews: 50 }
+  return doctorRatings[name] ?? { rating: 0, reviews: 0 }
 }
 
 function ratingStars(r: number): string[] {

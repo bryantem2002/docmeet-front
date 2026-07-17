@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { authController } from '@/controllers/auth.controller'
 import type {
   ILoginCredentials,
-  IRegisterPayload,
   IUpdateProfilePayload,
   IUser,
 } from '@/types'
@@ -29,12 +28,6 @@ export const useAuthStore = defineStore('auth', {
 
     async login(credentials: ILoginCredentials): Promise<void> {
       const res = await authController.login(credentials)
-      this.token = res.token
-      this.user = res.user
-    },
-
-    async register(payload: IRegisterPayload): Promise<void> {
-      const res = await authController.register(payload)
       this.token = res.token
       this.user = res.user
     },

@@ -29,9 +29,9 @@ const todayAppointments = ref([
               {{ app.status }}
             </span>
           </div>
-          <button class="w-full bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 text-center mt-2">
+          <RouterLink to="/medical-records" class="block w-full bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 text-center mt-2">
             Atender Paciente
-          </button>
+          </RouterLink>
         </div>
       </div>
 
@@ -61,9 +61,9 @@ const todayAppointments = ref([
               </span>
             </td>
             <td class="px-6 py-4 text-right">
-              <button class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+              <RouterLink to="/medical-records" class="inline-block bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
                 Atender Paciente
-              </button>
+              </RouterLink>
             </td>
           </tr>
         </tbody>

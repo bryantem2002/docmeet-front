@@ -9,16 +9,22 @@ const router = useRouter()
 const loading = ref(true)
 const doctor = ref<any>(null)
 
-// Datos simulados de reseñas
-const reviews = [
+// Las reseñas de demostración nunca se incluyen como datos visibles en producción.
+const reviews = import.meta.env.DEV ? [
   { id: 1, author: 'María C.', date: 'Hace 2 semanas', rating: 5, comment: 'Excelente atención. El doctor fue muy paciente y me explicó todo con mucho detalle.' },
   { id: 2, author: 'Juan P.', date: 'Hace 1 mes', rating: 5, comment: 'Muy profesional. Las instalaciones están impecables y no tuve que esperar casi nada.' },
   { id: 3, author: 'Elena R.', date: 'Hace 2 meses', rating: 4, comment: 'Buen trato y diagnóstico acertado, aunque la cita empezó 10 minutos tarde.' }
-]
+] : []
 
 async function loadDoctor() {
   loading.value = true
   const doctorId = Number(route.params.id)
+
+  if (!import.meta.env.DEV) {
+    doctor.value = null
+    loading.value = false
+    return
+  }
   
   // Simulamos carga
   await new Promise(resolve => setTimeout(resolve, 600))

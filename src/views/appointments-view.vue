@@ -1,412 +1,96 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { PhPlus, PhCalendarBlank, PhMapPin, PhX, PhInfo, PhCheckCircle, PhWarning, PhXCircle } from '@phosphor-icons/vue'
-// --- ESTADOS MOCK DE CITAS ---
-const appointments = ref([
-  {
-    id: 1,
-    doctor: 'Dr. Gregory House',
-    specialty: 'Medicina Interna',
-    date: '2026-06-15',
-    time: '10:00 AM',
-    location: 'Sede San Isidro',
-    status: 'confirmed',
-    type: 'upcoming',
-    price: '150.00'
-  },
-  {
-    id: 2,
-    doctor: 'Dra. Allison Cameron',
-    specialty: 'Inmunología',
-    date: '2026-06-20',
-    time: '03:30 PM',
-    location: 'Sede Miraflores',
-    status: 'confirmed',
-    type: 'upcoming',
-    price: '120.00'
-  },
-  {
-    id: 3,
-    doctor: 'Dr. Robert Chase',
-    specialty: 'Cardiología',
-    date: '2026-04-10',
-    time: '09:15 AM',
-    location: 'Sede Los Olivos',
-    status: 'completed',
-    type: 'past',
-    price: '180.00'
-  }
-])
+import { computed, onMounted, ref, watch } from 'vue'
+import { useAuthStore } from '@/store/auth-store'
+import {
+  cancelAppointmentById, getAppointmentsByPatient, getAvailabilitiesByDate,
+  markAppointmentPaid, rescheduleAppointment,
+} from '@/services/appointment-service'
+import type { AppointmentResponse, DoctorAvailabilityResponse } from '@/types/appointment'
 
-const activeTab = ref('upcoming')
+const auth = useAuthStore()
+const appointments = ref<AppointmentResponse[]>([])
+const activeTab = ref<'upcoming' | 'past'>('upcoming')
+const loading = ref(false)
+const error = ref('')
+const selected = ref<AppointmentResponse>()
+const mode = ref<'reschedule' | 'cancel'>()
+const date = ref('')
+const reason = ref('')
+const availabilityId = ref('')
+const availabilities = ref<DoctorAvailabilityResponse[]>([])
 
-const filteredAppointments = computed(() => {
-  return appointments.value.filter(app => app.type === activeTab.value)
+const pastStatuses = ['COMPLETED', 'CANCELLED', 'NO_SHOW']
+const filtered = computed(() => appointments.value.filter(item =>
+  activeTab.value === 'past' ? pastStatuses.includes(item.appointmentStatus) : !pastStatuses.includes(item.appointmentStatus)))
+
+async function load() {
+  if (!auth.user?.id) return
+  loading.value = true
+  error.value = ''
+  try { appointments.value = (await getAppointmentsByPatient(auth.user.id, 0, 50)).content }
+  catch (cause: any) { error.value = cause.response?.data?.message ?? 'No se pudieron cargar las citas.' }
+  finally { loading.value = false }
+}
+
+watch(date, async value => {
+  availabilityId.value = ''
+  availabilities.value = value ? (await getAvailabilitiesByDate(value)).filter(item => item.status === 'AVAILABLE') : []
 })
 
-// --- FUNCIONALIDAD REPROGRAMAR (MINI MODAL) ---
-const isRescheduleModalOpen = ref(false)
-const appointmentToReschedule = ref<any>(null)
-const newSelectedDate = ref('')
-const newSelectedTime = ref('')
+function open(item: AppointmentResponse, action: 'reschedule' | 'cancel') {
+  selected.value = item; mode.value = action; date.value = ''; reason.value = ''; availabilityId.value = ''
+}
+function close() { selected.value = undefined; mode.value = undefined }
 
-const openRescheduleModal = (app: any) => {
-  appointmentToReschedule.value = app
-  newSelectedDate.value = app.date
-  newSelectedTime.value = app.time
-  isRescheduleModalOpen.value = true
+async function submitAction() {
+  if (!selected.value) return
+  try {
+    if (mode.value === 'reschedule') await rescheduleAppointment(selected.value.idAppointment, { newAvailabilityId: availabilityId.value })
+    else await cancelAppointmentById(selected.value.idAppointment, { reason: reason.value })
+    close(); await load()
+  } catch (cause: any) { error.value = cause.response?.data?.message ?? 'No se pudo actualizar la cita.' }
 }
 
-const closeRescheduleModal = () => {
-  isRescheduleModalOpen.value = false
-  appointmentToReschedule.value = null
+async function pay(item: AppointmentResponse) {
+  try { await markAppointmentPaid(item.idAppointment); await load() }
+  catch (cause: any) { error.value = cause.response?.data?.message ?? 'No se pudo registrar el pago simulado.' }
 }
 
-const confirmReschedule = () => {
-  if (appointmentToReschedule.value) {
-    const index = appointments.value.findIndex(a => a.id === appointmentToReschedule.value.id)
-    if (index !== -1) {
-      appointments.value[index].date = newSelectedDate.value
-      appointments.value[index].time = newSelectedTime.value
-      appointments.value[index].status = 'confirmed'
-    }
-  }
-  closeRescheduleModal()
-}
-
-// --- POLÍTICA DE CANCELACIÓN (MODAL) ---
-const isCancelModalOpen = ref(false)
-const appointmentToCancel = ref<any>(null)
-const cancellationPolicy = ref<{ type: string, message: string, color: string }>({ type: '', message: '', color: '' })
-
-const parseDateTime = (dateStr: string, timeStr: string) => {
-  // Convertir '10:00 AM' a horas y minutos 24h
-  const [time, modifier] = timeStr.split(' ')
-  let [hours, minutes] = time.split(':')
-  if (hours === '12') hours = '00'
-  if (modifier === 'PM') hours = String(parseInt(hours, 10) + 12)
-  
-  return new Date(`${dateStr}T${hours.padStart(2, '0')}:${minutes}:00`)
-}
-
-const openCancelModal = (app: any) => {
-  appointmentToCancel.value = app
-  
-  const appDateTime = parseDateTime(app.date, app.time)
-  const now = new Date()
-  const diffInHours = (appDateTime.getTime() - now.getTime()) / (1000 * 60 * 60)
-
-  if (diffInHours > 24) {
-    cancellationPolicy.value = {
-      type: 'full',
-      message: 'Estás cancelando con más de 24 horas de anticipación. Tienes derecho a un reembolso del 100% o saldo a favor.',
-      color: 'emerald'
-    }
-  } else if (diffInHours > 0) {
-    cancellationPolicy.value = {
-      type: 'partial',
-      message: 'Estás cancelando con menos de 24 horas de anticipación. Se aplicará una penalidad y recibirás un reembolso del 70%.',
-      color: 'amber'
-    }
-  } else {
-    cancellationPolicy.value = {
-      type: 'none',
-      message: 'La fecha de la cita ya pasó o está en curso. No califica para reembolso por inasistencia.',
-      color: 'red'
-    }
-  }
-  
-  isCancelModalOpen.value = true
-}
-
-const closeCancelModal = () => {
-  isCancelModalOpen.value = false
-  appointmentToCancel.value = null
-}
-
-const confirmCancel = () => {
-  if (appointmentToCancel.value) {
-    const index = appointments.value.findIndex(a => a.id === appointmentToCancel.value.id)
-    if (index !== -1) {
-      appointments.value[index].status = 'cancelled'
-      appointments.value[index].type = 'past'
-    }
-  }
-  closeCancelModal()
-}
-
-// Utilidades
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString + 'T00:00:00')
-  return new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(date)
-}
-
-// Horarios de prueba para reprogramar
-const availableTimes = ['08:00 AM', '09:00 AM', '10:30 AM', '02:00 PM', '04:00 PM']
+onMounted(load)
 </script>
 
 <template>
-  <div class="max-w-6xl mx-auto w-full px-4 sm:px-0 font-sans">
-    
-    <!-- Encabezado -->
-    <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div>
-        <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Mis Citas</h1>
-        <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Administra tus próximas consultas y revisa tu historial de atenciones.</p>
-      </div>
-      <router-link to="/agendar" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#418FC8]/30 hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2">
-        <PhPlus class="h-5 w-5" weight="bold" />
-        Agendar nueva cita
-      </router-link>
+  <main class="max-w-6xl mx-auto">
+    <header class="flex flex-wrap justify-between items-end gap-4 mb-7">
+      <div><h1 class="text-3xl font-extrabold text-slate-800 dark:text-white">Mis citas</h1><p class="text-slate-500 mt-1">Consulta, paga, reprograma o cancela tus reservas.</p></div>
+      <RouterLink to="/agendar" class="rounded-xl bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] px-5 py-3 text-white font-bold">Agendar nueva cita</RouterLink>
+    </header>
+    <p v-if="error" class="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">{{ error }}</p>
+    <nav class="flex gap-5 border-b mb-6"><button v-for="tab in ['upcoming','past'] as const" :key="tab" @click="activeTab = tab" class="pb-3 font-bold" :class="activeTab === tab ? 'text-[#418FC8] border-b-2 border-[#418FC8]' : 'text-slate-500'">{{ tab === 'upcoming' ? 'Próximas' : 'Anteriores' }}</button></nav>
+    <div v-if="loading" class="py-16 text-center text-slate-500">Cargando citas…</div>
+    <div v-else-if="filtered.length" class="grid lg:grid-cols-2 gap-5">
+      <article v-for="item in filtered" :key="item.idAppointment" class="rounded-2xl border bg-white dark:bg-slate-800 dark:border-slate-700 p-6 shadow-sm">
+        <div class="flex justify-between gap-3"><div><h2 class="text-lg font-bold">{{ item.doctorName || 'Doctor asignado' }}</h2><p class="text-sm text-slate-500">{{ item.consultationReason }}</p></div><span class="h-fit rounded-full bg-slate-100 dark:bg-slate-700 px-3 py-1 text-xs font-bold">{{ item.appointmentStatus }}</span></div>
+        <dl class="grid grid-cols-2 gap-4 my-5 text-sm"><div><dt class="text-slate-500">Fecha</dt><dd>{{ item.date || 'Por confirmar' }} {{ item.startTime }}</dd></div><div><dt class="text-slate-500">Tipo</dt><dd>{{ item.appointmentType }}</dd></div><div><dt class="text-slate-500">Precio</dt><dd>S/ {{ item.appointmentPrice ?? 0 }}</dd></div><div><dt class="text-slate-500">Pago</dt><dd>{{ item.paymentStatus }}</dd></div></dl>
+        <div v-if="activeTab === 'upcoming'" class="flex flex-wrap gap-2">
+          <button v-if="item.paymentStatus === 'PENDING_PAYMENT'" @click="pay(item)" class="rounded-lg bg-emerald-600 px-4 py-2 text-white font-semibold">Simular pago</button>
+          <button @click="open(item, 'reschedule')" class="rounded-lg border px-4 py-2 text-[#418FC8] font-semibold">Reprogramar</button>
+          <button @click="open(item, 'cancel')" class="rounded-lg border border-red-200 px-4 py-2 text-red-600 font-semibold">Cancelar</button>
+        </div>
+      </article>
     </div>
+    <div v-else class="rounded-2xl border border-dashed p-14 text-center text-slate-500">No hay citas en esta sección.</div>
 
-    <!-- Pestañas (Tabs) -->
-    <div class="flex items-center gap-6 border-b border-slate-200 dark:border-slate-700 mb-8">
-      <button 
-        @click="activeTab = 'upcoming'"
-        class="pb-4 font-bold text-[15px] transition-all relative"
-        :class="activeTab === 'upcoming' ? 'text-[#418FC8]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-      >
-        Próximas Citas
-        <div v-if="activeTab === 'upcoming'" class="absolute bottom-0 left-0 w-full h-[3px] bg-[#418FC8] rounded-t-full"></div>
-      </button>
-      <button 
-        @click="activeTab = 'past'"
-        class="pb-4 font-bold text-[15px] transition-all relative"
-        :class="activeTab === 'past' ? 'text-[#418FC8]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-      >
-        Citas Pasadas
-        <div v-if="activeTab === 'past'" class="absolute bottom-0 left-0 w-full h-[3px] bg-[#418FC8] rounded-t-full"></div>
-      </button>
+    <div v-if="selected" class="fixed inset-0 z-50 grid place-items-center bg-slate-950/60 p-4">
+      <form @submit.prevent="submitAction" class="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-2xl space-y-5">
+        <h2 class="text-2xl font-bold">{{ mode === 'reschedule' ? 'Reprogramar cita' : 'Cancelar cita' }}</h2>
+        <template v-if="mode === 'reschedule'">
+          <label class="block">Nueva fecha<input v-model="date" type="date" required class="mt-1 w-full rounded-xl border p-3 dark:bg-slate-900" /></label>
+          <label class="block">Horario disponible<select v-model="availabilityId" required class="mt-1 w-full rounded-xl border p-3 dark:bg-slate-900"><option value="" disabled>Selecciona</option><option v-for="slot in availabilities" :key="slot.idAvailability" :value="slot.idAvailability">{{ slot.startTime }} – {{ slot.endTime }}</option></select></label>
+        </template>
+        <label v-else class="block">Motivo<textarea v-model.trim="reason" required rows="4" class="mt-1 w-full rounded-xl border p-3 dark:bg-slate-900"></textarea></label>
+        <div class="flex justify-end gap-3"><button type="button" @click="close" class="px-4 py-2">Volver</button><button class="rounded-xl bg-[#3E90C8] px-5 py-3 text-white font-bold">Confirmar</button></div>
+      </form>
     </div>
-
-    <!-- Lista de Citas -->
-    <div v-if="filteredAppointments.length > 0" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      
-      <div 
-        v-for="app in filteredAppointments" 
-        :key="app.id"
-        class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col"
-      >
-        <!-- Card Header -->
-        <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-start gap-4 bg-slate-50/50 dark:bg-slate-700/50">
-          <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-full bg-[#418FC8]/10 dark:bg-[#418FC8]/20 text-[#418FC8] dark:text-[#6DC7DC] flex items-center justify-center font-bold text-xl shrink-0">
-              {{ app.doctor.charAt(4) }}
-            </div>
-            <div>
-              <h3 class="font-bold text-slate-800 dark:text-white text-lg">{{ app.doctor }}</h3>
-              <p class="text-sm font-medium text-[#418FC8] dark:text-[#6DC7DC]">{{ app.specialty }}</p>
-            </div>
-          </div>
-          
-          <span 
-            class="text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg flex items-center gap-1.5"
-            :class="{
-              'bg-green-100 dark:bg-emerald-900/40 text-green-700 dark:text-emerald-300': app.status === 'confirmed',
-              'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300': app.status === 'pending',
-              'bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300': app.status === 'completed',
-              'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300': app.status === 'cancelled'
-            }"
-          >
-            <div class="w-1.5 h-1.5 rounded-full"
-              :class="{
-                'bg-green-500': app.status === 'confirmed',
-                'bg-amber-500': app.status === 'pending',
-                'bg-slate-500': app.status === 'completed',
-                'bg-red-500': app.status === 'cancelled'
-              }"
-            ></div>
-            {{ 
-              app.status === 'confirmed' ? 'Confirmada' : 
-              app.status === 'pending' ? 'Pendiente' : 
-              app.status === 'completed' ? 'Atendida' : 'Cancelada' 
-            }}
-          </span>
-        </div>
-
-        <!-- Card Body -->
-        <div class="p-6 flex-1">
-          <div class="grid grid-cols-2 gap-y-6 gap-x-4">
-            
-            <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 shrink-0">
-                <PhCalendarBlank class="h-4 w-4" />
-              </div>
-              <div>
-                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">Fecha y Hora</p>
-                <p class="text-sm font-semibold text-slate-800 dark:text-white capitalize">{{ formatDate(app.date) }}</p>
-                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">{{ app.time }}</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 shrink-0">
-                <PhMapPin class="h-4 w-4" />
-              </div>
-              <div>
-                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">Sede</p>
-                <p class="text-sm font-semibold text-slate-800 dark:text-white">{{ app.location }}</p>
-                <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Presencial</p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Card Footer / Acciones -->
-        <div v-if="app.type === 'upcoming'" class="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 flex gap-3">
-          <button @click="openRescheduleModal(app)" class="flex-1 bg-white dark:bg-slate-700 hover:bg-[#418FC8]/10 dark:hover:bg-[#418FC8]/20 border border-slate-200 dark:border-slate-600 hover:border-[#418FC8]/30 dark:hover:border-[#418FC8]/50 text-[#418FC8] dark:text-[#6DC7DC] font-bold py-2.5 rounded-xl transition-colors text-sm">
-            Reprogramar Cita
-          </button>
-          <button @click="openCancelModal(app)" class="flex-1 bg-white dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-900/30 border border-slate-200 dark:border-slate-600 hover:border-red-200 dark:hover:border-red-800 text-red-600 dark:text-red-400 font-bold py-2.5 rounded-xl transition-colors text-sm">
-            Cancelar Cita
-          </button>
-        </div>
-        <div v-else class="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 flex gap-3 justify-end">
-          <button class="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-400 font-bold py-2 px-4 rounded-xl text-sm opacity-50 cursor-not-allowed">
-            Ver receta médica
-          </button>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- Empty State -->
-    <div v-else class="flex flex-col items-center justify-center py-20 px-4 text-center bg-white dark:bg-slate-800 rounded-3xl border border-dashed border-slate-300 dark:border-slate-700">
-      <div class="w-20 h-20 bg-slate-50 dark:bg-slate-700 rounded-full flex items-center justify-center mb-4">
-        <PhCalendarBlank class="h-10 w-10 text-slate-300 dark:text-slate-500" />
-      </div>
-      <h3 class="text-xl font-bold text-slate-700 dark:text-slate-200 mb-2">No tienes {{ activeTab === 'upcoming' ? 'próximas citas' : 'citas pasadas' }}</h3>
-      <p class="text-slate-500 dark:text-slate-400 max-w-md">Cuando agendes una nueva consulta médica, aparecerá en esta sección.</p>
-      <router-link v-if="activeTab === 'upcoming'" to="/agendar" class="mt-6 text-[#418FC8] dark:text-[#6DC7DC] font-bold hover:underline">
-        Agendar mi primera cita &rarr;
-      </router-link>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- MODAL DE REPROGRAMACIÓN -->
-    <!-- ============================================================== -->
-    <div v-if="isRescheduleModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#111111]/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
-        
-        <!-- Header del modal -->
-        <div class="px-8 py-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-700/50">
-          <div>
-            <h2 class="text-xl font-bold text-slate-800 dark:text-white">Reprogramar Cita</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400">{{ appointmentToReschedule?.doctor }}</p>
-          </div>
-          <button @click="closeRescheduleModal" class="bg-white dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-400 p-2 rounded-full border border-slate-200 dark:border-slate-600 transition-colors">
-            <PhX class="h-5 w-5" />
-          </button>
-        </div>
-
-        <div class="p-8">
-          <!-- Selector de Nueva Fecha -->
-          <div class="mb-6">
-            <label class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-3">1. Selecciona la nueva fecha:</label>
-            <input 
-              type="date" 
-              v-model="newSelectedDate"
-              class="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-3 text-lg font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#418FC8] focus:ring-1 focus:ring-[#6DC7DC]"
-            />
-          </div>
-
-          <!-- Selector de Nueva Hora -->
-          <div class="mb-8">
-            <label class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-3">2. Selecciona el nuevo horario:</label>
-            <div class="grid grid-cols-3 gap-3">
-              <button 
-                v-for="time in availableTimes" 
-                :key="time"
-                @click="newSelectedTime = time"
-                class="py-3 px-2 rounded-xl text-sm font-bold transition-all border"
-                :class="newSelectedTime === time 
-                  ? 'bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] text-white shadow-md shadow-[#418FC8]/30 scale-105 border-transparent' 
-                  : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-[#418FC8]/50 hover:bg-[#418FC8]/5'"
-              >
-                {{ time }}
-              </button>
-            </div>
-          </div>
-
-          <!-- Alert/Warning -->
-          <div class="flex items-start gap-3 bg-[#418FC8]/10 dark:bg-[#418FC8]/20 p-4 rounded-xl border border-[#418FC8]/20 dark:border-[#418FC8]/30 mb-8">
-            <PhInfo class="h-5 w-5 text-[#418FC8] dark:text-[#6DC7DC] mt-0.5 shrink-0" />
-            <p class="text-xs font-medium text-[#418FC8] dark:text-[#6DC7DC]">
-              Al confirmar, tu cita anterior quedará liberada. Esta reprogramación no tiene costo adicional.
-            </p>
-          </div>
-
-          <div class="flex gap-4">
-            <button @click="closeRescheduleModal" class="flex-1 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 py-4 rounded-xl transition-colors">
-              Cancelar
-            </button>
-            <button @click="confirmReschedule" class="flex-1 bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white font-bold py-4 rounded-xl shadow-lg shadow-[#418FC8]/30 transition-all hover:-translate-y-0.5">
-              Confirmar cambio
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- MODAL DE CANCELACIÓN (POLÍTICAS DE REEMBOLSO)                  -->
-    <!-- ============================================================== -->
-    <div v-if="isCancelModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#111111]/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
-        
-        <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-700/50">
-          <h2 class="text-xl font-bold text-slate-800 dark:text-white">Cancelar Cita</h2>
-          <button @click="closeCancelModal" class="bg-white dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-400 p-2 rounded-full border border-slate-200 dark:border-slate-600 transition-colors">
-            <PhX class="h-5 w-5" />
-          </button>
-        </div>
-
-        <div class="p-8">
-          <div class="mb-6">
-            <p class="text-slate-600 dark:text-slate-300 font-medium mb-1">Cita con <strong>{{ appointmentToCancel?.doctor }}</strong></p>
-            <p class="text-sm text-slate-500 dark:text-slate-400">{{ formatDate(appointmentToCancel?.date) }} a las {{ appointmentToCancel?.time }}</p>
-          </div>
-
-          <div 
-            class="flex items-start gap-3 p-4 rounded-xl border mb-8"
-            :class="{
-              'bg-emerald-50 dark:bg-emerald-900/40 border-emerald-100 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300': cancellationPolicy.type === 'full',
-              'bg-amber-50 dark:bg-amber-900/40 border-amber-100 dark:border-amber-800 text-amber-800 dark:text-amber-300': cancellationPolicy.type === 'partial',
-              'bg-red-50 dark:bg-red-900/40 border-red-100 dark:border-red-800 text-red-800 dark:text-red-300': cancellationPolicy.type === 'none'
-            }"
-          >
-            <!-- Ícono dinámico -->
-            <PhCheckCircle v-if="cancellationPolicy.type === 'full'" class="h-6 w-6 text-emerald-600 shrink-0" weight="fill" />
-            <PhWarning v-else-if="cancellationPolicy.type === 'partial'" class="h-6 w-6 text-amber-600 shrink-0" weight="fill" />
-            <PhXCircle v-else class="h-6 w-6 text-red-600 shrink-0" weight="fill" />
-            
-            <div>
-              <p class="text-sm font-bold uppercase tracking-wider mb-1" :class="`text-${cancellationPolicy.color}-700`">Política de Reembolso</p>
-              <p class="text-sm font-medium">{{ cancellationPolicy.message }}</p>
-            </div>
-          </div>
-
-          <div class="flex gap-4">
-            <button @click="closeCancelModal" class="flex-1 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 py-4 rounded-xl transition-colors">
-              Volver
-            </button>
-            <button @click="confirmCancel" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-200 dark:shadow-red-900/30 transition-colors">
-              Sí, cancelar cita
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
+  </main>
 </template>
-
-<style>
-.font-sans {
-  font-family: 'Inter', 'Poppins', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-</style>

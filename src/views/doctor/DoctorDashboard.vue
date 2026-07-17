@@ -3,12 +3,12 @@ import { ref, computed } from 'vue'
 import { PhUsers, PhCheckCircle, PhCalendarCheck, PhFolderOpen, PhClock, PhUser, PhCheck, PhFileText, PhX, PhPlus, PhPrinter } from '@phosphor-icons/vue'
 
 // --- ESTADOS MOCK DE CITAS DEL DOCTOR ---
-const todayAppointments = ref([
+const todayAppointments = ref(import.meta.env.DEV ? [
   { id: 101, patient: 'Carlos Pérez', time: '09:00 AM', type: 'Presencial', status: 'confirmed', hasDiagnosis: false, hasPrescription: false },
   { id: 102, patient: 'Ana Gómez', time: '10:30 AM', type: 'Virtual', status: 'attended', hasDiagnosis: true, hasPrescription: false },
   { id: 103, patient: 'Luis Rodríguez', time: '02:00 PM', type: 'Presencial', status: 'no_show', hasDiagnosis: false, hasPrescription: false },
   { id: 104, patient: 'María Flores', time: '04:00 PM', type: 'Presencial', status: 'confirmed', hasDiagnosis: false, hasPrescription: false }
-])
+] : [])
 
 // --- MÉTRICAS KPI ---
 const metrics = computed(() => {

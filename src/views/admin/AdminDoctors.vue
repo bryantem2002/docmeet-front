@@ -1,36 +1,72 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { PhPlus, PhMagnifyingGlass, PhX } from '@phosphor-icons/vue'
+import { PhPlus, PhMagnifyingGlass, PhX, PhSpinner } from '@phosphor-icons/vue'
+import { createDoctor } from '@/services/admin-service'
 
-const doctors = ref([
+const doctors = ref(import.meta.env.DEV ? [
+  // Mantengo los mocks por ahora para la visualización en la tabla
   { id: 'MED-01', name: 'Dr. Roberto Mendoza', specialty: 'Cardiología', sede: 'Miraflores', status: 'active' },
   { id: 'MED-02', name: 'Dra. Patricia Vargas', specialty: 'Dermatología', sede: 'San Isidro', status: 'active' },
-  { id: 'MED-03', name: 'Dr. Jorge Castro', specialty: 'Pediatría', sede: 'Surco', status: 'inactive' },
-])
+] : [])
 
 const showModal = ref(false)
+const loading = ref(false)
+const errorMessage = ref<string | null>(null)
+
 const newDoctor = ref({
-  name: '',
-  specialty: '',
-  sede: '',
-  status: 'active'
+  userEmail: '',
+  dniDoctor: '',
+  cmp: '',
+  rne: '',
+  nombres: '',
+  apellidoPaterno: '',
+  apellidoMaterno: '',
+  fechaNacimiento: '',
+  sexo: '',
+  telefono: '',
+  direccion: '',
+  especialidades: [] as string[]
 })
 
-function saveDoctor() {
-  if (!newDoctor.value.name || !newDoctor.value.specialty || !newDoctor.value.sede) return
+const selectedSpecialty = ref('')
+
+function addSpecialty() {
+  if (selectedSpecialty.value && !newDoctor.value.especialidades.includes(selectedSpecialty.value)) {
+    newDoctor.value.especialidades.push(selectedSpecialty.value)
+    selectedSpecialty.value = ''
+  }
+}
+
+function removeSpecialty(sp: string) {
+  newDoctor.value.especialidades = newDoctor.value.especialidades.filter(s => s !== sp)
+}
+
+async function saveDoctor() {
+  errorMessage.value = null
+  loading.value = true
   
-  const nextId = `MED-0${doctors.value.length + 1}`
-  doctors.value.unshift({
-    id: nextId,
-    name: newDoctor.value.name,
-    specialty: newDoctor.value.specialty,
-    sede: newDoctor.value.sede,
-    status: newDoctor.value.status
-  })
-  
-  // Reset
-  newDoctor.value = { name: '', specialty: '', sede: '', status: 'active' }
-  showModal.value = false
+  try {
+    if (newDoctor.value.especialidades.length === 0) {
+      throw new Error('Debe seleccionar al menos una especialidad')
+    }
+    
+    await createDoctor({ ...newDoctor.value })
+    
+    // Aquí idealmente recargaríamos la lista de doctores (getDoctors)
+    // Por ahora solo cerramos
+    showModal.value = false
+    
+    // Reset form
+    newDoctor.value = {
+      userEmail: '', dniDoctor: '', cmp: '', rne: '', nombres: '',
+      apellidoPaterno: '', apellidoMaterno: '', fechaNacimiento: '',
+      sexo: '', telefono: '', direccion: '', especialidades: []
+    }
+  } catch (e: any) {
+    errorMessage.value = e.response?.data?.message || e.message || 'Error al crear doctor.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -137,67 +173,87 @@ function saveDoctor() {
           </button>
         </div>
         
-        <form @submit.prevent="saveDoctor" class="p-6 flex flex-col gap-5">
-          <!-- Nombre -->
-          <div>
-            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nombre Completo</label>
-            <input 
-              v-model="newDoctor.name"
-              type="text" 
-              required
-              placeholder="Ej. Dr. Juan Pérez" 
-              class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all"
-            />
+        <form @submit.prevent="saveDoctor" class="p-6 flex flex-col gap-5 max-h-[80vh] overflow-y-auto custom-scrollbar">
+          <div v-if="errorMessage" class="rounded-lg bg-red-50 text-red-700 text-sm px-4 py-3 border border-red-200">
+            {{ errorMessage }}
           </div>
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <!-- Especialidad -->
             <div>
-              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Especialidad</label>
-              <select v-model="newDoctor.specialty" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all appearance-none">
-                <option value="" disabled>Seleccionar...</option>
-                <option>Cardiología</option>
-                <option>Dermatología</option>
-                <option>Pediatría</option>
-                <option>Neurología</option>
-                <option>Medicina General</option>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Correo electrónico</label>
+              <input v-model="newDoctor.userEmail" type="email" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">DNI</label>
+              <input v-model="newDoctor.dniDoctor" type="text" required pattern="\d+" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nombres</label>
+              <input v-model="newDoctor.nombres" type="text" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Apellido Paterno</label>
+              <input v-model="newDoctor.apellidoPaterno" type="text" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Apellido Materno</label>
+              <input v-model="newDoctor.apellidoMaterno" type="text" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Fecha de Nacimiento</label>
+              <input v-model="newDoctor.fechaNacimiento" type="date" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Sexo</label>
+              <select v-model="newDoctor.sexo" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm">
+                <option value="" disabled>Seleccione</option>
+                <option value="MASCULINO">Masculino</option>
+                <option value="FEMENINO">Femenino</option>
+                <option value="OTRO">Otro</option>
               </select>
             </div>
-            
-            <!-- Sede -->
             <div>
-              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Sede Base</label>
-              <select v-model="newDoctor.sede" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all appearance-none">
-                <option value="" disabled>Seleccionar...</option>
-                <option>Miraflores</option>
-                <option>San Isidro</option>
-                <option>Surco</option>
-                <option>Los Olivos</option>
-              </select>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Teléfono</label>
+              <input v-model="newDoctor.telefono" type="tel" required pattern="\d+" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Dirección</label>
+              <input v-model="newDoctor.direccion" type="text" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">CMP</label>
+              <input v-model="newDoctor.cmp" type="text" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">RNE (Opcional)</label>
+              <input v-model="newDoctor.rne" type="text" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Especialidades</label>
+              <div class="flex gap-2 mb-2">
+                <select v-model="selectedSpecialty" class="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm">
+                  <option value="" disabled>Seleccione especialidad</option>
+                  <option value="Cardiología">Cardiología</option>
+                  <option value="Dermatología">Dermatología</option>
+                  <option value="Pediatría">Pediatría</option>
+                </select>
+                <button type="button" @click="addSpecialty" class="px-4 py-2 bg-[#418FC8] text-white rounded-xl font-bold">Agregar</button>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <span v-for="sp in newDoctor.especialidades" :key="sp" class="inline-flex items-center gap-1 px-3 py-1 bg-[#418FC8]/10 text-[#418FC8] rounded-full text-xs font-bold">
+                  {{ sp }}
+                  <button type="button" @click="removeSpecialty(sp)" class="hover:text-red-500"><PhX /></button>
+                </span>
+              </div>
             </div>
           </div>
           
-          <!-- Estado -->
-          <div>
-            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Estado</label>
-            <div class="flex gap-4">
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" v-model="newDoctor.status" value="active" class="w-4 h-4 text-[#418FC8] focus:ring-[#418FC8] border-slate-300" />
-                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Activo</span>
-              </label>
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" v-model="newDoctor.status" value="inactive" class="w-4 h-4 text-[#418FC8] focus:ring-[#418FC8] border-slate-300" />
-                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Vacaciones</span>
-              </label>
-            </div>
-          </div>
-          
-          <!-- Botones -->
           <div class="mt-4 flex justify-end gap-3">
             <button type="button" @click="showModal = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors">
               Cancelar
             </button>
-            <button type="submit" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-md shadow-[#418FC8]/20">
+            <button type="submit" :disabled="loading" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-md flex items-center gap-2">
+              <PhSpinner v-if="loading" class="animate-spin w-4 h-4" />
               Guardar Médico
             </button>
           </div>

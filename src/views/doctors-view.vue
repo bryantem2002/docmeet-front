@@ -13,7 +13,7 @@ async function load(): Promise<void> {
   errorMessage.value = null
 
   try {
-    doctors.value = await doctorController.list(specialty.value, { useMock: true })
+    doctors.value = await doctorController.list(specialty.value, { useMock: import.meta.env.DEV })
   } catch (e) {
     errorMessage.value = toApiError(e).message
   } finally {

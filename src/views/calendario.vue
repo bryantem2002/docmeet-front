@@ -27,12 +27,12 @@ const tomorrowStr = formatDateStr(new Date(today.getFullYear(), today.getMonth()
 const nextWeekStr = formatDateStr(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5))
 
 // --- DATOS DE PRUEBA (MOCK DATA) ---
-const appointments = ref([
+const appointments = ref(import.meta.env.DEV ? [
   { id: 1, date: todayStr, time: '10:00 AM', doctor: 'Dr. Gregory House', specialty: 'Medicina Interna', type: 'Presencial', status: 'confirmed' },
   { id: 2, date: todayStr, time: '03:30 PM', doctor: 'Dra. Allison Cameron', specialty: 'Inmunología', type: 'Videollamada', status: 'confirmed' },
   { id: 3, date: tomorrowStr, time: '09:15 AM', doctor: 'Dr. Robert Chase', specialty: 'Cardiología', type: 'Presencial', status: 'confirmed' },
   { id: 4, date: nextWeekStr, time: '11:00 AM', doctor: 'Dra. Lisa Cuddy', specialty: 'Endocrinología', type: 'Presencial', status: 'confirmed' }
-])
+] : [])
 
 // Capitaliza la primera letra del mes
 const currentMonthName = computed(() => {

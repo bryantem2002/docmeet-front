@@ -16,6 +16,36 @@ const router = createRouter({
       component: () => import('@/views/home-view.vue'),
       meta: { requiresAuth: false },
     },
+    {
+      path: '/confirm-account',
+      name: 'confirm-account',
+      component: () => import('@/views/auth/ConfirmAccount.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/complete-patient-profile',
+      name: 'complete-patient-profile',
+      component: () => import('@/views/auth/CompletePatientProfile.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: () => import('@/views/auth/ForgotPassword.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/confirm-forgot-password',
+      name: 'confirm-forgot-password',
+      component: () => import('@/views/auth/ConfirmForgotPassword.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/force-change-password',
+      name: 'force-change-password',
+      component: () => import('@/views/auth/ForceChangePassword.vue'),
+      meta: { requiresAuth: false },
+    },
     
     // --- RUTAS COMPARTIDAS / PACIENTES ---
     {
@@ -34,6 +64,42 @@ const router = createRouter({
       path: '/historial',
       name: 'medical-history',
       component: () => import('@/views/historial.vue'), 
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/medical-records',
+      name: 'medical-records',
+      component: () => import('@/views/medical/MedicalRecordsList.vue'),
+      meta: { requiresAuth: true, allowedRoles: ['admin', 'doctor', 'secretaria'] },
+    },
+    {
+      path: '/medical-records/new',
+      name: 'medical-record-new',
+      component: () => import('@/views/medical/MedicalRecordForm.vue'),
+      meta: { requiresAuth: true, allowedRoles: ['admin', 'doctor'] },
+    },
+    {
+      path: '/medical-records/:id',
+      name: 'medical-record-detail',
+      component: () => import('@/views/medical/MedicalRecordDetail.vue'),
+      meta: { requiresAuth: true, allowedRoles: ['admin', 'doctor', 'secretaria', 'patient', 'paciente'] },
+    },
+    {
+      path: '/medical-records/:id/edit',
+      name: 'medical-record-edit',
+      component: () => import('@/views/medical/MedicalRecordForm.vue'),
+      meta: { requiresAuth: true, allowedRoles: ['admin', 'doctor'] },
+    },
+    {
+      path: '/consultations/new',
+      name: 'consultation-new',
+      component: () => import('@/views/medical/ConsultationForm.vue'),
+      meta: { requiresAuth: true, requiresDoctor: true },
+    },
+    {
+      path: '/consultations/:id',
+      name: 'consultation-detail',
+      component: () => import('@/views/medical/ConsultationDetail.vue'),
       meta: { requiresAuth: true },
     },
     {
@@ -117,6 +183,12 @@ const router = createRouter({
       path: '/admin/especialidades',
       name: 'admin-specialties',
       component: () => import('@/views/admin/AdminSpecialties.vue'), 
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/administradores',
+      name: 'admin-admins',
+      component: () => import('@/views/admin/AdminAdmins.vue'), 
       meta: { requiresAuth: true, requiresAdmin: true },
     },
 

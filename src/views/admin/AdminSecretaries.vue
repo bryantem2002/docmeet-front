@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { PhX } from '@phosphor-icons/vue'
+import { PhX, PhSpinner } from '@phosphor-icons/vue'
+import { createSecretary } from '@/services/admin-service'
 
-const secretaries = ref([
+const secretaries = ref(import.meta.env.DEV ? [
+  // Mocks para visualización en tabla
   { 
     id: '1', 
     name: 'Ana Lopez', 
@@ -21,33 +23,43 @@ const secretaries = ref([
     doctorsAssigned: 1,
     active: true 
   }
-])
+] : [])
 
 const showModal = ref(false)
+const loading = ref(false)
+const errorMessage = ref<string | null>(null)
+
 const newSecretary = ref({
-  name: '',
-  dni: '',
-  shift: '',
-  clinic: '',
-  active: true
+  userEmail: '',
+  dniSecretary: '',
+  nombres: '',
+  apellidoPaterno: '',
+  apellidoMaterno: '',
+  fechaNacimiento: '',
+  sexo: '',
+  telefono: '',
+  direccion: ''
 })
 
-function saveSecretary() {
-  if (!newSecretary.value.name || !newSecretary.value.dni || !newSecretary.value.shift || !newSecretary.value.clinic) return
+async function saveSecretary() {
+  errorMessage.value = null
+  loading.value = true
   
-  const nextId = String(secretaries.value.length + 1)
-  secretaries.value.unshift({
-    id: nextId,
-    name: newSecretary.value.name,
-    dni: newSecretary.value.dni,
-    shift: newSecretary.value.shift,
-    clinic: newSecretary.value.clinic,
-    doctorsAssigned: 0,
-    active: newSecretary.value.active
-  })
-  
-  newSecretary.value = { name: '', dni: '', shift: '', clinic: '', active: true }
-  showModal.value = false
+  try {
+    await createSecretary({ ...newSecretary.value })
+    
+    // Aquí idealmente recargaríamos la lista de secretarias (getSecretaries)
+    showModal.value = false
+    
+    newSecretary.value = { 
+      userEmail: '', dniSecretary: '', nombres: '', apellidoPaterno: '',
+      apellidoMaterno: '', fechaNacimiento: '', sexo: '', telefono: '', direccion: ''
+    }
+  } catch (e: any) {
+    errorMessage.value = e.response?.data?.message || e.message || 'Error al crear secretaria.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -150,68 +162,52 @@ function saveSecretary() {
           </button>
         </div>
         
-        <form @submit.prevent="saveSecretary" class="p-6 flex flex-col gap-5">
-          <!-- Nombre -->
-          <div>
-            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nombre Completo</label>
-            <input 
-              v-model="newSecretary.name"
-              type="text" 
-              required
-              placeholder="Ej. Ana Lopez" 
-              class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all"
-            />
-          </div>
-          
-          <!-- DNI -->
-          <div>
-            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">DNI</label>
-            <input 
-              v-model="newSecretary.dni"
-              type="text" 
-              required
-              maxlength="8"
-              placeholder="Nro. Documento" 
-              class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all"
-            />
+        <form @submit.prevent="saveSecretary" class="p-6 flex flex-col gap-5 max-h-[80vh] overflow-y-auto custom-scrollbar">
+          <div v-if="errorMessage" class="rounded-lg bg-red-50 text-red-700 text-sm px-4 py-3 border border-red-200">
+            {{ errorMessage }}
           </div>
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <!-- Turno -->
             <div>
-              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Turno</label>
-              <select v-model="newSecretary.shift" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all appearance-none">
-                <option value="" disabled>Seleccionar...</option>
-                <option>Mañana</option>
-                <option>Tarde</option>
-                <option>Noche</option>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Correo electrónico</label>
+              <input v-model="newSecretary.userEmail" type="email" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">DNI</label>
+              <input v-model="newSecretary.dniSecretary" type="text" required pattern="\d+" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nombres</label>
+              <input v-model="newSecretary.nombres" type="text" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Apellido Paterno</label>
+              <input v-model="newSecretary.apellidoPaterno" type="text" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Apellido Materno</label>
+              <input v-model="newSecretary.apellidoMaterno" type="text" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Fecha de Nacimiento</label>
+              <input v-model="newSecretary.fechaNacimiento" type="date" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Sexo</label>
+              <select v-model="newSecretary.sexo" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm">
+                <option value="" disabled>Seleccione</option>
+                <option value="MASCULINO">Masculino</option>
+                <option value="FEMENINO">Femenino</option>
+                <option value="OTRO">Otro</option>
               </select>
             </div>
-            
-            <!-- Sede -->
             <div>
-              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Sede Asignada</label>
-              <select v-model="newSecretary.clinic" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#6DC7DC]/50 focus:border-[#418FC8] transition-all appearance-none">
-                <option value="" disabled>Seleccionar...</option>
-                <option>Sede Principal</option>
-                <option>Sede Norte</option>
-                <option>Sede Sur</option>
-              </select>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Teléfono</label>
+              <input v-model="newSecretary.telefono" type="tel" required pattern="\d+" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
             </div>
-          </div>
-          
-          <!-- Estado -->
-          <div>
-            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Estado</label>
-            <div class="flex gap-4">
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" :value="true" v-model="newSecretary.active" class="w-4 h-4 text-[#418FC8] focus:ring-[#418FC8] border-slate-300" />
-                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Activa</span>
-              </label>
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" :value="false" v-model="newSecretary.active" class="w-4 h-4 text-[#418FC8] focus:ring-[#418FC8] border-slate-300" />
-                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Inactiva</span>
-              </label>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Dirección</label>
+              <input v-model="newSecretary.direccion" type="text" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm" />
             </div>
           </div>
           
@@ -220,7 +216,8 @@ function saveSecretary() {
             <button type="button" @click="showModal = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors">
               Cancelar
             </button>
-            <button type="submit" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-md shadow-[#418FC8]/20">
+            <button type="submit" :disabled="loading" class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-md flex items-center gap-2">
+              <PhSpinner v-if="loading" class="animate-spin w-4 h-4" />
               Guardar Secretaria
             </button>
           </div>

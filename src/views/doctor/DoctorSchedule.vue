@@ -1,76 +1,55 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { useAuthStore } from '@/store/auth-store'
+import { createAvailability, createDoctorSchedule, getSchedulesByDoctor, updateScheduleStatus } from '@/services/appointment-service'
+import type { DayOfWeek, DoctorScheduleResponse } from '@/types/appointment'
 
-const schedules = ref([
-  { id: '1', day: 'Lunes', startTime: '08:00 AM', endTime: '02:00 PM', active: true },
-  { id: '2', day: 'Martes', startTime: '08:00 AM', endTime: '02:00 PM', active: true },
-  { id: '3', day: 'Miércoles', startTime: '10:00 AM', endTime: '06:00 PM', active: true },
-  { id: '4', day: 'Jueves', startTime: '08:00 AM', endTime: '02:00 PM', active: false },
-  { id: '5', day: 'Viernes', startTime: '08:00 AM', endTime: '02:00 PM', active: true }
-])
+const auth = useAuthStore()
+const schedules = ref<DoctorScheduleResponse[]>([])
+const error = ref('')
+const showForm = ref(false)
+const availabilityFor = ref<DoctorScheduleResponse>()
+const form = ref({ idClinic: '', idConsultingRoom: '', dayOfWeek: 'MONDAY' as DayOfWeek, startTime: '08:00', endTime: '13:00', appointmentDuration: 30 })
+const slot = ref({ date: '', startTime: '', endTime: '' })
+
+async function load() {
+  if (!auth.user?.id) return
+  try { schedules.value = await getSchedulesByDoctor(auth.user.id) }
+  catch (cause: any) { error.value = cause.response?.data?.message ?? 'No se pudieron cargar los horarios.' }
+}
+async function save() {
+  if (!auth.user?.id) return
+  try { await createDoctorSchedule({ idDoctor: auth.user.id, ...form.value }); showForm.value = false; await load() }
+  catch (cause: any) { error.value = cause.response?.data?.message ?? 'No se pudo crear el horario.' }
+}
+async function toggle(item: DoctorScheduleResponse) {
+  try { await updateScheduleStatus(item.idSchedule, { active: !item.active }); await load() }
+  catch (cause: any) { error.value = cause.response?.data?.message ?? 'No se pudo cambiar el estado.' }
+}
+async function saveAvailability() {
+  if (!availabilityFor.value) return
+  try { await createAvailability({ idDoctorSchedule: availabilityFor.value.idSchedule, ...slot.value }); availabilityFor.value = undefined }
+  catch (cause: any) { error.value = cause.response?.data?.message ?? 'No se pudo crear la disponibilidad.' }
+}
+onMounted(load)
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto w-full px-4 sm:px-0 font-sans">
-    <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Mi Horario de Atención</h1>
-        <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Configura tus días y horas de disponibilidad para citas.</p>
-      </div>
-      <button class="bg-gradient-to-r from-[#418FC8] to-[#6DC7DC] hover:opacity-90 text-white px-4 py-2 rounded-lg font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-        Guardar Cambios
-      </button>
+  <main class="max-w-6xl mx-auto">
+    <header class="flex justify-between items-end gap-4 mb-7"><div><h1 class="text-3xl font-extrabold">Horario médico</h1><p class="text-slate-500">Configura reglas semanales y genera disponibilidades concretas.</p></div><button @click="showForm = !showForm" class="rounded-xl bg-[#3E90C8] px-5 py-3 text-white font-bold">Nuevo horario</button></header>
+    <p v-if="error" class="mb-4 rounded-xl bg-red-50 p-4 text-red-700">{{ error }}</p>
+    <form v-if="showForm" @submit.prevent="save" class="grid md:grid-cols-3 gap-4 rounded-2xl border bg-white dark:bg-slate-800 p-6 mb-6">
+      <label>ID clínica<input v-model="form.idClinic" required class="mt-1 w-full rounded-xl border p-3 dark:bg-slate-900" /></label>
+      <label>ID consultorio<input v-model="form.idConsultingRoom" required class="mt-1 w-full rounded-xl border p-3 dark:bg-slate-900" /></label>
+      <label>Día<select v-model="form.dayOfWeek" class="mt-1 w-full rounded-xl border p-3 dark:bg-slate-900"><option v-for="day in ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY']" :key="day">{{ day }}</option></select></label>
+      <label>Inicio<input v-model="form.startTime" type="time" required class="mt-1 w-full rounded-xl border p-3 dark:bg-slate-900" /></label>
+      <label>Fin<input v-model="form.endTime" type="time" required class="mt-1 w-full rounded-xl border p-3 dark:bg-slate-900" /></label>
+      <label>Duración (min)<input v-model.number="form.appointmentDuration" type="number" min="5" required class="mt-1 w-full rounded-xl border p-3 dark:bg-slate-900" /></label>
+      <button class="md:col-span-3 rounded-xl bg-[#3E90C8] p-3 text-white font-bold">Guardar horario</button>
+    </form>
+    <div class="overflow-x-auto rounded-2xl border bg-white dark:bg-slate-800">
+      <table class="w-full text-left"><thead class="bg-slate-50 dark:bg-slate-700"><tr><th class="p-4">Día</th><th class="p-4">Horario</th><th class="p-4">Duración</th><th class="p-4">Estado</th><th class="p-4">Acciones</th></tr></thead><tbody><tr v-for="item in schedules" :key="item.idSchedule" class="border-t"><td class="p-4">{{ item.dayOfWeek }}</td><td class="p-4">{{ item.startTime }}–{{ item.endTime }}</td><td class="p-4">{{ item.appointmentDuration }} min</td><td class="p-4">{{ item.active ? 'Activo' : 'Inactivo' }}</td><td class="p-4 space-x-3"><button @click="toggle(item)" class="text-[#3E90C8] font-semibold">{{ item.active ? 'Desactivar' : 'Activar' }}</button><button @click="availabilityFor = item" class="text-[#3E90C8] font-semibold">Generar disponibilidad</button></td></tr></tbody></table>
     </div>
-
-    <div class="bg-white dark:bg-slate-800  border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
-      <!-- Vista Móvil -->
-      <div class="block sm:hidden divide-y divide-slate-100 dark:divide-slate-700">
-        <div v-for="sch in schedules" :key="'mob-'+sch.id" class="p-5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-          <div class="flex justify-between items-start mb-3">
-            <h3 class="font-bold text-slate-800 dark:text-white text-base">{{ sch.day }}</h3>
-            <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider" :class="sch.active ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300' : 'bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-300'">
-              {{ sch.active ? 'Habilitado' : 'Deshabilitado' }}
-            </span>
-          </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Horario: <span class="font-bold text-slate-700 dark:text-slate-200">{{ sch.startTime }} - {{ sch.endTime }}</span></p>
-          <button class="w-full text-[#418FC8] hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] py-2.5 rounded-xl text-sm font-bold transition-all text-center">
-            Editar Horario
-          </button>
-        </div>
-      </div>
-
-      <!-- Vista Desktop -->
-      <div class="hidden sm:block overflow-x-auto">
-        <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300 min-w-[600px]">
-        <thead class="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-medium border-b border-slate-200 dark:border-slate-700">
-          <tr>
-            <th class="px-6 py-4">Día de la Semana</th>
-            <th class="px-6 py-4">Hora de Inicio</th>
-            <th class="px-6 py-4">Hora de Fin</th>
-            <th class="px-6 py-4">Estado</th>
-            <th class="px-6 py-4 text-right">Acciones</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-          <tr v-for="sch in schedules" :key="sch.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-            <td class="px-6 py-4 font-bold text-slate-800 dark:text-white">{{ sch.day }}</td>
-            <td class="px-6 py-4">{{ sch.startTime }}</td>
-            <td class="px-6 py-4">{{ sch.endTime }}</td>
-            <td class="px-6 py-4">
-              <span 
-                class="px-2 py-1 rounded text-xs font-bold"
-                :class="sch.active ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300' : 'bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-300'"
-              >
-                {{ sch.active ? 'Habilitado' : 'Deshabilitado' }}
-              </span>
-            </td>
-            <td class="px-6 py-4 text-right">
-              <button class="text-[#418FC8] hover:text-white bg-[#418FC8]/10 hover:bg-[#418FC8] px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md">Editar</button>
-            </td>
-          </tr>
-        </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+    <div v-if="availabilityFor" class="fixed inset-0 z-50 grid place-items-center bg-slate-950/60 p-4"><form @submit.prevent="saveAvailability" class="w-full max-w-md space-y-4 rounded-2xl bg-white dark:bg-slate-800 p-6"><h2 class="text-xl font-bold">Nueva disponibilidad</h2><label class="block">Fecha<input v-model="slot.date" type="date" required class="mt-1 w-full rounded-xl border p-3 dark:bg-slate-900" /></label><div class="grid grid-cols-2 gap-3"><label>Inicio<input v-model="slot.startTime" type="time" required class="mt-1 w-full rounded-xl border p-3 dark:bg-slate-900" /></label><label>Fin<input v-model="slot.endTime" type="time" required class="mt-1 w-full rounded-xl border p-3 dark:bg-slate-900" /></label></div><div class="flex justify-end gap-3"><button type="button" @click="availabilityFor = undefined">Cancelar</button><button class="rounded-xl bg-[#3E90C8] px-5 py-3 text-white font-bold">Crear</button></div></form></div>
+  </main>
 </template>

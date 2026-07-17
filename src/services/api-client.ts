@@ -1,6 +1,7 @@
 import axios, { type AxiosError } from 'axios'
 import { apiBaseUrl } from '@/config/env'
 import { clearToken, getToken } from '@/utils/token-storage'
+import { clearStoredUser } from '@/utils/session-storage'
 import { router } from '@/router'
 
 export const api = axios.create({
@@ -24,6 +25,7 @@ api.interceptors.response.use(
 
     if (status === 401) {
       clearToken()
+      clearStoredUser()
       if (router.currentRoute.value.path !== '/') {
         void router.push({
           path: '/',

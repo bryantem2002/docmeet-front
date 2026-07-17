@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { PhX, PhSpinner } from '@phosphor-icons/vue'
 import { useAuthStore } from '@/store/auth-store'
 import { authController } from '@/controllers/auth.controller'
+import { registerCognito } from '@/services/auth-service'
 
 const props = defineProps<{
   initialMode: 'login' | 'register'
@@ -18,7 +19,6 @@ const mode = ref<'login' | 'register'>(props.initialMode)
 const loading = ref(false)
 const errorMessage = ref<string | null>(null)
 
-const fullName = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
@@ -47,30 +47,40 @@ async function submit(): Promise<void> {
   loading.value = true
 
   try {
-    const form = {
-      email: email.value,
-      password: password.value,
-      fullName: fullName.value,
-      confirmPassword: confirmPassword.value,
-      dni: dni.value,
-      fechaNacimiento: fechaNacimiento.value,
-      genero: genero.value,
-      telefono: telefono.value,
-      nombreContactoEmergencia: nombreContactoEmergencia.value,
-      telefonoContactoEmergencia: telefonoContactoEmergencia.value
-    }
-
     if (mode.value === 'register') {
-      const payload = authController.validateRegisterForm(form)
-      await auth.register(payload)
+      if (password.value !== confirmPassword.value) {
+        throw new Error('Las contraseñas no coinciden')
+      }
+      if (password.value.length < 6) {
+        throw new Error('La contraseña debe tener al menos 6 caracteres')
+      }
+      await registerCognito({ userEmail: email.value, password: password.value })
+      
+      emit('close')
+      await router.push({ path: '/confirm-account', query: { email: email.value } })
+      return
     } else {
+      const form = {
+        email: email.value,
+        password: password.value,
+      }
       const credentials = authController.validateLoginForm(form)
       await auth.login(credentials)
+      emit('close')
+      await router.push('/')
     }
-
-    emit('close')
-    await router.push('/')
-  } catch (e) {
+  } catch (e: any) {
+    // Detectar desafío NEW_PASSWORD_REQUIRED de Cognito
+    const challengePayload = e.response?.data?.data ?? e.response?.data ?? e
+    if (challengePayload?.challenge === 'NEW_PASSWORD_REQUIRED' || e.message?.includes('NEW_PASSWORD_REQUIRED')) {
+      sessionStorage.setItem('temp_email', email.value)
+      if (challengePayload?.session) {
+        sessionStorage.setItem('temp_session', challengePayload.session)
+      }
+      emit('close')
+      await router.push('/force-change-password')
+      return
+    }
     errorMessage.value = authController.toErrorMessage(e)
   } finally {
     loading.value = false
@@ -120,116 +130,7 @@ async function submit(): Promise<void> {
               {{ errorMessage }}
             </div>
 
-            <div v-if="mode === 'register'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="sm:col-span-2">
-                <label class="block text-sm font-semibold text-[var(--color-doc-text-main)] mb-1.5">Nombre completo</label>
-                <input
-                  v-model="fullName"
-                  @input="fullName = ($event.target as HTMLInputElement).value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')"
-                  type="text"
-                  required
-                  pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+"
-                  title="Solo se permiten letras y espacios"
-                  placeholder="Ej. Juan Pérez"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-semibold text-[var(--color-doc-text-main)] mb-1.5">DNI</label>
-                <input
-                  v-model="dni"
-                  @input="dni = ($event.target as HTMLInputElement).value.replace(/[^0-9]/g, '')"
-                  type="text"
-                  required
-                  pattern="\d+"
-                  title="Solo se permiten números"
-                  placeholder="Nro. de Documento"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-semibold text-[var(--color-doc-text-main)] mb-1.5">Teléfono</label>
-                <input
-                  v-model="telefono"
-                  @input="telefono = ($event.target as HTMLInputElement).value.replace(/[^0-9]/g, '')"
-                  type="tel"
-                  required
-                  pattern="\d+"
-                  title="Solo se permiten números"
-                  placeholder="Tu número celular"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-semibold text-[var(--color-doc-text-main)] mb-1.5">Fecha de Nacimiento</label>
-                <input
-                  v-model="fechaNacimiento"
-                  type="date"
-                  required
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-semibold text-[var(--color-doc-text-main)] mb-1.5">Género</label>
-                <select
-                  v-model="genero"
-                  required
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
-                >
-                  <option value="" disabled>Seleccione</option>
-                  <option value="M">Masculino</option>
-                  <option value="F">Femenino</option>
-                  <option value="O">Otro</option>
-                </select>
-              </div>
-
-              <div class="sm:col-span-2 pt-2 border-t border-slate-100 dark:border-slate-700 mt-2">
-                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Contacto de Emergencia</p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-sm font-semibold text-[var(--color-doc-text-main)] mb-1.5">Nombre</label>
-                    <input
-                      v-model="nombreContactoEmergencia"
-                      @input="nombreContactoEmergencia = ($event.target as HTMLInputElement).value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')"
-                      type="text"
-                      pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+"
-                      title="Solo se permiten letras y espacios"
-                      placeholder="Familiar o amigo"
-                      class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
-                    />
-                  </div>
-                  <div>
-                    <label class="block text-sm font-semibold text-[var(--color-doc-text-main)] mb-1.5">Teléfono</label>
-                    <input
-                      v-model="telefonoContactoEmergencia"
-                      @input="telefonoContactoEmergencia = ($event.target as HTMLInputElement).value.replace(/[^0-9]/g, '')"
-                      type="tel"
-                      pattern="\d+"
-                      title="Solo se permiten números"
-                      placeholder="Teléfono"
-                      class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div v-if="mode === 'login'">
-              <label class="block text-sm font-semibold text-[var(--color-doc-text-main)] mb-1.5">Correo electrónico</label>
-              <input
-                v-model="email"
-                type="email"
-                required
-                placeholder="tu@correo.com"
-                class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2.5 text-[var(--color-doc-text-main)] dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#418FC8] focus:border-[#418FC8] focus:shadow-md focus:shadow-[#418FC8]/10 transition-all duration-200 bg-white dark:bg-slate-800 shadow-sm"
-              />
-            </div>
-
-            <div v-if="mode === 'register'" class="sm:col-span-2 border-t border-slate-100 dark:border-slate-700 pt-4 mt-2">
+            <div>
               <label class="block text-sm font-semibold text-[var(--color-doc-text-main)] mb-1.5">Correo electrónico</label>
               <input
                 v-model="email"
@@ -242,7 +143,17 @@ async function submit(): Promise<void> {
 
             <div :class="mode === 'register' ? 'grid grid-cols-1 sm:grid-cols-2 gap-4' : ''">
               <div>
-                <label class="block text-sm font-semibold text-[var(--color-doc-text-main)] mb-1.5">Contraseña</label>
+                <div class="flex justify-between items-center mb-1.5">
+                  <label class="block text-sm font-semibold text-[var(--color-doc-text-main)]">Contraseña</label>
+                  <button
+                    v-if="mode === 'login'"
+                    type="button"
+                    @click="$emit('close'); router.push('/forgot-password')"
+                    class="text-[#3E90C8] text-xs font-semibold hover:underline"
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </button>
+                </div>
                 <input
                   v-model="password"
                   type="password"

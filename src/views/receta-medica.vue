@@ -1,50 +1,55 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { PhCalendarBlank, PhFileText, PhPill, PhSpinner, PhDownloadSimple, PhFolderOpen } from '@phosphor-icons/vue'
+import { getMedicalRecords, getConsultationsByMedicalRecord, getPrescriptions } from '@/services/medical-service'
 
 // --- ESTADOS ---
 // Controla qué receta se está "descargando" para mostrar un spinner de carga
-const downloadingId = ref<number | null>(null)
+const downloadingId = ref<string | null>(null)
 
-// --- DATOS DE PRUEBA (MOCK DATA) ---
-const prescriptions = ref([
-  {
-    id: 201,
-    date: '2026-05-02',
-    doctor: 'Dr. Gregory House',
-    specialty: 'Medicina Interna',
-    diagnosis: 'Infección respiratoria aguda',
-    medications: [
-      { name: 'Amoxicilina', dosage: '500mg', frequency: 'Cada 8 horas', duration: '7 días' },
-      { name: 'Paracetamol', dosage: '1g', frequency: 'Cada 12 horas', duration: '3 días (si hay fiebre)' }
-    ],
-    notes: 'Tomar la amoxicilina junto con los alimentos para evitar irritación gástrica.'
-  },
-  {
-    id: 202,
-    date: '2026-03-22',
-    doctor: 'Dra. Allison Cameron',
-    specialty: 'Inmunología',
-    diagnosis: 'Rinitis Alérgica',
-    medications: [
-      { name: 'Cetirizina', dosage: '10mg', frequency: '1 vez al día', duration: '14 días' },
-      { name: 'Budesonida Spray Nasal', dosage: '2 disparos/fosa', frequency: 'Cada 12 horas', duration: '1 mes' }
-    ],
-    notes: 'Evitar la exposición prolongada al polvo y usar el spray nasal después de limpiar las fosas nasales.'
-  },
-  {
-    id: 203,
-    date: '2025-08-05',
-    doctor: 'Dr. Robert Chase',
-    specialty: 'Gastroenterología',
-    diagnosis: 'Gastritis Aguda',
-    medications: [
-      { name: 'Omeprazol', dosage: '20mg', frequency: '1 vez al día (en ayunas)', duration: '14 días' },
-      { name: 'Sucralfato', dosage: '1g', frequency: 'Cada 8 horas', duration: '7 días' }
-    ],
-    notes: 'Evitar comidas picantes, café y alcohol durante el tratamiento.'
+const prescriptions = ref<any[]>([])
+const loading = ref(true)
+
+onMounted(async () => {
+  try {
+    const records = await getMedicalRecords({ page: 0, size: 1 })
+    if (records.content.length > 0) {
+      const idMedicalRecord = records.content[0].idMedicalRecord
+      const consultations = await getConsultationsByMedicalRecord(idMedicalRecord)
+      
+      const allPrescriptions = []
+      for (const consult of consultations) {
+        try {
+          const prescs = await getPrescriptions(consult.id)
+          for (const p of prescs) {
+            allPrescriptions.push({
+              id: p.id,
+              date: consult.date.split('T')[0],
+              doctor: consult.doctorName || consult.doctor || 'Doctor Asignado',
+              specialty: 'Medicina General',
+              diagnosis: consult.reason || 'Consulta médica',
+              notes: p.instructions,
+              medications: p.details.map(d => ({
+                name: d.medicine,
+                dosage: d.dose,
+                frequency: d.frequency,
+                duration: d.duration
+              }))
+            })
+          }
+        } catch (e) {
+          console.error('Error fetching prescriptions for consultation', consult.id, e)
+        }
+      }
+      // Ordenar por fecha descendente
+      prescriptions.value = allPrescriptions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    }
+  } catch (error) {
+    console.error('Error cargando recetas:', error)
+  } finally {
+    loading.value = false
   }
-])
+})
 
 // --- UTILIDADES ---
 const formatDate = (dateString: string) => {
@@ -53,30 +58,33 @@ const formatDate = (dateString: string) => {
 }
 
 // --- LÓGICA DE DESCARGA PDF ---
-const descargarPDF = async (id: number) => {
+const descargarPDF = async (id: string | number) => {
   // 1. Activamos el estado de carga para que el botón muestre el spinner
-  downloadingId.value = id
+  downloadingId.value = id.toString()
 
   try {
-    // 2. Simulamos el tiempo que tarda el servidor en generar el PDF (1.5 segundos)
+    // 2. Simulamos la llamada a tu Spring Boot (ej. GET /api/v1/prescriptions/{id}/pdf)
     await new Promise(resolve => setTimeout(resolve, 1500))
-
-    // 3. AQUÍ IRÁ LA LLAMADA REAL A SPRING BOOT EN EL FUTURO:
-    // const response = await axios.get(`http://localhost:8080/api/prescriptions/${id}/pdf`, { responseType: 'blob' })
-    // const url = window.URL.createObjectURL(new Blob([response.data]))
-    // const link = document.createElement('a')
-    // link.href = url
-    // link.setAttribute('download', `Receta_Medica_${id}.pdf`)
-    // document.body.appendChild(link)
-    // link.click()
     
-    // Alerta temporal para que veas que funciona
-    alert(`¡PDF de la receta #${id} descargado con éxito!`)
+    // Aquí normalmente recibirías un Blob de tu API y lo descargarías así:
+    /*
+    const response = await api.get(`/prescriptions/${id}/pdf`, { responseType: 'blob' })
+    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `receta_${id}.pdf`)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    */
+    
+    // Para esta simulación, solo mostramos una alerta
+    console.log(`Receta ${id} descargada exitosamente.`)
   } catch (error) {
-    console.error("Error al descargar el PDF", error)
-    alert("Hubo un error al generar el PDF.")
+    console.error('Error al descargar la receta', error)
+    alert('Hubo un problema al descargar la receta. Inténtalo de nuevo.')
   } finally {
-    // 4. Apagamos el spinner de carga
+    // 3. Quitamos el estado de carga
     downloadingId.value = null
   }
 }

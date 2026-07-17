@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const payments = ref([
+const payments = ref(import.meta.env.DEV ? [
   { id: '1', date: '15 Oct 2026', invoice: 'F001-00123', patient: 'Juan Pérez', amount: 'S/ 150.00', status: 'Pagado', method: 'Tarjeta' },
   { id: '2', date: '15 Oct 2026', invoice: 'F001-00124', patient: 'María García', amount: 'S/ 200.00', status: 'Pendiente', method: 'Efectivo' }
-])
+] : [])
 </script>
 
 <template>

@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/store/auth-store'
+import { cancelAppointmentById, createAppointment, getAvailabilitiesByDate, markAppointmentPaid } from '@/services/appointment-service'
+import type { DoctorAvailabilityResponse } from '@/types/appointment'
+import { doctorController } from '@/controllers/doctor.controller'
 import { 
   PhX, PhCheckCircle, PhStar, PhCalendarBlank, PhClock, PhCaretLeft, PhCaretRight, PhInfo, PhBuildings, PhCreditCard, PhDeviceMobile, PhMoney, PhArrowRight, PhStethoscope, PhUser, PhCheck, PhMapPin, PhClipboardText
 } from '@phosphor-icons/vue'
@@ -10,6 +14,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['close', 'schedule'])
 const router = useRouter()
+const auth = useAuthStore()
 
 // --- ESTADO DEL FORMULARIO ---
 const step = ref(1)
@@ -19,14 +24,25 @@ const selectedDoctor = ref<any>(null)
 const selectedDate = ref('')
 const selectedTime = ref('')
 const reason = ref('')
+const pendingAppointmentId = ref('')
+const availabilityOptions = ref<DoctorAvailabilityResponse[]>([])
+const availabilityLoading = ref(false)
+const availabilityError = ref('')
+const paymentError = ref('')
+const cardNumber = ref('')
+const cardExpiry = ref('')
+const cardCvv = ref('')
+const cardHolder = ref('')
+const yapePhone = ref('')
+const yapeCode = ref('')
 
 // --- ESTADO DE LA PASARELA ---
 const selectedPaymentTab = ref('billeteras')
 const isQrGenerated = ref(false)
 const isProcessingPayment = ref(false)
 
-// --- TIMER DE PAGO (15 MINUTOS) ---
-const paymentTimeLeft = ref(900)
+// El backend mantiene la reserva de pago durante 5 minutos.
+const paymentTimeLeft = ref(300)
 let paymentTimerInterval: any = null
 
 const qrTimeLeft = ref(300)
@@ -74,13 +90,31 @@ const specialties = [
   { id: '6', name: 'Traumatología', img: '/img/esp-traumatologia.png', color: 'bg-cyan-50 text-cyan-600 border-cyan-200', activeColor: 'border-cyan-600 bg-cyan-600 text-white' },
 ]
 
-const doctors = [
+const doctors = ref<any[]>(import.meta.env.DEV ? [
   { id: 1, name: 'Dr. Gregory House', specialty: 'Medicina Interna', avatar: 'https://ui-avatars.com/api/?name=Gregory+House&background=0D8ABC&color=fff', rating: 4.9, price: '150.00', location: 'Sede San Isidro', experience: '15 años' },
   { id: 2, name: 'Dra. Allison Cameron', specialty: 'Cardiología', avatar: 'https://ui-avatars.com/api/?name=Allison+Cameron&background=D946EF&color=fff', rating: 4.8, price: '120.00', location: 'Sede Miraflores', experience: '10 años' },
   { id: 3, name: 'Dr. Robert Chase', specialty: 'Cardiología', avatar: 'https://ui-avatars.com/api/?name=Robert+Chase&background=F59E0B&color=fff', rating: 4.7, price: '200.00', location: 'Sede San Isidro', experience: '12 años' },
   { id: 4, name: 'Dr. Eric Foreman', specialty: 'Medicina Interna', avatar: 'https://ui-avatars.com/api/?name=Eric+Foreman&background=10B981&color=fff', rating: 4.6, price: '130.00', location: 'Sede Los Olivos', experience: '8 años' },
   { id: 5, name: 'Dra. Lisa Cuddy', specialty: 'Medicina Interna', avatar: 'https://ui-avatars.com/api/?name=Lisa+Cuddy&background=6366F1&color=fff', rating: 4.9, price: '180.00', location: 'Sede San Isidro', experience: '20 años' },
-]
+] : [])
+
+onMounted(async () => {
+  try {
+    const items = await doctorController.list('', { useMock: import.meta.env.DEV })
+    doctors.value = items.map(item => ({
+      id: item.id,
+      name: item.fullName,
+      specialty: item.specialty,
+      avatar: item.avatar,
+      rating: null,
+      price: '100.00',
+      location: '',
+      experience: item.bio || '',
+    }))
+  } catch {
+    doctors.value = []
+  }
+})
 
 // --- CALENDARIO COMPLETO CON NAVEGACIÓN POR MES ---
 const calendarViewDate = ref(new Date())
@@ -136,11 +170,23 @@ function nextCalMonth() {
   const d = calendarViewDate.value
   calendarViewDate.value = new Date(d.getFullYear(), d.getMonth() + 1, 1)
 }
-function selectCalDay(day: any) {
+async function selectCalDay(day: any) {
   if (day.isPast && !day.isToday) return
   selectedDate.value = day.dateStr
+  selectedTime.value = ''
   if (!day.isCurrentMonth) {
     calendarViewDate.value = new Date(day.date.getFullYear(), day.date.getMonth(), 1)
+  }
+  availabilityLoading.value = true
+  availabilityError.value = ''
+  try {
+    availabilityOptions.value = (await getAvailabilitiesByDate(day.dateStr)).filter(item => item.status === 'AVAILABLE')
+    if (!availabilityOptions.value.length) availabilityError.value = 'No quedan horarios disponibles para este día.'
+  } catch (cause: any) {
+    availabilityOptions.value = []
+    availabilityError.value = cause.response?.data?.message ?? 'No pudimos consultar los horarios.'
+  } finally {
+    availabilityLoading.value = false
   }
 }
 
@@ -152,29 +198,19 @@ const selectedDateFormatted = computed(() => {
   return name.charAt(0).toUpperCase() + name.slice(1)
 })
 
-// --- HORARIOS CON ESTADOS (disponible / ocupado) ---
 const timeSlots = computed(() => {
-  // Simular ocupación dependiendo del día seleccionado
-  const hash = selectedDate.value ? selectedDate.value.split('-').reduce((a, b) => a + parseInt(b), 0) : 0
-  return [
-    { time: '08:00 AM', status: hash % 3 === 0 ? 'occupied' : 'available' },
-    { time: '09:00 AM', status: 'available' },
-    { time: '09:30 AM', status: hash % 2 === 0 ? 'occupied' : 'available' },
-    { time: '10:00 AM', status: 'occupied' },
-    { time: '10:30 AM', status: 'available' },
-    { time: '11:00 AM', status: hash % 4 === 1 ? 'occupied' : 'available' },
-    { time: '11:30 AM', status: 'available' },
-    { time: '02:00 PM', status: 'available' },
-    { time: '02:30 PM', status: 'occupied' },
-    { time: '03:00 PM', status: 'available' },
-    { time: '04:00 PM', status: hash % 3 === 1 ? 'occupied' : 'available' },
-    { time: '05:00 PM', status: 'available' },
-  ]
+  return availabilityOptions.value.map(item => ({
+    idAvailability: item.idAvailability,
+    time: item.startTime,
+    endTime: item.endTime,
+    status: 'available',
+  }))
 })
+const selectedSlot = computed(() => timeSlots.value.find(item => item.idAvailability === selectedTime.value))
 
 const filteredDoctors = computed(() => {
   if (!selectedSpecialty.value || !selectedLocation.value) return []
-  return doctors.filter(d => d.specialty === selectedSpecialty.value && d.location === selectedLocation.value)
+  return doctors.value.filter(d => d.specialty === selectedSpecialty.value)
 })
 
 // --- NAVEGACIÓN ---
@@ -185,12 +221,39 @@ const steps = [
   { id: 4, title: 'Detalles' }
 ]
 
-const nextStep = () => {
+async function reserveAppointment() {
+  if (!auth.user?.id || !selectedDoctor.value?.id) throw new Error('Faltan los datos del paciente o doctor.')
+  const slot = availabilityOptions.value.find(item => item.idAvailability === selectedTime.value)
+  if (!slot) throw new Error('Selecciona un horario disponible.')
+  const appointment = await createAppointment({
+    idPatient: auth.user.id,
+    idDoctor: String(selectedDoctor.value.id),
+    idAvailability: slot.idAvailability,
+    appointmentType: 'PRESENTIAL',
+    consultationReason: reason.value,
+  })
+  pendingAppointmentId.value = appointment.idAppointment
+}
+
+const nextStep = async () => {
   if (step.value < 5) {
-    step.value++
+    if (step.value === 4) {
+      isProcessingPayment.value = true
+      try {
+        await reserveAppointment()
+        step.value = 5
+      } catch (cause: any) {
+        paymentError.value = cause.response?.data?.message ?? cause.message ?? 'No se pudo reservar la cita.'
+        alert(paymentError.value)
+        return
+      } finally {
+        isProcessingPayment.value = false
+      }
+    } else {
+      step.value++
+    }
     if (step.value === 5) {
-      // Iniciar el temporizador de 15 minutos al llegar al paso de pago
-      paymentTimeLeft.value = 900
+      paymentTimeLeft.value = 300
       if (paymentTimerInterval) clearInterval(paymentTimerInterval)
       paymentTimerInterval = setInterval(() => {
         if (paymentTimeLeft.value > 0) {
@@ -198,7 +261,7 @@ const nextStep = () => {
         } else {
           // Si expira el tiempo, cerrar el modal y cancelar reserva
           clearInterval(paymentTimerInterval)
-          closeModal()
+          void closeModal()
           alert("El tiempo de reserva ha expirado. Por favor, vuelve a intentarlo.")
         }
       }, 1000)
@@ -219,7 +282,10 @@ const changePaymentTab = (tab: string) => {
   isQrGenerated.value = false
 }
 
-const closeModal = () => {
+const closeModal = async () => {
+  if (step.value === 5 && pendingAppointmentId.value) {
+    await cancelAppointmentById(pendingAppointmentId.value, { reason: 'Pago cancelado por el paciente' }).catch(() => undefined)
+  }
   step.value = 1
   selectedLocation.value = ''
   selectedSpecialty.value = ''
@@ -227,32 +293,54 @@ const closeModal = () => {
   selectedDate.value = ''
   selectedTime.value = ''
   reason.value = ''
+  pendingAppointmentId.value = ''
+  availabilityOptions.value = []
+  paymentError.value = ''
   selectedPaymentTab.value = 'billeteras'
   isQrGenerated.value = false
   if (paymentTimerInterval) clearInterval(paymentTimerInterval)
   emit('close')
 }
 
-const processPayment = () => {
+const processPayment = async () => {
   isProcessingPayment.value = true
-  setTimeout(() => {
+  paymentError.value = ''
+  try {
+    if (!pendingAppointmentId.value) {
+      throw new Error('No existe una reserva pendiente de pago.')
+    }
+    if (selectedPaymentTab.value === 'tarjeta' &&
+      (cardNumber.value.replace(/\D/g, '').length !== 16 || !cardExpiry.value || cardCvv.value.length < 3 || !cardHolder.value.trim())) {
+      throw new Error('Completa correctamente los datos de la tarjeta de prueba.')
+    }
+    if (selectedPaymentTab.value === 'yape' &&
+      (yapePhone.value.replace(/\D/g, '').length !== 9 || yapeCode.value.replace(/\D/g, '').length !== 6)) {
+      throw new Error('Ingresa un celular y código Yape de prueba válidos.')
+    }
+    await new Promise(resolve => setTimeout(resolve, 1200))
+    await markAppointmentPaid(pendingAppointmentId.value)
+
     isProcessingPayment.value = false
     step.value = 6
     emit('schedule', {
+      idAppointment: pendingAppointmentId.value,
       location: selectedLocation.value,
       specialty: selectedSpecialty.value,
       doctor: selectedDoctor.value?.name || 'Por asignar',
       date: selectedDate.value,
-      time: selectedTime.value,
+      time: selectedSlot.value?.time || '',
       reason: reason.value,
       paymentMethod: selectedPaymentTab.value,
       amount: selectedDoctor.value?.price || '100.00'
     })
-  }, 2000)
+  } catch (cause: any) {
+    isProcessingPayment.value = false
+    paymentError.value = cause.response?.data?.message ?? cause.message ?? 'No se pudo confirmar el pago.'
+  }
 }
 
 const goToAppointments = () => {
-  closeModal()
+  void closeModal()
   router.push('/appointments')
 }
 </script>
@@ -263,7 +351,7 @@ const goToAppointments = () => {
     <!-- ============================================== -->
     <!-- MODAL DE SELECCIÓN DE CITA (Pasos 1 al 4)      -->
     <!-- ============================================== -->
-    <div v-if="step < 5" class="bg-white rounded-[2rem] shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div v-if="step < 5" class="bg-white rounded-[2rem] shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[92vh]">
       <!-- HEADER -->
       <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
         <div>
@@ -364,7 +452,7 @@ const goToAppointments = () => {
         </div>
 
         <!-- PASO 3: FECHA Y HORA -->
-        <div v-if="step === 3" class="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
+        <div v-if="step === 3" class="grid lg:grid-cols-[1.15fr_.85fr] gap-6 items-start animate-in fade-in slide-in-from-right-8 duration-500">
           <!-- Mini Calendario completo -->
           <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <!-- Header del calendario -->
@@ -402,39 +490,35 @@ const goToAppointments = () => {
           </div>
 
           <!-- Horarios con estados -->
-          <div v-if="selectedDate">
+          <div v-if="selectedDate" class="bg-white rounded-2xl border border-blue-100 shadow-sm p-5 lg:sticky lg:top-0 min-h-[340px]">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-base font-extrabold text-slate-800">
                 Horarios — <span class="text-blue-600 font-bold text-sm">{{ selectedDateFormatted }}</span>
               </h3>
-              <!-- Leyenda -->
-              <div class="flex items-center gap-3 text-[11px] font-medium text-slate-500">
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>Libre</span>
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span>Ocupado</span>
-              </div>
+              <span class="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold text-emerald-700">{{ timeSlots.length }} disponibles</span>
             </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <div v-if="availabilityLoading" class="py-16 text-center text-slate-500">Consultando horarios disponibles…</div>
+            <div v-else-if="availabilityError" class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-800">{{ availabilityError }}<p class="mt-1 text-xs font-normal">Prueba seleccionando otro día en el calendario.</p></div>
+            <div v-else class="grid grid-cols-2 gap-2.5">
               <button
                 v-for="slot in timeSlots" :key="slot.time"
-                @click="slot.status === 'available' && (selectedTime = slot.time)"
-                :disabled="slot.status === 'occupied'"
+                @click="selectedTime = slot.idAvailability"
                 class="px-3 py-3 rounded-xl border-2 font-semibold transition-all outline-none text-center text-sm flex items-center justify-center gap-2"
                 :class="[
-                  slot.status === 'occupied'
-                    ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed line-through'
-                    : selectedTime === slot.time
+                  selectedTime === slot.idAvailability
                       ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-200'
                       : 'border-slate-200 bg-white text-slate-700 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700'
                 ]">
-                <span v-if="slot.status === 'occupied'" class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>
-                <span v-else-if="selectedTime !== slot.time" class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
-                {{ slot.time }}
+                <PhCheck v-if="selectedTime === slot.idAvailability" class="h-4 w-4" weight="bold" />
+                <span v-else class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                {{ slot.time }} – {{ slot.endTime }}
               </button>
             </div>
           </div>
-          <div v-else class="flex flex-col items-center justify-center py-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-            <PhCalendarBlank class="h-8 w-8 text-slate-300 mb-2" />
-            <p class="text-sm text-slate-400 font-medium">Selecciona un día en el calendario</p>
+          <div v-else class="flex flex-col items-center justify-center min-h-[340px] text-center bg-blue-50/50 rounded-2xl border border-dashed border-blue-200">
+            <PhClock class="h-10 w-10 text-blue-300 mb-3" />
+            <p class="text-sm text-slate-600 font-bold">Los horarios aparecerán aquí</p>
+            <p class="text-xs text-slate-400 mt-1 max-w-[220px]">Selecciona una fecha y verás inmediatamente las horas disponibles, sin desplazarte.</p>
           </div>
         </div>
 
@@ -462,7 +546,7 @@ const goToAppointments = () => {
               </div>
               <div class="bg-white/5 rounded-xl p-3 border border-white/10">
                 <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">Hora de Atención</p>
-                <p class="font-bold text-sm">{{ selectedTime }}</p>
+                <p class="font-bold text-sm">{{ selectedSlot?.time }} – {{ selectedSlot?.endTime }}</p>
               </div>
             </div>
           </div>
@@ -492,12 +576,16 @@ const goToAppointments = () => {
     <!-- ============================================== -->
     <!-- MODAL DE PASARELA DE PAGOS (TIPO CULQI) PASO 5 -->
     <!-- ============================================== -->
-    <div v-if="step === 5" class="bg-[#FFFFFF] rounded-xl shadow-2xl w-full max-w-[1000px] h-[700px] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 font-sans relative">
+    <div v-if="step === 5" class="bg-[#FFFFFF] rounded-2xl shadow-2xl w-full max-w-[1000px] min-h-[620px] max-h-[92vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 font-sans relative">
       <!-- Banner de Temporizador -->
       <div class="bg-amber-50 border-b border-amber-200 py-2 px-4 flex items-center justify-center gap-2 z-50 shadow-sm shrink-0">
         <PhClock class="h-5 w-5 text-amber-600 animate-pulse" />
         <span class="text-sm font-bold text-amber-800">Tienes <span class="font-black text-amber-600 text-base">{{ formatTime(paymentTimeLeft) }}</span> minutos para completar el pago y asegurar tu cita.</span>
       </div>
+      <div class="bg-sky-50 border-b border-sky-200 px-5 py-2 text-center text-sm font-semibold text-sky-800">
+        Pasarela de demostración: no se realizará ningún cobro real. La reserva y su estado de pago sí se enviarán al backend.
+      </div>
+      <div v-if="paymentError" class="bg-red-50 border-b border-red-200 px-5 py-3 text-center text-sm font-semibold text-red-700">{{ paymentError }}</div>
       
       <!-- HEADER NEGRO -->
       <div class="h-[80px] bg-[#111111] shrink-0 flex justify-between items-center px-8 rounded-t-xl">
@@ -517,11 +605,11 @@ const goToAppointments = () => {
       </div>
 
       <!-- CUERPO DIVIDIDO 30% / 70% -->
-      <div class="flex flex-1 overflow-hidden">
+      <div class="flex flex-col md:flex-row flex-1 overflow-hidden">
         
         <!-- SIDEBAR (30%) -->
-        <div class="w-[30%] bg-[#F8F8F8] border-r border-slate-200 flex flex-col justify-between shrink-0">
-          <div class="py-2">
+        <div class="w-full md:w-[30%] bg-[#F8F8F8] border-r border-slate-200 flex md:flex-col justify-between shrink-0 overflow-x-auto">
+          <div class="py-2 flex md:block min-w-max">
             
             <button @click="changePaymentTab('tarjeta')" class="w-full text-left px-6 py-5 flex items-center gap-4 transition-colors group relative" :class="selectedPaymentTab === 'tarjeta' ? 'text-[#00B5AD] bg-white shadow-sm' : 'text-[#555555] hover:bg-black/5'">
               <div v-if="selectedPaymentTab === 'tarjeta'" class="absolute left-0 top-0 bottom-0 w-[4px] bg-[#00B5AD]"></div>
@@ -569,7 +657,7 @@ const goToAppointments = () => {
         </div>
 
         <!-- CONTENIDO PRINCIPAL (70%) -->
-        <div class="w-[70%] p-[50px] flex flex-col bg-white overflow-y-auto relative">
+        <div class="w-full md:w-[70%] p-5 sm:p-8 md:p-[50px] flex flex-col bg-white overflow-y-auto relative">
           
           <!-- TAB: TARJETA -->
           <div v-if="selectedPaymentTab === 'tarjeta'" class="flex flex-col h-full animate-in fade-in duration-300">
@@ -578,26 +666,26 @@ const goToAppointments = () => {
               <div>
                 <label class="block text-sm font-medium text-[#555] mb-2">Número de tarjeta</label>
                 <div class="relative">
-                  <input type="text" placeholder="0000 0000 0000 0000" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
+                  <input v-model="cardNumber" type="text" inputmode="numeric" maxlength="19" placeholder="0000 0000 0000 0000" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
                   <PhCreditCard class="h-6 w-6 absolute right-4 top-1/2 -translate-y-1/2 text-slate-300" />
                 </div>
               </div>
               <div class="grid grid-cols-2 gap-5">
                 <div>
                   <label class="block text-sm font-medium text-[#555] mb-2">Vencimiento</label>
-                  <input type="text" placeholder="MM / AA" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
+                  <input v-model="cardExpiry" type="text" maxlength="7" placeholder="MM / AA" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-[#555] mb-2">CVV</label>
                   <div class="relative">
-                    <input type="text" placeholder="123" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
+                    <input v-model="cardCvv" type="password" inputmode="numeric" maxlength="4" placeholder="123" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
                     <PhInfo class="h-5 w-5 absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" />
                   </div>
                 </div>
               </div>
               <div>
                 <label class="block text-sm font-medium text-[#555] mb-2">Titular de la tarjeta</label>
-                <input type="text" placeholder="Como aparece en la tarjeta" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
+                <input v-model="cardHolder" type="text" placeholder="Como aparece en la tarjeta" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
               </div>
             </div>
             
@@ -622,11 +710,11 @@ const goToAppointments = () => {
             <div class="space-y-6 max-w-md">
               <div>
                 <label class="block text-sm font-medium text-[#555] mb-2">Número de celular Yape</label>
-                <input type="text" placeholder="999 999 999" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
+                <input v-model="yapePhone" type="text" inputmode="numeric" maxlength="9" placeholder="999 999 999" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-[#555] mb-2">Código de aprobación (6 dígitos)</label>
-                <input type="text" placeholder="000000" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg text-center tracking-[0.5em] font-bold focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
+                <input v-model="yapeCode" type="text" inputmode="numeric" maxlength="6" placeholder="000000" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-lg text-center tracking-[0.5em] font-bold focus:outline-none focus:border-[#00B5AD] focus:ring-1 focus:ring-[#00B5AD] transition-all" />
                 <a href="#" class="text-[#00B5AD] text-sm mt-2 block font-medium hover:underline">¿Cómo obtengo mi código de aprobación?</a>
               </div>
             </div>
@@ -677,10 +765,11 @@ const goToAppointments = () => {
             <!-- SIMULACIÓN DE QR GENERADO -->
             <div v-if="isQrGenerated" class="flex flex-col items-center justify-center flex-1 animate-in slide-in-from-bottom-8 duration-500">
               <div class="p-4 bg-white border border-slate-200 rounded-2xl shadow-xl shadow-slate-100 mb-6">
-                <!-- Imagen mock de QR -->
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PagoEfectivoSimulation" alt="Código QR" class="w-48 h-48 rounded-lg" />
+                <div aria-label="Código QR de demostración" class="w-48 h-48 rounded-lg bg-white p-3 grid grid-cols-9 gap-1">
+                  <span v-for="cell in 81" :key="cell" class="rounded-[1px]" :class="((cell * 7 + Math.floor(cell / 9) * 3) % 5) < 2 ? 'bg-slate-950' : 'bg-white'"></span>
+                </div>
               </div>
-              <p class="text-sm font-semibold text-slate-700 mb-2">Escanea el código para pagar</p>
+              <p class="text-sm font-semibold text-slate-700 mb-2">Escanea el código de demostración</p>
               <div class="flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-full">
                 <PhClock class="h-4 w-4 text-slate-500" />
                 <span class="font-bold text-slate-700 font-mono">{{ formatTime(qrTimeLeft) }}</span>
@@ -807,7 +896,7 @@ const goToAppointments = () => {
               <PhCalendarBlank class="h-4 w-4" />
             </div>
             <div>
-              <p class="text-sm font-bold text-slate-800">{{ selectedDate }} a las {{ selectedTime }}</p>
+              <p class="text-sm font-bold text-slate-800">{{ selectedDate }} a las {{ selectedSlot?.time }}</p>
               <p class="text-xs font-medium text-slate-500">{{ selectedLocation }}</p>
             </div>
           </div>

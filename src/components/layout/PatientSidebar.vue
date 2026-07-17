@@ -52,7 +52,8 @@ const menuItems = computed(() => {
       { name: 'Mi Agenda', routeName: 'doctor-agenda', icon: PhCalendarCheck },
       { name: 'Mi Horario', routeName: 'doctor-schedule', icon: PhClock },
       { name: 'Pacientes', routeName: 'doctor-patients', icon: PhUsers },
-      { name: 'Diagnósticos', routeName: 'doctor-diagnoses', icon: PhHeartbeat },
+      { name: 'Historias clínicas', routeName: 'medical-records', icon: PhFolderOpen },
+      { name: 'Diagnósticos emitidos', routeName: 'doctor-diagnoses', icon: PhHeartbeat },
       { name: 'Recetas', routeName: 'doctor-prescriptions', icon: PhPill },
       { name: 'Ajustes', routeName: 'settings', icon: PhGear }
     ]

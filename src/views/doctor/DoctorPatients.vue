@@ -2,11 +2,11 @@
 import { ref } from 'vue'
 import { PhMagnifyingGlass, PhFunnel } from '@phosphor-icons/vue'
 
-const patients = ref([
+const patients = ref(import.meta.env.DEV ? [
   { id: 1, name: 'Carlos Pérez', lastVisit: '10 May 2026', totalVisits: 3 },
   { id: 2, name: 'Ana Gómez', lastVisit: '12 May 2026', totalVisits: 1 },
   { id: 3, name: 'Luis Rodríguez', lastVisit: '15 May 2026', totalVisits: 5 }
-])
+] : [])
 </script>
 
 <template>

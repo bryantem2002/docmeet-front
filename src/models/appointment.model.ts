@@ -9,7 +9,7 @@ export const appointmentModel = {
   },
 
   async create(payload: CreateAppointmentPayload): Promise<IAppointment> {
-    return appointmentService.createAppointment(payload)
+    return appointmentService.createLegacyAppointment(payload)
   },
 
   async delete(id: string): Promise<void> {

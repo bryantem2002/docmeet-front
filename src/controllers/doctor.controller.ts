@@ -47,7 +47,7 @@ const MOCK_DOCTORS: Omit<IDoctorListItem, 'avatar'>[] = [
 function withAvatar(doctor: IDoctor): IDoctorListItem {
   return {
     ...doctor,
-    avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(doctor.fullName)}&backgroundColor=0369a1,0ea5e9&textColor=ffffff`,
+    avatar: doctor.photoUrl || '/img/logodoc.png',
   }
 }
 
@@ -72,8 +72,9 @@ export const doctorController = {
         ? await doctorModel.readBySpecialty(specialty.trim())
         : await doctorModel.readAll()
       return doctors.map(withAvatar)
-    } catch {
-      return filterMock(specialty)
+    } catch (error) {
+      if (import.meta.env.DEV) return filterMock(specialty)
+      throw error
     }
   },
 }

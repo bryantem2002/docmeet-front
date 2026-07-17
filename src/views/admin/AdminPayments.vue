@@ -2,11 +2,11 @@
 import { ref } from 'vue'
 import { PhMagnifyingGlass, PhFileText } from '@phosphor-icons/vue'
 
-const transactions = ref([
+const transactions = ref(import.meta.env.DEV ? [
   { id: 'TXN-9021', date: '18 May 2026', patient: 'María Flores', amount: 'S/ 120.00', type: 'Ingreso', status: 'Completado', method: 'Yape' },
   { id: 'TXN-9020', date: '17 May 2026', patient: 'Luis Rodríguez', amount: 'S/ 84.00', type: 'Reembolso (70%)', status: 'Pendiente', method: 'Mercado Pago' },
   { id: 'TXN-9019', date: '15 May 2026', patient: 'Ana Gómez', amount: 'S/ 150.00', type: 'Ingreso', status: 'Completado', method: 'Tarjeta' },
-])
+] : [])
 
 const processRefund = (txn: any) => {
   txn.status = 'Procesado'

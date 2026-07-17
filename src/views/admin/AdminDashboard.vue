@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const metrics = ref({
+const metrics = ref(import.meta.env.DEV ? {
   totalIncome: 'S/ 24,500',
   appointmentsMonth: 342,
   newPatients: 85,
   activeDoctors: 12
+} : {
+  totalIncome: 'S/ 0',
+  appointmentsMonth: 0,
+  newPatients: 0,
+  activeDoctors: 0
 })
 
 // Mock data for the chart (Completadas vs Canceladas)
-const chartData = [
+const chartData = import.meta.env.DEV ? [
   { day: 'Lun', completed: 80, cancelled: 10 },
   { day: 'Mar', completed: 65, cancelled: 15 },
   { day: 'Mie', completed: 90, cancelled: 5 },
@@ -17,7 +22,7 @@ const chartData = [
   { day: 'Vie', completed: 85, cancelled: 8 },
   { day: 'Sab', completed: 40, cancelled: 2 },
   { day: 'Dom', completed: 20, cancelled: 0 },
-]
+] : []
 
 const maxChartValue = 100
 </script>

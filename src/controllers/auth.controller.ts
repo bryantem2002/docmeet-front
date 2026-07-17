@@ -109,12 +109,6 @@ export const authController = {
   },
 
   /** CREATE — registrar usuario y sesión. */
-  async register(payload: IRegisterPayload): Promise<IAuthResponse> {
-    const res = await authModel.createUser(payload)
-    authModel.writeSession(res.token, res.user)
-    return res
-  },
-
   /** READ — sesión local. */
   readSession(): { token: string | null; user: IUser | null } {
     return authModel.readSession()

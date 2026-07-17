@@ -1,12 +1,43 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { PhPlus, PhMagnifyingGlass, PhFileText, PhPrinter } from '@phosphor-icons/vue'
+import { useAuthStore } from '@/store/auth-store'
+import { getConsultationsByDoctor, getPrescriptions } from '@/services/medical-service'
 
-const prescriptions = ref([
-  { id: 'REC-2051', patient: 'Ana Gómez', date: '12 May 2026', items: 2, status: 'Vigente' },
-  { id: 'REC-2050', patient: 'Carlos Pérez', date: '10 May 2026', items: 1, status: 'Vencida' },
-  { id: 'REC-2049', patient: 'Luis Rodríguez', date: '05 May 2026', items: 3, status: 'Vencida' },
-])
+const authStore = useAuthStore()
+const prescriptions = ref<any[]>([])
+const loading = ref(true)
+
+onMounted(async () => {
+  if (!authStore.user?.id) return
+  try {
+    const consultations = await getConsultationsByDoctor(authStore.user.id, 0, 50)
+    
+    const allPrescriptions = []
+    for (const consult of consultations.content) {
+      try {
+        const prescs = await getPrescriptions(consult.id)
+        for (const p of prescs) {
+          allPrescriptions.push({
+            id: p.id,
+            patient: 'Paciente',
+            date: consult.date.split('T')[0],
+            items: p.details?.length || 0,
+            status: 'Vigente'
+          })
+        }
+      } catch (e) {
+        console.error('Error al obtener recetas de la consulta', consult.id)
+      }
+    }
+    
+    prescriptions.value = allPrescriptions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  } catch (error) {
+    console.error('Error cargando recetas del doctor:', error)
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <template>

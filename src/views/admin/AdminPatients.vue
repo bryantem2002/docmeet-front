@@ -2,12 +2,12 @@
 import { ref } from 'vue'
 import { PhPlus, PhMagnifyingGlass, PhCheckCircle, PhProhibit, PhPhone, PhFunnel, PhX } from '@phosphor-icons/vue'
 
-const patients = ref([
+const patients = ref(import.meta.env.DEV ? [
   { id: 'PAC-001', name: 'Carlos Pérez', dni: '74839210', phone: '987654321', lastVisit: '10 May 2026', sede: 'Miraflores', date: '10 May 2026', status: 'active' },
   { id: 'PAC-002', name: 'Ana Gómez', dni: '45637281', phone: '912345678', lastVisit: '12 May 2026', sede: 'San Isidro', date: '12 May 2026', status: 'active' },
   { id: 'PAC-003', name: 'Luis Rodríguez', dni: '09384726', phone: '999888777', lastVisit: '15 May 2026', sede: 'Miraflores', date: '15 May 2026', status: 'inactive' },
   { id: 'PAC-004', name: 'María Flores', dni: '72836412', phone: '921123456', lastVisit: '18 May 2026', sede: 'Surco', date: '18 May 2026', status: 'active' }
-])
+] : [])
 
 const toggleStatus = (patient: any) => {
   patient.status = patient.status === 'active' ? 'inactive' : 'active'

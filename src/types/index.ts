@@ -6,5 +6,15 @@ export type {
   IRegisterPayload,
   IUpdateProfilePayload,
   IAuthResponse,
+  ICognitoRegisterRequest,
+  ICognitoConfirmRequest,
+  IForgotPasswordRequest,
+  IConfirmForgotPasswordRequest,
+  IChangePasswordRequest,
+  IRespondNewPasswordRequest,
+  IPatientCreateRequest,
 } from './auth'
 export type { IPayment, PaymentStatus } from './payment'
+export type * from './medical'
+export type * from './admin'
+

@@ -1,7 +1,6 @@
 import type {
   IAuthResponse,
   ILoginCredentials,
-  IRegisterPayload,
   IUpdateProfilePayload,
   IUser,
 } from '@/types'
@@ -21,10 +20,6 @@ export const authModel = {
   },
 
   /** CREATE — nuevo usuario y sesión (registro). */
-  async createUser(payload: IRegisterPayload): Promise<IAuthResponse> {
-    return authService.register(payload)
-  },
-
   /** READ — sesión almacenada en el cliente. */
   readSession(): { token: string | null; user: IUser | null } {
     return {

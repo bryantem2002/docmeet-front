@@ -1,19 +1,52 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { PhMagnifyingGlass, PhFunnel } from '@phosphor-icons/vue'
+import { useAuthStore } from '@/store/auth-store'
+import { getConsultationsByDoctor, getDiagnoses } from '@/services/medical-service'
 
-const diagnoses = ref([
-  { id: 'DX-1001', patient: 'Ana Gómez', date: '12 May 2026', code: 'J02.9', description: 'Faringitis aguda no especificada', status: 'Registrado' },
-  { id: 'DX-1002', patient: 'Carlos Pérez', date: '10 May 2026', code: 'E11.9', description: 'Diabetes mellitus tipo 2 sin complicaciones', status: 'Registrado' },
-  { id: 'DX-1003', patient: 'Luis Rodríguez', date: '05 May 2026', code: 'I10', description: 'Hipertensión esencial (primaria)', status: 'Registrado' },
-])
+const authStore = useAuthStore()
+
+const diagnoses = ref<any[]>([])
+const loading = ref(true)
+
+onMounted(async () => {
+  if (!authStore.user?.id) return
+  try {
+    const consultations = await getConsultationsByDoctor(authStore.user.id, 0, 50)
+    
+    const allDiagnoses = []
+    for (const consult of consultations.content) {
+      try {
+        const diags = await getDiagnoses(consult.id)
+        for (const d of diags) {
+          allDiagnoses.push({
+            id: d.id || 'DX-GENERIC',
+            patient: 'Paciente (Ver detalle)', // El backend no retorna el nombre
+            date: consult.date?.split('T')[0] || 'Fecha no disp.',
+            code: d.severity,
+            description: d.description,
+            status: 'Registrado'
+          })
+        }
+      } catch (e) {
+        console.error('Error al obtener diagnósticos de la consulta', consult.id)
+      }
+    }
+    
+    diagnoses.value = allDiagnoses
+  } catch (error) {
+    console.error('Error cargando diagnósticos del doctor:', error)
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <template>
   <div class="max-w-7xl mx-auto w-full px-4 sm:px-0 font-sans">
     <div class="mb-8">
       <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Diagnósticos Clínicos Emitidos</h1>
-      <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Historial completo de los diagnósticos que has registrado a tus pacientes.</p>
+      <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Reporte de diagnósticos registrados dentro de tus consultas. No reemplaza la historia clínica del paciente.</p>
     </div>
 
     <!-- Filtros (Mockup visual) -->

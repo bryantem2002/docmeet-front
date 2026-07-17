@@ -1,63 +1,50 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { PhMagnifyingGlass, PhCalendarBlank, PhClock, PhFileText } from '@phosphor-icons/vue'
+import { getMedicalRecords, getConsultationsByMedicalRecord } from '@/services/medical-service'
+import type { MedicalConsultationResponse } from '@/types/medical'
 
 // --- ESTADOS ---
 const searchQuery = ref('')
 const filterSpecialty = ref('Todas')
 
-// --- DATOS DE PRUEBA (MOCK DATA - CITAS PASADAS) ---
-// Nota: Las fechas son anteriores a "hoy" (Mayo 2026)
-const pastAppointments = ref([
-  {
-    id: 101,
-    date: '2026-04-15',
-    time: '10:30 AM',
-    doctor: 'Dr. Gregory House',
-    specialty: 'Medicina Interna',
-    diagnosis: 'Infección respiratoria aguda leve. Requiere reposo y medicación sintomática.',
-    prescription: true,
-    status: 'completed',
-    notes: 'Paciente presentó fiebre de 38.5°C por dos días. No hay signos de complicación pulmonar.'
-  },
-  {
-    id: 102,
-    date: '2026-03-22',
-    time: '04:00 PM',
-    doctor: 'Dra. Allison Cameron',
-    specialty: 'Inmunología',
-    diagnosis: 'Reacción alérgica estacional. Rinitis alérgica.',
-    prescription: true,
-    status: 'completed',
-    notes: 'Se recetan antihistamínicos de segunda generación.'
-  },
-  {
-    id: 103,
-    date: '2025-11-10',
-    time: '09:15 AM',
-    doctor: 'Dr. Robert Chase',
-    specialty: 'Cardiología',
-    diagnosis: 'Chequeo general preventivo. Presión arterial dentro de los límites normales (110/70).',
-    prescription: false,
-    status: 'completed',
-    notes: 'Electrocardiograma normal. Se recomienda mantener rutina de ejercicios.'
-  },
-  {
-    id: 104,
-    date: '2025-08-05',
-    time: '11:00 AM',
-    doctor: 'Dr. Gregory House',
-    specialty: 'Medicina Interna',
-    diagnosis: 'Gastroenteritis aguda. Posible origen alimentario.',
-    prescription: true,
-    status: 'completed',
-    notes: 'Paciente reporta dolor abdominal y náuseas. Tratamiento con suero oral y antieméticos.'
+const pastAppointments = ref<any[]>([])
+const loading = ref(true)
+
+onMounted(async () => {
+  try {
+    // 1. Obtener la historia clínica del paciente
+    const records = await getMedicalRecords({ page: 0, size: 1 })
+    if (records.content.length > 0) {
+      const idMedicalRecord = records.content[0].idMedicalRecord
+      
+      // 2. Obtener las consultas de esa historia clínica
+      const consultations = await getConsultationsByMedicalRecord(idMedicalRecord)
+      
+      // 3. Mapear a la interfaz
+      pastAppointments.value = consultations.map((c: MedicalConsultationResponse) => ({
+        id: c.id,
+        date: c.date.split('T')[0],
+        time: c.date.includes('T') ? c.date.split('T')[1].substring(0, 5) : '00:00',
+        doctor: c.doctorName || c.doctor || 'Doctor asignado',
+        specialty: 'Medicina General',
+        diagnosis: c.reason || 'Consulta médica',
+        prescription: false,
+        status: c.status,
+        notes: c.reason || ''
+      }))
+    }
+  } catch (error) {
+    console.error('Error cargando el historial clínico:', error)
+  } finally {
+    loading.value = false
   }
-])
+})
 
 // --- UTILIDADES ---
 // Formatear la fecha para que se lea bonito (ej. "15 de Abril, 2026")
 const formatDate = (dateString: string) => {
+  if (!dateString) return ''
   const date = new Date(dateString + 'T00:00:00') // Prevenir desfase de zona horaria
   return new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).format(date)
 }
